@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handlePaystackWebhook } from "@/lib/services/paystack";
 
+export async function GET() {
+  return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
+}
+
 /**
  * Paystack Webhook Handler
  * Receives events from Paystack for successful payments
