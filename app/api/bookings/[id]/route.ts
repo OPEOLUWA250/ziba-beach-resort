@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getBookingDetails, cancelBooking } from "@/lib/services/booking";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } },
 ) {
   try {
+    const { getBookingDetails } = await import("@/lib/services/booking");
     const bookingId = params.id;
 
     if (!bookingId) {
@@ -36,6 +38,7 @@ export async function PATCH(
   { params }: { params: { id: string } },
 ) {
   try {
+    const { cancelBooking } = await import("@/lib/services/booking");
     const bookingId = params.id;
     const body = await request.json();
     const { userId, action } = body;
