@@ -4,6 +4,8 @@ import { createPaymentWithCurrencyConversion } from "@/lib/services/paystack";
 import { getUserById } from "@/lib/services/auth";
 import prisma from "@/lib/services/prisma";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
 }

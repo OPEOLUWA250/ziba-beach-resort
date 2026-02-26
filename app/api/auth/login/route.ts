@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { loginUser } from "@/lib/services/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
 }

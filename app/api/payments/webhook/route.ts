@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handlePaystackWebhook } from "@/lib/services/paystack";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
 }
