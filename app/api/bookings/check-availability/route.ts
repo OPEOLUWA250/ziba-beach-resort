@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isRoomAvailable, getAvailableRooms } from "@/lib/services/booking";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const { isRoomAvailable, getAvailableRooms } =
+      await import("@/lib/services/booking");
     const { roomId, checkInDate, checkOutDate } = body;
 
     if (!roomId || !checkInDate || !checkOutDate) {

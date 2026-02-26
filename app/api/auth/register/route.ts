@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { registerUser } from "@/lib/services/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +9,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const { registerUser } = await import("@/lib/services/auth");
     const { email, password, firstName, lastName, phone, country, currency } =
       body;
 

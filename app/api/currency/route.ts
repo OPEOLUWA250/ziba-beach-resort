@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  convertCurrency,
-  getSupportedCurrencies,
-  convertFromNGN,
-} from "@/lib/services/currency";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const { convertCurrency, getSupportedCurrencies, convertFromNGN } =
+      await import("@/lib/services/currency");
     const { amount, fromCurrency, toCurrency } = body;
 
     if (!amount || !fromCurrency || !toCurrency) {

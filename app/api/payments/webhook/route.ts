@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handlePaystackWebhook } from "@/lib/services/paystack";
 
 export const dynamic = "force-dynamic";
 
@@ -13,8 +12,8 @@ export async function GET() {
  */
 export async function POST(request: NextRequest) {
   try {
-    // Get the raw body
     const body = await request.json();
+    const { handlePaystackWebhook } = await import("@/lib/services/paystack");
     const signature = request.headers.get("x-paystack-signature");
 
     if (!signature) {

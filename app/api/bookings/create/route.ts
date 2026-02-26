@@ -1,8 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createBooking, calculateBookingPrice } from "@/lib/services/booking";
-import { createPaymentWithCurrencyConversion } from "@/lib/services/paystack";
-import { getUserById } from "@/lib/services/auth";
-import prisma from "@/lib/services/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +9,12 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const { createBooking, calculateBookingPrice } =
+      await import("@/lib/services/booking");
+    const { createPaymentWithCurrencyConversion } =
+      await import("@/lib/services/paystack");
+    const { getUserById } = await import("@/lib/services/auth");
+    const prisma = (await import("@/lib/services/prisma")).default;
     const {
       userId,
       roomId,
