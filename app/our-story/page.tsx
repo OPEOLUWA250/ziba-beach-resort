@@ -74,7 +74,10 @@ export default function OurStory() {
       />
       <main className="bg-white">
         {/* The Resort Section */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-blue-50 via-white to-pink-50">
+        <section
+          className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-blue-50 via-white to-pink-50 overflow-hidden"
+          style={{ animation: "fadeInUp 0.8s ease-out" }}
+        >
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <h2

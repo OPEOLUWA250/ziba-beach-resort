@@ -93,7 +93,10 @@ export default function Contact() {
       />
       <main className="bg-white">
         {/* Trust Indicators */}
-        <section className="px-4 sm:px-6 lg:px-8 py-12 bg-linear-to-r from-blue-900 via-blue-800 to-blue-900">
+        <section
+          className="px-4 sm:px-6 lg:px-8 py-12 bg-linear-to-r from-blue-900 via-blue-800 to-blue-900 overflow-hidden"
+          style={{ animation: "fadeInUp 0.8s ease-out" }}
+        >
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 text-white text-center">
               <div>
@@ -238,6 +241,9 @@ export default function Contact() {
                     <div
                       key={index}
                       className="border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md hover:border-blue-300"
+                      style={{
+                        animation: `fadeInLeft 0.6s ease-out ${index * 100}ms both`,
+                      }}
                     >
                       <button
                         onClick={() =>

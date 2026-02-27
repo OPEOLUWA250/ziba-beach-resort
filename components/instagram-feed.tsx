@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ExternalLink } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faInstagram,
+  faArrowUpRightFromSquare,
+} from "@fortawesome/free-brands-svg-icons";
 
 interface InstagramPost {
   id: string;
@@ -203,8 +207,11 @@ export default function InstagramFeed() {
           >
             <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-6">
               {/* Profile Icon */}
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg">
-                <span className="text-5xl">📸</span>
+              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <FontAwesomeIcon
+                  icon={faInstagram}
+                  className="w-16 h-16 text-white"
+                />
               </div>
 
               {/* Profile Info */}
@@ -234,13 +241,12 @@ export default function InstagramFeed() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-lg hover:shadow-xl transition-all duration-500 transform hover:scale-105 active:scale-95 font-light tracking-wide group/btn w-full sm:w-auto mt-4"
               >
-                <span className="flex items-center gap-2">
-                  Follow on Instagram
-                  <ExternalLink
-                    size={18}
-                    strokeWidth={1}
-                    className="transform group-hover/btn:translate-x-1 transition-transform"
+                <span className="flex items-center gap-3">
+                  <FontAwesomeIcon
+                    icon={faInstagram}
+                    className="w-5 h-5 transform group-hover/btn:-rotate-12 transition-transform"
                   />
+                  Follow on Instagram
                 </span>
               </a>
             </div>

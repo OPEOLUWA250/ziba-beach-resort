@@ -40,7 +40,7 @@ export default function Menu() {
     note?: string;
     children: React.ReactNode;
   }) => (
-    <div className="mb-16">
+    <div className="mb-16" style={{ animation: "fadeInUp 0.6s ease-out" }}>
       <div>
         <h2
           className="text-4xl font-light text-blue-900 mb-2"

@@ -28,10 +28,13 @@ export default function Blog() {
       />
       <main className="bg-white">
         {/* Category Filter */}
-        <section className="px-4 sm:px-6 lg:px-8 py-16">
+        <section
+          className="px-4 sm:px-6 lg:px-8 py-16 overflow-hidden"
+          style={{ animation: "fadeInUp 0.8s ease-out" }}
+        >
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-wrap gap-3 justify-center mb-12">
-              {categories.map((category) => (
+              {categories.map((category, idx) => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
@@ -40,6 +43,9 @@ export default function Blog() {
                       ? "bg-blue-900 text-white shadow-md"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
+                  style={{
+                    animation: `fadeInUp 0.6s ease-out ${idx * 50}ms both`,
+                  }}
                 >
                   {category}
                 </button>
@@ -48,11 +54,14 @@ export default function Blog() {
 
             {/* Blog Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-              {filteredPosts.map((post) => (
+              {filteredPosts.map((post, idx) => (
                 <Link
                   key={post.id}
                   href={`/blog/${post.slug}`}
                   className="group"
+                  style={{
+                    animation: `fadeInUp 0.6s ease-out ${200 + idx * 100}ms both`,
+                  }}
                 >
                   <div className="h-full bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col hover:border-blue-300">
                     {/* Featured Image */}
