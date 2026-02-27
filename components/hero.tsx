@@ -66,14 +66,6 @@ export default function Hero() {
               />
             </div>
 
-            {/* Main Title */}
-            <h1
-              className="text-7xl md:text-8xl lg:text-9xl font-light leading-tight text-white mb-8 tracking-tight"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
-            >
-              Ziba
-            </h1>
-
             {/* Description */}
             <p className="text-xl md:text-2xl text-gray-100 max-w-2xl font-light leading-relaxed mb-12">
               Experience luxury on the water. Floating rooms, ocean views, and
@@ -84,10 +76,10 @@ export default function Hero() {
             <div className="flex flex-col sm:flex-row gap-4 mb-16 justify-center">
               <button
                 onClick={scrollToBooking}
-                className="group px-8 py-3 bg-linear-to-r from-gold-400 to-gold-500 text-black font-light text-lg tracking-wide hover:shadow-2xl hover:from-gold-300 hover:to-gold-400 transition-all duration-300 transform hover:-translate-y-1"
+                className="group px-8 py-3 bg-linear-to-r from-blue-600 to-blue-700 text-white font-light text-lg tracking-wide hover:shadow-2xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:-translate-y-1"
                 style={{
-                  background: "linear-gradient(135deg, #d4af37, #f4d03f)",
-                  color: "#1a1a1a",
+                  background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                  color: "#ffffff",
                 }}
               >
                 <span className="flex items-center gap-2">
@@ -103,7 +95,7 @@ export default function Hero() {
 
               <button
                 onClick={scrollToBooking}
-                className="px-8 py-3 border-2 border-white text-white font-light text-lg tracking-wide hover:bg-white/10 transition-all duration-300 backdrop-blur-sm"
+                className="px-8 py-3 border-2 border-blue-600 text-blue-600 font-light text-lg tracking-wide hover:bg-blue-600/10 transition-all duration-300 backdrop-blur-sm"
               >
                 Day Pass Experience
               </button>

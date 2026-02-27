@@ -57,7 +57,7 @@ export default function Footer() {
             <ul className="space-y-3 text-sm font-light text-blue-100">
               <li>
                 <a
-                  href="/stay/rooms/room01"
+                  href="/bookings/rooms/room01"
                   className="hover:text-blue-200 transition-colors duration-300"
                 >
                   Beach Facing Room
@@ -65,7 +65,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/stay/rooms/room02"
+                  href="/bookings/rooms/room02"
                   className="hover:text-blue-200 transition-colors duration-300"
                 >
                   Beach Facing Family Room
@@ -73,7 +73,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/stay/rooms/room03"
+                  href="/bookings/rooms/room03"
                   className="hover:text-blue-200 transition-colors duration-300"
                 >
                   Beach Facing Family Room (Full View)
@@ -81,7 +81,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/stay/rooms/room04"
+                  href="/bookings/rooms/room04"
                   className="hover:text-blue-200 transition-colors duration-300"
                 >
                   Beach Facing Connecting Room
@@ -89,7 +89,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/stay/rooms/room05"
+                  href="/bookings/rooms/room05"
                   className="hover:text-blue-200 transition-colors duration-300"
                 >
                   Beach Facing Suite
@@ -97,7 +97,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/stay/rooms/room06"
+                  href="/bookings/rooms/room06"
                   className="hover:text-blue-200 transition-colors duration-300"
                 >
                   Two Bedroom Apartment
@@ -105,7 +105,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/stay/rooms/room07"
+                  href="/bookings/rooms/room07"
                   className="hover:text-blue-200 transition-colors duration-300"
                 >
                   Overwater Terrace Room
@@ -113,7 +113,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/stay/rooms/room08"
+                  href="/bookings/rooms/room08"
                   className="hover:text-blue-200 transition-colors duration-300"
                 >
                   Overwater Terrace Suite
@@ -121,7 +121,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/stay/rooms/room09"
+                  href="/bookings/rooms/room09"
                   className="hover:text-blue-200 transition-colors duration-300"
                 >
                   Ziba Black

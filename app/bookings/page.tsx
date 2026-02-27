@@ -137,7 +137,7 @@ export default function Stay() {
               {rooms.map((room) => (
                 <Link
                   key={room.roomId}
-                  href={`/stay/rooms/${room.roomId}`}
+                  href={`/bookings/rooms/${room.roomId}`}
                   className="group bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-gray-400 hover:shadow-2xl transition-all duration-300"
                 >
                   {/* Image Container */}

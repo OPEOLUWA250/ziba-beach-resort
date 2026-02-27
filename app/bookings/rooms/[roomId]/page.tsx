@@ -4,7 +4,9 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { use } from "react";
+import { use, useState } from "react";
+import { useRouter } from "next/navigation";
+import AvailabilityModal from "@/components/availability-modal";
 
 interface Room {
   id: string;
@@ -302,6 +304,19 @@ export default function RoomDetail({
   const resolvedParams = use(params);
   const roomId = resolvedParams.roomId;
   const room = rooms[roomId];
+  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleBooking = (checkInDate: Date, checkOutDate: Date) => {
+    const checkInStr = checkInDate.toISOString().split("T")[0];
+    const checkOutStr = checkOutDate.toISOString().split("T")[0];
+    setIsModalOpen(false);
+    // Redirect to payment page with room pre-selected and dates
+    const roomName = encodeURIComponent(room?.name || roomId);
+    router.push(
+      `/booking/payment?roomId=${roomId}&roomName=${roomName}&checkIn=${checkInStr}&checkOut=${checkOutStr}`,
+    );
+  };
 
   if (!room) {
     return (
@@ -311,7 +326,7 @@ export default function RoomDetail({
             Room Not Found
           </h1>
           <Link
-            href="/stay"
+            href="/bookings"
             className="text-gray-600 hover:text-gray-900 font-light"
           >
             Back to Rooms →
@@ -377,7 +392,7 @@ export default function RoomDetail({
         <div className="px-4 sm:px-6 lg:px-8 py-6 border-b border-gray-200 bg-white">
           <div className="max-w-6xl mx-auto">
             <Link
-              href="/stay"
+              href="/bookings"
               className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-light transition"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -554,7 +569,10 @@ export default function RoomDetail({
                   </div>
 
                   <div className="flex gap-3">
-                    <button className="flex-1 bg-gray-900 text-white py-4 rounded-lg hover:bg-gray-800 transition font-light">
+                    <button
+                      onClick={() => setIsModalOpen(true)}
+                      className="flex-1 bg-gray-900 text-white py-4 rounded-lg hover:bg-gray-800 transition font-light"
+                    >
                       Book Now
                     </button>
                     <button className="flex-1 border-2 border-gray-900 text-gray-900 py-4 rounded-lg hover:bg-gray-50 transition font-light">
@@ -603,7 +621,7 @@ export default function RoomDetail({
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="/stay"
+                href="/bookings"
                 className="bg-white text-gray-900 px-10 py-4 rounded-lg font-light hover:bg-gray-100 transition-all duration-300 inline-block"
               >
                 View All Rooms
@@ -616,6 +634,16 @@ export default function RoomDetail({
         </section>
       </main>
       <Footer />
+
+      {/* Availability Check Modal */}
+      <AvailabilityModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        roomId={room.id}
+        roomName={room.name}
+        pricePerNight={parseInt(room.price.replace(/[^0-9]/g, ""))}
+        onProceedToBooking={handleBooking}
+      />
     </>
   );
 }

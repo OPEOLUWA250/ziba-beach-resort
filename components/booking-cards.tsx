@@ -82,7 +82,7 @@ export default function BookingCards() {
                 ))}
               </ul>
 
-              <Link href="/stay">
+              <Link href="/bookings">
                 <button className="w-full bg-linear-to-r from-blue-600 to-blue-700 text-white px-6 py-3 font-light tracking-wide hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 rounded-lg">
                   Explore Night Experience
                 </button>

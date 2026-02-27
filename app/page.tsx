@@ -8,8 +8,8 @@ import BookingCards from "@/components/booking-cards";
 import Rooms from "@/components/rooms";
 import Amenities from "@/components/amenities";
 import ExperiencesCarousel from "@/components/experiences-carousel";
-import Booking from "@/components/booking";
 import Reviews from "@/components/reviews";
+import ContactSection from "@/components/contact-section";
 import Footer from "@/components/footer";
 
 export default function Home() {
@@ -22,8 +22,8 @@ export default function Home() {
       <ExperiencesCarousel />
       <Rooms />
       <Amenities />
-      <Booking />
       <Reviews />
+      <ContactSection />
       <Footer />
     </main>
   );

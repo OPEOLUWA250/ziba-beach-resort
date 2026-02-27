@@ -128,3 +128,87 @@
 .experiences-carousel::-webkit-scrollbar {
   display: none;
 }
+/* Custom React Calendar Styling */
+.react-calendar-custom {
+  width: 100%;
+  border: none !important;
+  font-family: inherit;
+}
+
+.react-calendar-custom__month-view__weekdays {
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 10px;
+}
+
+.react-calendar-custom__month-view__weekdays__weekday {
+  font-size: 0.875rem;
+  padding: 8px 0;
+  abbr {
+    text-decoration: none;
+  }
+}
+
+.react-calendar-custom__month-view__days__day {
+  padding: 8px;
+  font-size: 0.875rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #f3f4f6;
+  }
+}
+
+.react-calendar-custom__month-view__days__day--disabled {
+  color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.react-calendar-custom__month-view__days__day--active {
+  background-color: #1e3a8a !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.react-calendar-custom__month-view__days__day--rangeStart,
+.react-calendar-custom__month-view__days__day--rangeEnd {
+  background-color: #1e3a8a !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.react-calendar-custom__month-view__days__day--rangeStart::after,
+.react-calendar-custom__month-view__days__day--rangeEnd::after {
+  display: none;
+}
+
+.react-calendar-custom__month-view__days__day--inRange {
+  background-color: #bfdbfe !important;
+  color: #1e40af;
+}
+
+.react-calendar-custom__navigation {
+  margin-bottom: 15px;
+}
+
+.react-calendar-custom__navigation button {
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: #1e3a8a;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f3f4f6;
+  }
+}
+
+.react-calendar-custom__navigation button:disabled {
+  color: #d1d5db;
+  cursor: not-allowed;
+}
