@@ -79,13 +79,18 @@ export default function Amenities() {
               }`}
               style={{
                 transitionDelay: isVisible ? `${300 + idx * 75}ms` : "0ms",
+                transitionDuration: "200ms",
+                transitionProperty:
+                  "border-color, box-shadow, transform, opacity",
               }}
             >
-              <div className="text-4xl mb-3 transform group-hover:scale-110 transition-transform duration-500 inline-block hover:scale-110">
-                {item.icon}
+              <div className="text-center md:text-left">
+                <div className="text-4xl mb-3 transform group-hover:scale-110 transition-transform duration-200 inline-block hover:scale-110">
+                  {item.icon}
+                </div>
+                <h3 className="font-light text-gray-900 mb-2">{item.name}</h3>
+                <p className="text-sm text-gray-600 font-light">{item.desc}</p>
               </div>
-              <h3 className="font-light text-gray-900 mb-2">{item.name}</h3>
-              <p className="text-sm text-gray-600 font-light">{item.desc}</p>
             </div>
           ))}
         </div>

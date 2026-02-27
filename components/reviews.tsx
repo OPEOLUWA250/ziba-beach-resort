@@ -140,7 +140,7 @@ const AverageRating = ({ isVisible }: { isVisible: boolean }) => {
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >
-      <div className="flex items-center gap-8">
+      <div className="flex flex-col md:flex-row items-center gap-8">
         <div className="text-center">
           <div className="text-6xl font-bold text-blue-600 mb-2 transition-all duration-700">
             {avgRating}

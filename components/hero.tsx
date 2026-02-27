@@ -45,17 +45,6 @@ export default function Hero() {
             }}
           />
 
-          {/* Overlay Gradients */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-900/50 via-transparent to-blue-900/30" />
-          <div
-            className="absolute inset-0 opacity-30 mix-blend-multiply"
-            style={{
-              background:
-                "radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.2) 0%, transparent 50%)",
-            }}
-          />
-
           {/* Animated Accent Elements */}
           <div
             className="absolute top-20 right-20 w-72 h-72 rounded-full blur-3xl opacity-20 mix-blend-screen"
