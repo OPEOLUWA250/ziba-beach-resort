@@ -121,7 +121,7 @@ export default function ContactSection() {
           {/* FAQ Column */}
           <div className="order-2 lg:order-1">
             <h3
-              className={`text-3xl font-light text-blue-900 mb-8 cormorant transition-all duration-1000 ease-out ${
+              className={`text-3xl font-light text-blue-900 mb-8 cormorant text-center sm:text-left transition-all duration-1000 ease-out ${
                 isVisible
                   ? "opacity-100 translate-x-0"
                   : "opacity-0 -translate-x-10"
@@ -290,7 +290,7 @@ export default function ContactSection() {
                 <button
                   type="submit"
                   disabled={submitStatus === "loading"}
-                  className={`w-full py-2 sm:py-3 px-4 rounded-lg font-light text-sm sm:text-base transition-all duration-300 transform hover:scale-105 ${
+                  className={`w-full py-3 sm:py-3 px-6 sm:px-6 rounded-lg font-light text-sm sm:text-base transition-all duration-300 transform hover:scale-105 ${
                     submitStatus === "success"
                       ? "bg-green-600 text-white hover:bg-green-700"
                       : submitStatus === "loading"
