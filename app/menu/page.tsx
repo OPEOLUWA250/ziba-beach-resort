@@ -661,8 +661,7 @@ export default function Menu() {
           </div>
         </section>
 
-        {/* CTA SECTION */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-r from-blue-900 to-blue-800">
+        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-blue-900">
           <div className="max-w-4xl mx-auto text-center">
             <h2
               className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-white mb-6"
@@ -670,10 +669,10 @@ export default function Menu() {
             >
               Ready to Dine?
             </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-100 font-light mb-10">
+            <p className="text-base sm:text-lg lg:text-xl text-blue-100 font-light mb-10">
               Reserve your table or book your stay at Ziba Beach Resort
             </p>
-            <button className="bg-white text-blue-900 px-10 py-4 rounded-lg font-light hover:bg-gray-100 transition-all duration-300 hover:shadow-lg text-lg">
+            <button className="bg-gradient-to-br from-white to-blue-50 text-blue-900 px-10 py-4 rounded-lg font-light hover:shadow-lg transition-all duration-300 hover:from-blue-50 hover:to-white text-lg">
               Make a Reservation
             </button>
           </div>

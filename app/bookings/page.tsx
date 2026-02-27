@@ -121,16 +121,16 @@ export default function Stay() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-gray-900 mb-4"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
+                className="text-5xl font-light text-blue-900 mb-4 text-center"
+                style={{ fontFamily: "Cormorant Garamond" }}
               >
                 Room Types & Accommodations
               </h2>
+              <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
               <p className="text-gray-600 font-light max-w-2xl mx-auto">
                 Choose from our carefully curated collection of 9 premium rooms
                 and suites, each designed for ultimate comfort
               </p>
-              <div className="w-24 h-1 bg-blue-900 mx-auto mt-6"></div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -207,12 +207,12 @@ export default function Stay() {
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <h2
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-gray-900 mb-4"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
+                className="text-5xl font-light text-blue-900 mb-4 text-center"
+                style={{ fontFamily: "Cormorant Garamond" }}
               >
                 What's Included In Your Stay
               </h2>
-              <div className="w-24 h-1 bg-blue-900 mx-auto mt-6"></div>
+              <div className="w-16 h-0.5 mx-auto bg-linear-to-r from-transparent via-blue-400 to-transparent" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
@@ -317,12 +317,13 @@ export default function Stay() {
 
             {/* DAY PASS RATES */}
             <div className="mb-20">
-              <h3
-                className="text-4xl font-light text-gray-900 mb-12 text-center"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
+              <h2
+                className="text-5xl font-light text-blue-900 mb-4 text-center"
+                style={{ fontFamily: "Cormorant Garamond" }}
               >
                 Day Pass Rates
-              </h3>
+              </h2>
+              <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
                 {/* Ticket Only */}
@@ -568,12 +569,12 @@ export default function Stay() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
               <h2
-                className="text-5xl font-light text-gray-900 mb-4"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
+                className="text-5xl font-light text-blue-900 mb-4 text-center"
+                style={{ fontFamily: "Cormorant Garamond" }}
               >
                 Special Packages
               </h2>
-              <div className="w-24 h-1 bg-blue-900 mx-auto mt-6"></div>
+              <div className="w-16 h-0.5 mx-auto bg-linear-to-r from-transparent via-blue-400 to-transparent" />
             </div>
 
             <div className="grid md:grid-cols-2 gap-8">

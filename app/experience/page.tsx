@@ -383,14 +383,15 @@ export default function Celebrate() {
         </section>
 
         {/* Honeymoon Gallery/Hero Section */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-gray-900">
+        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-blue-50 to-white">
           <div className="max-w-7xl mx-auto">
             <h2
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-white mb-12 text-center"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
+              className="text-5xl font-light text-blue-900 mb-4 text-center"
+              style={{ fontFamily: "Cormorant Garamond" }}
             >
               Your Perfect Honeymoon Awaits
             </h2>
+            <div className="w-16 h-0.5 mx-auto mb-12 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
 
             {/* Image Grid Gallery */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
@@ -944,14 +945,14 @@ export default function Celebrate() {
         {/* Wedding Celebrations */}
         <section className="px-4 sm:px-6 lg:px-8 py-20">
           <div className="max-w-6xl mx-auto">
-            <div className="bg-linear-to-r from-pink-100 to-blue-100 rounded-2xl p-12 text-center">
+            <div className="bg-gradient-to-br from-blue-900 to-blue-800 rounded-2xl p-12 text-center">
               <h2
-                className="text-5xl font-light text-gray-900 mb-6"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
+                className="text-5xl font-light text-white mb-6"
+                style={{ fontFamily: "Cormorant Garamond" }}
               >
                 Wedding Celebrations & Receptions
               </h2>
-              <p className="text-gray-700 font-light mb-8 max-w-2xl mx-auto text-lg">
+              <p className="text-blue-100 font-light mb-8 max-w-2xl mx-auto text-lg">
                 Celebrate your special day with beachfront ceremonies, elegant
                 receptions, and personalized touches. Our expert team handles
                 every detail from venue setup to catering.
@@ -959,13 +960,13 @@ export default function Celebrate() {
               <div className="flex gap-4 justify-center flex-wrap">
                 <a
                   href="/blog/how-to-plan-beach-wedding-lagos"
-                  className="bg-blue-900 text-white px-8 py-3 rounded-lg hover:bg-blue-800 transition font-light"
+                  className="bg-white text-blue-900 px-8 py-3 rounded-lg hover:bg-blue-50 transition font-light"
                 >
                   View Wedding Guide
                 </a>
                 <a
                   href="tel:+2347047300013"
-                  className="border-2 border-blue-900 text-blue-900 px-8 py-3 rounded-lg hover:bg-blue-50 transition font-light"
+                  className="border-2 border-white text-white px-8 py-3 rounded-lg hover:bg-white hover:text-blue-900 transition font-light"
                 >
                   Plan Your Wedding
                 </a>
