@@ -130,7 +130,7 @@ export default function Stay() {
                 Choose from our carefully curated collection of 9 premium rooms
                 and suites, each designed for ultimate comfort
               </p>
-              <div className="w-24 h-1 bg-gray-900 mx-auto mt-6"></div>
+              <div className="w-24 h-1 bg-blue-900 mx-auto mt-6"></div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -147,7 +147,7 @@ export default function Stay() {
                       alt={room.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
-                    <div className="absolute top-4 left-4 bg-gray-900 text-white px-4 py-2 rounded-full font-light">
+                    <div className="absolute top-4 left-4 bg-blue-900 text-white px-4 py-2 rounded-full font-light">
                       {room.number}
                     </div>
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
@@ -212,7 +212,7 @@ export default function Stay() {
               >
                 What's Included In Your Stay
               </h2>
-              <div className="w-24 h-1 bg-gray-900 mx-auto mt-6"></div>
+              <div className="w-24 h-1 bg-blue-900 mx-auto mt-6"></div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
@@ -307,12 +307,12 @@ export default function Stay() {
               <div className="flex justify-center mb-8">
                 <Link
                   href="/day-pass"
-                  className="inline-block bg-gray-900 text-white px-10 py-3 rounded-lg font-light hover:bg-gray-800 transition-all duration-300 hover:shadow-lg"
+                  className="inline-block bg-blue-900 text-white px-10 py-3 rounded-lg font-light hover:bg-blue-800 transition-all duration-300 hover:shadow-lg"
                 >
                   View Full Day Pass Rates →
                 </Link>
               </div>
-              <div className="w-24 h-1 bg-gray-900 mx-auto mt-6"></div>
+              <div className="w-24 h-1 bg-blue-900 mx-auto mt-6"></div>
             </div>
 
             {/* DAY PASS RATES */}
@@ -370,14 +370,14 @@ export default function Stay() {
                     </div>
                   </div>
 
-                  <button className="w-full bg-gray-900 text-white py-4 rounded-lg hover:bg-gray-800 transition font-light">
+                  <button className="w-full bg-blue-900 text-white py-4 rounded-lg hover:bg-blue-800 transition font-light">
                     Purchase Ticket Only
                   </button>
                 </div>
 
                 {/* Ticket Plus+ */}
                 <div className="bg-linear-to-br from-blue-50 to-white border-2 border-blue-300 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 relative">
-                  <div className="absolute top-0 right-0 bg-gray-900 text-white px-4 py-2 rounded-bl-xl font-light text-sm">
+                  <div className="absolute top-0 right-0 bg-blue-900 text-white px-4 py-2 rounded-bl-xl font-light text-sm">
                     POPULAR
                   </div>
                   <h4
@@ -426,7 +426,7 @@ export default function Stay() {
                     </p>
                   </div>
 
-                  <button className="w-full bg-gray-900 text-white py-4 rounded-lg hover:bg-gray-800 transition font-light">
+                  <button className="w-full bg-blue-900 text-white py-4 rounded-lg hover:bg-blue-800 transition font-light">
                     Purchase Ticket Plus+
                   </button>
                 </div>
@@ -545,18 +545,18 @@ export default function Stay() {
             </div>
 
             {/* GROUP BOOKINGS */}
-            <div className="bg-linear-to-r from-gray-900 to-gray-800 rounded-2xl p-12 text-center">
+            <div className="bg-linear-to-r from-blue-900 to-blue-800 rounded-2xl p-8 sm:p-10 md:p-12 text-center">
               <h3
-                className="text-4xl font-light text-white mb-4"
+                className="text-2xl sm:text-3xl md:text-4xl font-light text-white mb-4 cormorant"
                 style={{ fontFamily: "Cormorant Garamond, serif" }}
               >
                 Group Bookings & Celebrations
               </h3>
-              <p className="text-xl text-gray-200 font-light mb-8 max-w-2xl mx-auto">
+              <p className="text-base sm:text-lg md:text-xl text-blue-100 font-light mb-6 sm:mb-8 max-w-2xl mx-auto">
                 Planning a birthday or a get-together for 15 or more guests?
                 Contact us for special arrangements and exclusive group rates.
               </p>
-              <button className="bg-white text-gray-900 px-10 py-4 rounded-lg font-light hover:bg-gray-100 transition-all duration-300 hover:shadow-lg">
+              <button className="bg-white text-blue-900 px-6 sm:px-10 py-3 sm:py-4 rounded-lg font-light hover:bg-blue-50 transition-all duration-300 hover:shadow-lg text-sm sm:text-base">
                 Email Us For Group Inquiries
               </button>
             </div>
@@ -573,7 +573,7 @@ export default function Stay() {
               >
                 Special Packages
               </h2>
-              <div className="w-24 h-1 bg-gray-900 mx-auto mt-6"></div>
+              <div className="w-24 h-1 bg-blue-900 mx-auto mt-6"></div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-8">
@@ -661,7 +661,7 @@ export default function Stay() {
                       </li>
                     ))}
                   </ul>
-                  <button className="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800 transition font-light">
+                  <button className="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition font-light">
                     Book Package
                   </button>
                 </div>
@@ -671,25 +671,25 @@ export default function Stay() {
         </section>
 
         {/* CTA SECTION */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-r from-gray-900 to-gray-800">
+        <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 bg-linear-to-r from-blue-900 to-blue-800">
           <div className="max-w-4xl mx-auto text-center">
             <h2
-              className="text-5xl font-light text-white mb-6"
+              className="text-3xl sm:text-4xl md:text-5xl font-light text-white mb-4 sm:mb-6 cormorant"
               style={{ fontFamily: "Cormorant Garamond, serif" }}
             >
               Ready to Plan Your Escape?
             </h2>
-            <p className="text-xl text-gray-200 font-light mb-10">
+            <p className="text-base sm:text-lg md:text-xl text-blue-100 font-light mb-8 sm:mb-10">
               Your perfect beach retreat awaits. Book now and create
               unforgettable memories at Ziba Beach Resort.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-gray-900 px-10 py-4 rounded-lg font-light hover:bg-gray-100 transition-all duration-300 hover:shadow-lg">
+              <a
+                href="/bookings/rooms"
+                className="inline-block bg-white text-blue-900 px-6 sm:px-10 py-3 sm:py-4 rounded-lg font-light hover:bg-blue-50 transition-all duration-300 hover:shadow-lg text-sm sm:text-base"
+              >
                 Reserve Your Room
-              </button>
-              <button className="border-2 border-white text-white px-10 py-4 rounded-lg font-light hover:bg-white hover:text-gray-900 transition-all duration-300">
-                Explore More
-              </button>
+              </a>
             </div>
           </div>
         </section>
