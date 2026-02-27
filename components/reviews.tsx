@@ -136,20 +136,20 @@ const AverageRating = ({ isVisible }: { isVisible: boolean }) => {
 
   return (
     <div
-      className={`bg-linear-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 sm:p-12 border-2 border-amber-200 mb-12 transition-all duration-1000 ease-out ${
+      className={`bg-linear-to-br from-blue-50 to-blue-100 rounded-2xl p-8 sm:p-12 border-2 border-blue-300 mb-12 transition-all duration-1000 ease-out ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >
       <div className="flex items-center gap-8">
         <div className="text-center">
-          <div className="text-6xl font-bold text-amber-600 mb-2 transition-all duration-700">
+          <div className="text-6xl font-bold text-blue-600 mb-2 transition-all duration-700">
             {avgRating}
           </div>
           <div className="flex justify-center gap-1 mb-3">
             {[...Array(5)].map((_, i) => (
               <span
                 key={i}
-                className="text-2xl text-amber-500 transition-all duration-500 transform hover:scale-125"
+                className="text-2xl text-blue-500 transition-all duration-500 transform hover:scale-125"
                 style={{
                   transitionDelay: isVisible ? `${100 + i * 50}ms` : "0ms",
                 }}
@@ -195,14 +195,14 @@ const ReviewCard = ({
         transitionDelay: isVisible ? `${200 + index * 100}ms` : "0ms",
       }}
     >
-      <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 hover:shadow-2xl hover:border-amber-300 transition-all duration-500 transform hover:scale-105 h-full flex flex-col">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 hover:shadow-2xl hover:border-blue-400 transition-all duration-500 transform hover:scale-105 h-full flex flex-col">
         {/* Header with name and rating */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <h4 className="font-semibold text-gray-900">{review.name}</h4>
               {review.source === "google" && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 rounded-full text-xs font-medium text-blue-700">
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 rounded-full text-xs font-medium text-blue-600">
                   <svg
                     className="w-3 h-3"
                     viewBox="0 0 24 24"
@@ -220,7 +220,7 @@ const ReviewCard = ({
             <div className="flex items-center gap-2">
               <div className="flex gap-0.5">
                 {[...Array(review.rating)].map((_, i) => (
-                  <span key={i} className="text-amber-500 text-sm">
+                  <span key={i} className="text-blue-500 text-sm">
                     ★
                   </span>
                 ))}
@@ -408,7 +408,10 @@ export default function Reviews() {
           <span className="inline-block text-blue-600 font-semibold text-sm uppercase tracking-widest mb-4">
             ✨ What Our Guests Say
           </span>
-          <h2 className="text-5xl sm:text-6xl font-bold text-blue-900 mb-4 text-center cormorant">
+          <h2
+            className="text-5xl sm:text-6xl font-light text-blue-900 mb-4 text-center"
+            style={{ fontFamily: "Cormorant Garamond" }}
+          >
             Unforgettable Moments
           </h2>
           <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
@@ -459,7 +462,7 @@ export default function Reviews() {
           </div>
 
           {/* Stats/Info CTA */}
-          <div className="bg-linear-to-br from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-2xl p-8 sm:p-12 flex flex-col justify-center">
+          <div className="bg-linear-to-br from-blue-50 to-blue-100 border-2 border-blue-300 rounded-2xl p-8 sm:p-12 flex flex-col justify-center">
             <h3 className="text-3xl font-bold text-gray-900 mb-8 cormorant">
               Why Choose Us
             </h3>

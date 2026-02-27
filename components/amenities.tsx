@@ -51,17 +51,18 @@ export default function Amenities() {
     >
       <div className="max-w-6xl mx-auto">
         <div
-          className={`mb-16 transition-all duration-1000 ease-out ${
+          className={`mb-16 text-center transition-all duration-1000 ease-out ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
           <h2
-            className="text-5xl font-light text-blue-900 mb-4"
+            className="text-5xl font-light text-blue-900 mb-4 text-center"
             style={{ fontFamily: "Cormorant Garamond" }}
           >
             World-Class Amenities
           </h2>
-          <p className="text-gray-600 font-light mb-8 max-w-2xl">
+          <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
+          <p className="text-gray-600 font-light mb-8 max-w-2xl mx-auto text-center">
             Everything you need for an unforgettable stay, from premium
             facilities to thoughtful services.
           </p>
@@ -71,7 +72,7 @@ export default function Amenities() {
           {amenities.map((item, idx) => (
             <div
               key={idx}
-              className={`bg-white p-6 rounded-lg border border-gray-100 hover:border-blue-200 hover:shadow-lg hover:scale-105 transition-all duration-500 transform ${
+              className={`bg-white p-6 rounded-lg border border-gray-100 hover:border-blue-900 hover:shadow-lg hover:scale-105 transition-all duration-500 transform ${
                 isVisible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-10"
