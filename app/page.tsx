@@ -7,6 +7,7 @@ import AboutUs from "@/components/about-us";
 import BookingCards from "@/components/booking-cards";
 import Rooms from "@/components/rooms";
 import Amenities from "@/components/amenities";
+import InstagramFeed from "@/components/instagram-feed";
 import ExperiencesCarousel from "@/components/experiences-carousel";
 import Reviews from "@/components/reviews";
 import ContactSection from "@/components/contact-section";
@@ -22,6 +23,7 @@ export default function Home() {
       <ExperiencesCarousel />
       <Rooms />
       <Amenities />
+      <InstagramFeed />
       <Reviews />
       <ContactSection />
       <Footer />
