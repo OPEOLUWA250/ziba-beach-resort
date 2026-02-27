@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronUp } from "lucide-react";
+import { ChevronUp, MapPin } from "lucide-react";
 
 export default function BackToTop() {
   const [isVisible, setIsVisible] = useState(false);
@@ -27,17 +27,37 @@ export default function BackToTop() {
     });
   };
 
+  const openLocation = () => {
+    window.open(
+      "https://www.google.com/maps?q=Ziba+Beach+Close+Okun+Ajah+Lagos+Nigeria",
+      "_blank",
+    );
+  };
+
   return (
     <>
       {isVisible && (
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-8 right-4 sm:right-6 md:right-8 z-50 p-3 rounded-full bg-blue-900 hover:bg-blue-800 text-white transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl animate-fadeIn"
-          aria-label="Back to top"
-          title="Back to top"
-        >
-          <ChevronUp size={24} strokeWidth={2.5} />
-        </button>
+        <div className="fixed bottom-8 right-4 sm:right-6 md:right-8 z-50 flex flex-col gap-2 animate-fadeIn">
+          {/* Location Navigation Icon */}
+          <button
+            onClick={openLocation}
+            className="p-3 rounded-full bg-blue-900 hover:bg-blue-800 text-white transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl"
+            aria-label="Navigate to Ziba Beach Resort"
+            title="Ziba Beach Close, Okun Ajah, Lagos, Nigeria"
+          >
+            <MapPin size={24} strokeWidth={1.5} />
+          </button>
+
+          {/* Back to Top Button */}
+          <button
+            onClick={scrollToTop}
+            className="p-3 rounded-full bg-blue-900 hover:bg-blue-800 text-white transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl"
+            aria-label="Back to top"
+            title="Back to top"
+          >
+            <ChevronUp size={24} strokeWidth={2.5} />
+          </button>
+        </div>
       )}
 
       <style jsx>{`
