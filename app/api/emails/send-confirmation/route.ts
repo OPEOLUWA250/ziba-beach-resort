@@ -1,4 +1,3 @@
-import { sendBookingConfirmation } from "@/lib/services/email";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +13,9 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+
+    // Dynamically import to avoid build-time issues
+    const { sendBookingConfirmation } = await import("@/lib/services/email");
 
     // If booking details passed directly (from payment page), use them
     if (bookingDetails) {

@@ -1,6 +1,16 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resendClient: Resend | null = null;
+
+function getResendClient() {
+  if (!resendClient) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY environment variable is not set");
+    }
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendClient;
+}
 
 export async function sendBookingConfirmation(
   email: string,
@@ -39,6 +49,7 @@ export async function sendBookingConfirmation(
       (1000 * 60 * 60 * 24),
   );
 
+  const resend = getResendClient();
   return await resend.emails.send({
     from: "bookings@zibabeachresort.com",
     to: email,
