@@ -56,12 +56,17 @@ export default function BookingCards() {
         <div className="grid md:grid-cols-2 gap-8 md:gap-10">
           {/* Night Experience Card */}
           <div
-            className={`group relative overflow-hidden rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 h-96 ${
+            className={`group relative overflow-hidden rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 h-96 hover-lift ${
               isVisible
                 ? "opacity-100 translate-x-0 translate-y-0"
                 : "opacity-0 -translate-x-10 translate-y-10"
             }`}
-            style={{ transitionDelay: isVisible ? "300ms" : "0ms" }}
+            style={{
+              transitionDelay: isVisible ? "300ms" : "0ms",
+              animation: isVisible
+                ? "cardReveal 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)"
+                : "none",
+            }}
           >
             {/* Background Image */}
             <Image
@@ -127,8 +132,26 @@ export default function BookingCards() {
               </ul>
 
               <Link href="/bookings">
-                <button className="w-full bg-linear-to-r from-blue-600 to-blue-700 text-white px-6 py-3 font-light tracking-wide hover:from-blue-700 hover:to-blue-800 transition-all duration-500 transform hover:scale-105 rounded-lg shadow-lg hover:shadow-xl">
-                  Explore Night Experience
+                <button
+                  className="w-full bg-linear-to-r from-blue-600 to-blue-700 text-white px-6 py-4 font-light tracking-wide hover:from-blue-700 hover:to-blue-800 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn -translate-y-0 hover:-translate-y-1"
+                  style={{ boxShadow: "0 4px 15px rgba(37, 99, 235, 0.3)" }}
+                >
+                  <span className="relative flex items-center justify-center gap-2">
+                    Explore Night Experience
+                    <svg
+                      className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                      />
+                    </svg>
+                  </span>
                 </button>
               </Link>
             </div>
@@ -136,12 +159,17 @@ export default function BookingCards() {
 
           {/* Day Experience Card */}
           <div
-            className={`group relative overflow-hidden rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 h-96 ${
+            className={`group relative overflow-hidden rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 h-96 hover-lift ${
               isVisible
                 ? "opacity-100 translate-x-0 translate-y-0"
                 : "opacity-0 translate-x-10 translate-y-10"
             }`}
-            style={{ transitionDelay: isVisible ? "500ms" : "0ms" }}
+            style={{
+              transitionDelay: isVisible ? "500ms" : "0ms",
+              animation: isVisible
+                ? "cardReveal 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both"
+                : "none",
+            }}
           >
             {/* Background Image */}
             <Image
@@ -207,8 +235,26 @@ export default function BookingCards() {
               </ul>
 
               <Link href="/product/day-pass/">
-                <button className="w-full bg-linear-to-r from-amber-600 to-orange-600 text-white px-6 py-3 font-light tracking-wide hover:from-amber-700 hover:to-orange-700 transition-all duration-500 transform hover:scale-105 rounded-lg shadow-lg hover:shadow-xl">
-                  Explore Day Experience
+                <button
+                  className="w-full bg-linear-to-r from-amber-600 to-orange-600 text-white px-6 py-4 font-light tracking-wide hover:from-amber-700 hover:to-orange-700 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn -translate-y-0 hover:-translate-y-1"
+                  style={{ boxShadow: "0 4px 15px rgba(217, 119, 6, 0.3)" }}
+                >
+                  <span className="relative flex items-center justify-center gap-2">
+                    Explore Day Experience
+                    <svg
+                      className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                      />
+                    </svg>
+                  </span>
                 </button>
               </Link>
             </div>

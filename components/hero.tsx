@@ -100,28 +100,32 @@ export default function Hero() {
 
             {/* CTA Buttons */}
             <div
-              className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6 justify-center pt-2 sm:pt-4"
+              className="flex flex-col sm:flex-row gap-4 sm:gap-4 md:gap-6 justify-center pt-2 sm:pt-4"
               style={{ animation: "slideUp 0.8s ease-out 0.2s both" }}
             >
               {/* Primary Button - Brand Blue Background */}
               <button
                 onClick={() => (window.location.href = "/bookings")}
-                className="group relative px-6 sm:px-10 md:px-12 py-3 sm:py-4 md:py-5 text-white font-semibold text-sm sm:text-base md:text-lg tracking-wide overflow-hidden rounded-lg transition-all duration-500 transform hover:scale-105 hover:shadow-2xl w-full sm:w-auto"
+                className="group relative px-8 sm:px-10 md:px-12 py-4 sm:py-4 md:py-5 text-white font-semibold text-sm sm:text-base md:text-lg tracking-wide overflow-hidden rounded-lg transition-all duration-500 transform hover:scale-105 hover:shadow-2xl w-full sm:w-auto active:scale-95 buttonGlow"
                 style={{
                   background: "#1e3a8a",
                   boxShadow: "0 20px 40px rgba(30, 58, 138, 0.4)",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.background = "#162e6f")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.background = "#1e3a8a")
-                }
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#162e6f";
+                  e.currentTarget.style.boxShadow =
+                    "0 30px 60px rgba(30, 58, 138, 0.6), 0 0 40px rgba(96, 165, 250, 0.4)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#1e3a8a";
+                  e.currentTarget.style.boxShadow =
+                    "0 20px 40px rgba(30, 58, 138, 0.4)";
+                }}
               >
                 <span className="relative z-10 flex items-center justify-center gap-2 sm:gap-3">
                   Reserve Your Stay
                   <svg
-                    className="w-4 sm:w-5 h-4 sm:h-5 transform group-hover:translate-x-1 transition-transform"
+                    className="w-4 sm:w-5 h-4 sm:h-5 transform group-hover:translate-x-1 transition-transform duration-300"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -139,7 +143,7 @@ export default function Hero() {
               {/* Secondary Button - White Border & Text */}
               <button
                 onClick={() => (window.location.href = "/day-pass")}
-                className="group relative px-6 sm:px-10 md:px-12 py-3 sm:py-4 md:py-5 text-sm sm:text-base md:text-lg font-semibold tracking-wide rounded-lg border-2 border-white transition-all duration-500 transform hover:scale-105 backdrop-blur-sm hover:shadow-lg w-full sm:w-auto"
+                className="group relative px-8 sm:px-10 md:px-12 py-4 sm:py-4 md:py-5 text-sm sm:text-base md:text-lg font-semibold tracking-wide rounded-lg border-2 border-white transition-all duration-500 transform hover:scale-105 backdrop-blur-sm hover:shadow-lg w-full sm:w-auto active:scale-95 buttonGlow"
                 style={{
                   color: "white",
                   backgroundColor: "rgba(255, 255, 255, 0.05)",
@@ -223,6 +227,31 @@ export default function Hero() {
               transform: translateY(8px);
               opacity: 0;
             }
+          }
+
+          @keyframes shimmer {
+            0% {
+              background-position: -1000px 0;
+            }
+            100% {
+              background-position: 1000px 0;
+            }
+          }
+
+          @keyframes glow {
+            0% {
+              box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+            }
+            50% {
+              box-shadow: 0 0 40px rgba(96, 165, 250, 0.6);
+            }
+            100% {
+              box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+            }
+          }
+
+          .buttonGlow:hover {
+            animation: glow 1.5s ease-in-out;
           }
         `}</style>
       </section>
