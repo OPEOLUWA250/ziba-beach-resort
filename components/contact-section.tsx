@@ -117,9 +117,9 @@ export default function ContactSection() {
         </h2>
         <div className="w-16 h-0.5 mx-auto mb-12 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* FAQ Column */}
-          <div>
+          <div className="order-2 lg:order-1">
             <h3
               className={`text-3xl font-light text-blue-900 mb-8 cormorant transition-all duration-1000 ease-out ${
                 isVisible
@@ -186,20 +186,20 @@ export default function ContactSection() {
 
           {/* Contact Form Column */}
           <div
-            className={`transition-all duration-1000 ease-out ${
+            className={`order-1 lg:order-2 transition-all duration-1000 ease-out ${
               isVisible
-                ? "opacity-100 translate-x-0"
-                : "opacity-0 translate-x-10"
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-10"
             }`}
           >
             <div
               id="contact-form"
-              className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500"
+              className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-500"
             >
-              <h2 className="text-3xl font-light text-blue-900 mb-8 text-center cormorant">
+              <h2 className="text-2xl sm:text-3xl font-light text-blue-900 mb-6 sm:mb-8 text-center cormorant">
                 Send us a Message
               </h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 {/* Name Field */}
                 <div
                   className={`transition-all duration-700 ${
@@ -207,7 +207,7 @@ export default function ContactSection() {
                   }`}
                   style={{ transitionDelay: isVisible ? "200ms" : "0ms" }}
                 >
-                  <label className="block text-gray-700 font-light mb-2">
+                  <label className="block text-gray-700 font-light mb-2 text-sm sm:text-base">
                     Full Name <span className="text-blue-900">*</span>
                   </label>
                   <input
@@ -217,7 +217,7 @@ export default function ContactSection() {
                       setFormData({ ...formData, name: e.target.value })
                     }
                     placeholder="Your full name"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:border-blue-900 focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:border-blue-900 focus:ring-2 focus:ring-blue-100 transition-all"
                     required
                   />
                 </div>
@@ -229,7 +229,7 @@ export default function ContactSection() {
                   }`}
                   style={{ transitionDelay: isVisible ? "250ms" : "0ms" }}
                 >
-                  <label className="block text-gray-700 font-light mb-2">
+                  <label className="block text-gray-700 font-light mb-2 text-sm sm:text-base">
                     Phone Number <span className="text-blue-900">*</span>
                   </label>
                   <input
@@ -239,10 +239,10 @@ export default function ContactSection() {
                       setFormData({ ...formData, phone: e.target.value })
                     }
                     placeholder="+234 704 730 0013"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:border-blue-900 focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:border-blue-900 focus:ring-2 focus:ring-blue-100 transition-all"
                     required
                   />
-                  <p className="text-gray-500 text-sm font-light mt-2">
+                  <p className="text-gray-500 text-xs sm:text-sm font-light mt-2">
                     We'll use this to contact you about your inquiry
                   </p>
                 </div>
@@ -254,7 +254,7 @@ export default function ContactSection() {
                   }`}
                   style={{ transitionDelay: isVisible ? "300ms" : "0ms" }}
                 >
-                  <label className="block text-gray-700 font-light mb-2">
+                  <label className="block text-gray-700 font-light mb-2 text-sm sm:text-base">
                     Message <span className="text-blue-900">*</span>
                   </label>
                   <textarea
@@ -266,8 +266,8 @@ export default function ContactSection() {
                       })
                     }
                     placeholder="Tell us about your inquiry or special requests..."
-                    rows={4}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:border-blue-900 focus:ring-2 focus:ring-blue-100 transition-all resize-none"
+                    rows={3}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:border-blue-900 focus:ring-2 focus:ring-blue-100 transition-all resize-none"
                     required
                   />
                   <div className="flex items-center justify-between mt-2">
@@ -290,7 +290,7 @@ export default function ContactSection() {
                 <button
                   type="submit"
                   disabled={submitStatus === "loading"}
-                  className={`w-full py-4 rounded-lg font-light text-lg transition-all duration-300 transform hover:scale-105 ${
+                  className={`w-full py-2 sm:py-3 px-4 rounded-lg font-light text-sm sm:text-base transition-all duration-300 transform hover:scale-105 ${
                     submitStatus === "success"
                       ? "bg-green-600 text-white hover:bg-green-700"
                       : submitStatus === "loading"

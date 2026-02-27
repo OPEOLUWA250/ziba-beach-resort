@@ -24,6 +24,15 @@ const rooms = [
   },
   {
     id: 3,
+    name: "Beach Facing Family Room",
+    type: "Family",
+    description:
+      "Spacious room with full pool view, perfect for families seeking premium comfort.",
+    icon: "👨‍👩‍👧‍👦",
+    features: ["Full Pool View", "Family Friendly", "Premium Comfort"],
+  },
+  {
+    id: 4,
     name: "Beach Facing Connecting Room",
     type: "Group",
     description:
@@ -32,40 +41,49 @@ const rooms = [
     features: ["2 Adjoining Rooms", "Group Friendly", "Flexible Layout"],
   },
   {
-    id: 4,
-    name: "Overwater Terrace Room",
-    type: "Premium",
-    description:
-      "Exclusive terrace experience with private deck and unobstructed ocean views.",
-    icon: "🏝️",
-    features: ["Private Terrace", "Unobstructed Views", "Premium Access"],
-  },
-  {
     id: 5,
-    name: "Terrace Suite",
-    type: "Luxury",
+    name: "Beach Facing Suite",
+    type: "Suite",
     description:
-      "Ultimate overwater luxury with separate living area and premium amenities.",
-    icon: "✨",
-    features: ["Living Area", "Premium Amenities", "Luxury Experience"],
+      "Spacious suite with living room and premium views overlooking the beach.",
+    icon: "🛋️",
+    features: ["Living Room", "Sofa Bed", "Beach View"],
   },
   {
     id: 6,
-    name: "Ziba Black",
-    type: "Exclusive",
-    description:
-      "Our most exclusive suite featuring premium black design and maximum privacy.",
-    icon: "🖤",
-    features: ["Ultra Premium", "Privacy Focused", "Exclusive Design"],
-  },
-  {
-    id: 7,
     name: "Two Bedroom Apartment",
     type: "Residence",
     description:
-      "Spacious two-bedroom home perfect for extended stays and groups seeking comfort.",
+      "Spacious two-bedroom apartment with private pool and stunning ocean views.",
     icon: "🏠",
-    features: ["2 Bedrooms", "Full Kitchen", "Living Spaces"],
+    features: ["2 Bedrooms", "Private Pool", "Ocean View"],
+  },
+  {
+    id: 7,
+    name: "Overwater Terrace Room",
+    type: "Premium",
+    description:
+      "Premium terrace room with direct water access and exclusive amenities.",
+    icon: "🏝️",
+    features: ["Direct Water Access", "Private Terrace", "Premium Access"],
+  },
+  {
+    id: 8,
+    name: "Overwater Terrace Suite",
+    type: "Luxury",
+    description:
+      "Spacious luxury suite with wooden deck and exclusive pool access.",
+    icon: "✨",
+    features: ["Wooden Deck", "Pool Access", "Luxury Suite"],
+  },
+  {
+    id: 9,
+    name: "Ziba Black",
+    type: "Exclusive",
+    description:
+      "Our most exclusive suite with premium black design and maximum elegance.",
+    icon: "🖤",
+    features: ["Premium Design", "Exclusive Suite", "Maximum Luxury"],
   },
 ];
 

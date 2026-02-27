@@ -156,7 +156,7 @@ export default function ExperiencesCarousel() {
                     : "0ms",
                 }}
               >
-                <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105 h-full flex flex-col">
+                <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl active:shadow-2xl focus:shadow-2xl transition-all duration-500 transform hover:scale-105 active:scale-105 focus:scale-105 h-full flex flex-col cursor-pointer">
                   {/* Image Container */}
                   <div
                     className="relative w-full h-64 bg-cover bg-center overflow-hidden"
