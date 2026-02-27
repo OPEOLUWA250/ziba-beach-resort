@@ -406,7 +406,7 @@ export default function RoomDetail({
           <div className="max-w-7xl mx-auto">
             <div className="mb-10">
               <h2
-                className="text-4xl font-light text-gray-900 mb-2"
+                className="text-4xl font-light text-blue-900 mb-2"
                 style={{ fontFamily: "Cormorant Garamond, serif" }}
               >
                 Room Gallery

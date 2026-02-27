@@ -211,7 +211,7 @@ export default function DayPass() {
             {/* TICKETS SECTION */}
             <div className="mb-20">
               <h2
-                className="text-4xl font-light text-gray-900 mb-12"
+                className="text-4xl font-light text-blue-900 mb-12"
                 style={{ fontFamily: "Cormorant Garamond, serif" }}
               >
                 Day Pass Tickets
@@ -233,7 +233,7 @@ export default function DayPass() {
             {/* EXPERIENCES SECTION */}
             <div className="mb-20">
               <h2
-                className="text-4xl font-light text-gray-900 mb-12"
+                className="text-4xl font-light text-blue-900 mb-12"
                 style={{ fontFamily: "Cormorant Garamond, serif" }}
               >
                 Add-On Experiences

@@ -43,7 +43,7 @@ export default function Menu() {
     <div className="mb-16">
       <div>
         <h2
-          className="text-4xl font-light text-gray-900 mb-2"
+          className="text-4xl font-light text-blue-900 mb-2"
           style={{ fontFamily: "Cormorant Garamond, serif" }}
         >
           {title}
@@ -196,7 +196,7 @@ export default function Menu() {
               timing="LUNCH: 12:00 NOON - 6:00 PM DAILY | DINNER: 7:00 PM - 10:00 PM DAILY"
               note="Lunch is served À La Carte. Dinner is either a buffet or à la carte when the buffet isn't available. Our team will let you know the dining option for your stay at check-in"
             >
-              <h3 className="text-2xl font-light text-gray-900 mb-8 mt-6">
+              <h3 className="text-2xl font-light text-blue-900 mb-8 mt-6">
                 Traditional Nigerian
               </h3>
               <MenuItem
@@ -304,7 +304,7 @@ export default function Menu() {
                 price={15000}
                 description="Spicy, saucy goat head tossed in rich palm oil and native spices, topped with onions and Utazi leaves"
               />
-              <h3 className="text-2xl font-light text-gray-900 mb-8 mt-12">
+              <h3 className="text-2xl font-light text-blue-900 mb-8 mt-12">
                 Seafood & Grilled
               </h3>
               <MenuItem
@@ -327,7 +327,7 @@ export default function Menu() {
                 price={25000}
                 description="Served with a side of mashed potatoes/Fries/Rice and steamed veggies"
               />
-              <h3 className="text-2xl font-light text-gray-900 mb-8 mt-12">
+              <h3 className="text-2xl font-light text-blue-900 mb-8 mt-12">
                 International & Fusion
               </h3>
               <MenuItem
@@ -365,7 +365,7 @@ export default function Menu() {
                 price={15000}
                 description="Spaghetti in Fish, Calamari, Shrimps, Onion Garlic, Ginger, Cheese, Tomatoes/Creamy Sauce"
               />
-              <h3 className="text-2xl font-light text-gray-900 mb-8 mt-12">
+              <h3 className="text-2xl font-light text-blue-900 mb-8 mt-12">
                 Premium Grilled & Braised
               </h3>
               <MenuItem
@@ -388,7 +388,7 @@ export default function Menu() {
                 price={25000}
                 description="Served with a side of mashed potatoes/Fries/Rice and steamed veggies"
               />
-              <h3 className="text-2xl font-light text-gray-900 mb-8 mt-12">
+              <h3 className="text-2xl font-light text-blue-900 mb-8 mt-12">
                 Appetizers & Lighter Fare
               </h3>
               <MenuItem
@@ -411,7 +411,7 @@ export default function Menu() {
                 price={10000}
                 description="Your Choice of Margarita, Seafood, Barbecue Chicken or Goat Suya served with Sauté Mixed Vegetables"
               />
-              <h3 className="text-2xl font-light text-gray-900 mb-8 mt-12">
+              <h3 className="text-2xl font-light text-blue-900 mb-8 mt-12">
                 Soups & Light Meals
               </h3>
               <MenuItem
@@ -434,7 +434,7 @@ export default function Menu() {
                 price={10000}
                 description="Assorted/Goat Meat/Cow leg/Chicken Pepper Soup Served with Boiled Yam Cubes"
               />
-              <h3 className="text-2xl font-light text-gray-900 mb-8 mt-12">
+              <h3 className="text-2xl font-light text-blue-900 mb-8 mt-12">
                 Salads
               </h3>
               <MenuItem

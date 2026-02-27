@@ -375,7 +375,7 @@ export default function Celebrate() {
                 <p className="font-light text-blue-100">Satisfaction Rate</p>
               </div>
               <div>
-                <p className="text-4xl font-light mb-2">15+</p>
+                <p className="text-4xl font-light mb-2">5+</p>
                 <p className="font-light text-blue-100">Years Experience</p>
               </div>
             </div>
@@ -452,7 +452,7 @@ export default function Celebrate() {
 
             {/* Gallery Description */}
             <div className="text-center text-white">
-              <p className="font-light text-lg text-blue-100 mb-6">
+              <p className="font-light text-lg text-blue-900 mb-6">
                 Create timeless memories with your loved one at Nigeria's most
                 romantic beachfront destination
               </p>
@@ -480,7 +480,7 @@ export default function Celebrate() {
         <section className="px-4 sm:px-6 lg:px-8 py-20">
           <div className="max-w-7xl mx-auto">
             <h2
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-gray-900 mb-4 text-center"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-blue-900 mb-4 text-center"
               style={{ fontFamily: "Cormorant Garamond, serif" }}
             >
               Honeymoon Packages
@@ -610,7 +610,7 @@ export default function Celebrate() {
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-blue-50 via-pink-50 to-blue-50">
           <div className="max-w-6xl mx-auto">
             <h2
-              className="text-5xl font-light text-gray-900 mb-4 text-center"
+              className="text-5xl font-light text-blue-900 mb-4 text-center"
               style={{ fontFamily: "Cormorant Garamond, serif" }}
             >
               Honeymoon Experiences Included
@@ -716,7 +716,7 @@ export default function Celebrate() {
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-blue-50">
           <div className="max-w-6xl mx-auto">
             <h2
-              className="text-5xl font-light text-gray-900 mb-4 text-center"
+              className="text-5xl font-light text-blue-900 mb-4 text-center"
               style={{ fontFamily: "Cormorant Garamond, serif" }}
             >
               Event Spaces & Team Bonding
@@ -778,7 +778,7 @@ export default function Celebrate() {
             {/* Team Bonding Activities */}
             <div>
               <h3
-                className="text-3xl font-light text-gray-900 mb-12 text-center"
+                className="text-3xl font-light text-blue-900 mb-12 text-center"
                 style={{ fontFamily: "Cormorant Garamond, serif" }}
               >
                 Team Bonding Activities
@@ -821,7 +821,7 @@ export default function Celebrate() {
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-white">
           <div className="max-w-6xl mx-auto">
             <h2
-              className="text-5xl font-light text-gray-900 mb-4 text-center"
+              className="text-5xl font-light text-blue-900 mb-4 text-center"
               style={{ fontFamily: "Cormorant Garamond, serif" }}
             >
               Culinary Excellence
@@ -884,7 +884,7 @@ export default function Celebrate() {
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-blue-50 via-purple-50 to-blue-50">
           <div className="max-w-6xl mx-auto">
             <h2
-              className="text-5xl font-light text-gray-900 mb-4 text-center"
+              className="text-5xl font-light text-blue-900 mb-4 text-center"
               style={{ fontFamily: "Cormorant Garamond, serif" }}
             >
               Wellness & Relaxation
@@ -979,11 +979,12 @@ export default function Celebrate() {
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-blue-50">
           <div className="max-w-6xl mx-auto">
             <h2
-              className="text-5xl font-light text-gray-900 mb-4 text-center"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
+              className="text-5xl font-light text-blue-900 mb-4 text-center"
+              style={{ fontFamily: "Cormorant Garamond" }}
             >
               Professional Shoots & Content Creation
             </h2>
+            <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
             <p className="text-center text-gray-600 font-light mb-16 max-w-2xl mx-auto">
               Give your audience a thrill with premium content creation at our
               stunning beachfront location without leaving Nigeria.
@@ -1017,7 +1018,7 @@ export default function Celebrate() {
                 </div>
                 <div className="p-12 flex flex-col justify-center">
                   <h3
-                    className="text-3xl font-light text-gray-900 mb-6"
+                    className="text-3xl font-light text-blue-900 mb-6"
                     style={{ fontFamily: "Cormorant Garamond, serif" }}
                   >
                     World-Class Production Facilities

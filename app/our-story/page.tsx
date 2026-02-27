@@ -295,7 +295,7 @@ export default function OurStory() {
                 </div>
                 <div className="p-8">
                   <h3
-                    className="text-3xl font-light text-gray-900 mb-4"
+                    className="text-3xl font-light text-blue-900 mb-4"
                     style={{ fontFamily: "Cormorant Garamond, serif" }}
                   >
                     World-Class Events
@@ -322,7 +322,7 @@ export default function OurStory() {
                 </div>
                 <div className="p-8">
                   <h3
-                    className="text-3xl font-light text-gray-900 mb-4"
+                    className="text-3xl font-light text-blue-900 mb-4"
                     style={{ fontFamily: "Cormorant Garamond, serif" }}
                   >
                     Culinary Delight

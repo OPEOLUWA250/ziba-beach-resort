@@ -147,7 +147,7 @@ export default function BlogPost({
               <div key={i} className="mb-16">
                 {section.title && (
                   <h2
-                    className="text-3xl font-light text-gray-900 mb-6"
+                    className="text-3xl font-light text-blue-900 mb-6"
                     style={{ fontFamily: "Cormorant Garamond, serif" }}
                   >
                     {section.title}
@@ -212,7 +212,7 @@ export default function BlogPost({
         <section className="px-4 sm:px-6 lg:px-8 py-16 bg-blue-50">
           <div className="max-w-4xl mx-auto text-center">
             <h2
-              className="text-3xl font-light text-gray-900 mb-4"
+              className="text-3xl font-light text-blue-900 mb-4"
               style={{ fontFamily: "Cormorant Garamond, serif" }}
             >
               Ready to Experience It?
@@ -243,7 +243,7 @@ export default function BlogPost({
           <section className="px-4 sm:px-6 lg:px-8 py-20">
             <div className="max-w-6xl mx-auto">
               <h2
-                className="text-4xl font-light text-gray-900 mb-12 text-center"
+                className="text-4xl font-light text-blue-900 mb-12 text-center"
                 style={{ fontFamily: "Cormorant Garamond, serif" }}
               >
                 Related Posts
@@ -289,7 +289,7 @@ export default function BlogPost({
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-blue-50">
           <div className="max-w-2xl mx-auto text-center">
             <h2
-              className="text-3xl font-light text-gray-900 mb-4"
+              className="text-3xl font-light text-blue-900 mb-4"
               style={{ fontFamily: "Cormorant Garamond, serif" }}
             >
               Get More Stories Like This

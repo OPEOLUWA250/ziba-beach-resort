@@ -120,7 +120,7 @@ export default function Blog() {
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-blue-50">
           <div className="max-w-2xl mx-auto text-center">
             <h2
-              className="text-4xl font-light text-gray-900 mb-4"
+              className="text-4xl font-light text-blue-900 mb-4"
               style={{ fontFamily: "Cormorant Garamond, serif" }}
             >
               Stay Updated

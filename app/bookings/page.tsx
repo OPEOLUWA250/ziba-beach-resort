@@ -291,7 +291,7 @@ export default function Stay() {
             {/* Hero Section */}
             <div className="text-center mb-20">
               <h2
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-gray-900 mb-4"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-blue-900 mb-4"
                 style={{ fontFamily: "Cormorant Garamond, serif" }}
               >
                 Experience Ziba Without Spending the Night
@@ -329,7 +329,7 @@ export default function Stay() {
                 {/* Ticket Only */}
                 <div className="bg-white border-2 border-gray-300 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300">
                   <h4
-                    className="text-3xl font-light text-gray-900 mb-3"
+                    className="text-3xl font-light text-blue-900 mb-3"
                     style={{ fontFamily: "Cormorant Garamond, serif" }}
                   >
                     Ticket Only
@@ -382,7 +382,7 @@ export default function Stay() {
                     POPULAR
                   </div>
                   <h4
-                    className="text-3xl font-light text-gray-900 mb-3"
+                    className="text-3xl font-light text-blue-900 mb-3"
                     style={{ fontFamily: "Cormorant Garamond, serif" }}
                   >
                     Ticket Plus+
@@ -437,7 +437,7 @@ export default function Stay() {
             {/* WHAT'S COVERED */}
             <div className="mb-20">
               <h3
-                className="text-4xl font-light text-gray-900 mb-12 text-center"
+                className="text-4xl font-light text-blue-900 mb-12 text-center"
                 style={{ fontFamily: "Cormorant Garamond, serif" }}
               >
                 What Your Day Pass Covers
@@ -467,7 +467,7 @@ export default function Stay() {
             {/* POLICIES */}
             <div className="mb-20">
               <h3
-                className="text-4xl font-light text-gray-900 mb-12 text-center"
+                className="text-4xl font-light text-blue-900 mb-12 text-center"
                 style={{ fontFamily: "Cormorant Garamond, serif" }}
               >
                 Important Policies & Guidelines

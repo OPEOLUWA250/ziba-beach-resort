@@ -211,17 +211,19 @@ export default function Contact() {
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-white">
           <div className="max-w-7xl mx-auto">
             <h2
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-gray-900 mb-16 text-center"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
+              className="text-5xl font-light text-blue-900 mb-4 text-center"
+              style={{ fontFamily: "Cormorant Garamond" }}
             >
               Questions? We're Here to Help
             </h2>
+            <div className="w-16 h-0.5 mx-auto mb-16 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
+            <div className="w-16 h-0.5 mx-auto mb-16 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
               {/* FAQ Column */}
               <div>
                 <h3
-                  className="text-3xl font-light text-gray-900 mb-8"
+                  className="text-3xl font-light text-blue-900 mb-8"
                   style={{ fontFamily: "Cormorant Garamond, serif" }}
                 >
                   Frequently Asked Questions
@@ -269,18 +271,21 @@ export default function Contact() {
               <div>
                 <div
                   id="contact-form"
-                  className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg sticky top-20"
+                  className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-lg"
                 >
                   <h2
-                    className="text-4xl font-light text-gray-900 mb-8 text-center"
+                    className="text-4xl font-light text-blue-900 mb-8 text-center"
                     style={{ fontFamily: "Cormorant Garamond, serif" }}
                   >
                     Send us a Message
                   </h2>
-                  <form onSubmit={handleSubmit} className="space-y-6">
+                  <form
+                    onSubmit={handleSubmit}
+                    className="space-y-4 sm:space-y-6"
+                  >
                     {/* Name Field */}
                     <div>
-                      <label className="block text-gray-700 font-light mb-2">
+                      <label className="block text-gray-700 font-light mb-2 text-sm sm:text-base">
                         Full Name <span className="text-blue-900">*</span>
                       </label>
                       <input
@@ -290,14 +295,14 @@ export default function Contact() {
                           setFormData({ ...formData, name: e.target.value })
                         }
                         placeholder="Your full name"
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:border-blue-900 focus:ring-2 focus:ring-blue-100 transition-all"
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:border-blue-900 focus:ring-2 focus:ring-blue-100 transition-all text-sm sm:text-base"
                         required
                       />
                     </div>
 
                     {/* Phone Field */}
                     <div>
-                      <label className="block text-gray-700 font-light mb-2">
+                      <label className="block text-gray-700 font-light mb-2 text-sm sm:text-base">
                         Phone Number <span className="text-blue-900">*</span>
                       </label>
                       <input
@@ -307,17 +312,17 @@ export default function Contact() {
                           setFormData({ ...formData, phone: e.target.value })
                         }
                         placeholder="+234 704 730 0013"
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:border-blue-900 focus:ring-2 focus:ring-blue-100 transition-all"
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:border-blue-900 focus:ring-2 focus:ring-blue-100 transition-all text-sm sm:text-base"
                         required
                       />
-                      <p className="text-gray-500 text-sm font-light mt-2">
+                      <p className="text-gray-500 text-xs sm:text-sm font-light mt-1 sm:mt-2">
                         We'll use this to contact you about your inquiry
                       </p>
                     </div>
 
                     {/* Message Field */}
                     <div>
-                      <label className="block text-gray-700 font-light mb-2">
+                      <label className="block text-gray-700 font-light mb-2 text-sm sm:text-base">
                         Message <span className="text-blue-900">*</span>
                       </label>
                       <textarea
@@ -330,15 +335,15 @@ export default function Contact() {
                         }
                         placeholder="Tell us about your inquiry or special requests..."
                         rows={4}
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:border-blue-900 focus:ring-2 focus:ring-blue-100 transition-all resize-none"
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:border-blue-900 focus:ring-2 focus:ring-blue-100 transition-all resize-none text-sm sm:text-base"
                         required
                       />
-                      <div className="flex items-center justify-between mt-2">
-                        <p className="text-gray-500 text-sm font-light">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-2 gap-2">
+                        <p className="text-gray-500 text-xs sm:text-sm font-light">
                           Please provide details about your inquiry
                         </p>
                         <span
-                          className={`text-sm font-light ${
+                          className={`text-xs sm:text-sm font-light whitespace-nowrap ${
                             messageCharCount > maxChars * 0.8
                               ? "text-orange-600"
                               : "text-gray-500"
@@ -353,7 +358,7 @@ export default function Contact() {
                     <button
                       type="submit"
                       disabled={submitStatus === "loading"}
-                      className={`w-full py-4 rounded-lg font-light text-lg transition-all duration-300 ${
+                      className={`w-full py-3 sm:py-4 rounded-lg font-light text-base sm:text-lg transition-all duration-300 ${
                         submitStatus === "success"
                           ? "bg-green-600 text-white hover:bg-green-700"
                           : submitStatus === "loading"
@@ -415,11 +420,12 @@ export default function Contact() {
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-blue-50">
           <div className="max-w-6xl mx-auto">
             <h2
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-gray-900 mb-12 text-center"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
+              className="text-5xl font-light text-blue-900 mb-4 text-center"
+              style={{ fontFamily: "Cormorant Garamond" }}
             >
               Visit Us
             </h2>
+            <div className="w-16 h-0.5 mx-auto mb-12 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
             <div className="rounded-2xl overflow-hidden shadow-lg">
               <iframe
                 width="100%"
