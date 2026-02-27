@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 
 interface FAQItem {
@@ -62,6 +62,26 @@ export default function ContactSection() {
   const [submitStatus, setSubmitStatus] = useState<
     null | "loading" | "success"
   >(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   const messageCharCount = formData.message.length;
   const maxChars = 500;
@@ -82,19 +102,41 @@ export default function ContactSection() {
   };
 
   return (
-    <section id="contact" className="px-4 sm:px-6 lg:px-8 py-20 bg-white">
+    <section
+      ref={sectionRef}
+      id="contact"
+      className="px-4 sm:px-6 lg:px-8 py-20 bg-white overflow-hidden"
+    >
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-gray-900 mb-16 text-center cormorant">
+        <h2
+          className={`text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-blue-900 mb-4 text-center cormorant transition-all duration-1000 ease-out ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          }`}
+        >
           Questions? We're Here to Help
         </h2>
+        <div className="w-16 h-0.5 mx-auto mb-12 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           {/* FAQ Column */}
           <div>
-            <h3 className="text-3xl font-light text-gray-900 mb-8 cormorant">
+            <h3
+              className={`text-3xl font-light text-blue-900 mb-8 cormorant transition-all duration-1000 ease-out ${
+                isVisible
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 -translate-x-10"
+              }`}
+            >
               Frequently Asked Questions
             </h3>
-            <p className="text-gray-600 font-light mb-8">
+            <p
+              className={`text-gray-600 font-light mb-8 transition-all duration-1000 ease-out ${
+                isVisible
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 -translate-x-10"
+              }`}
+              style={{ transitionDelay: isVisible ? "100ms" : "0ms" }}
+            >
               Find answers to common questions about our resort, amenities, and
               services.
             </p>
@@ -103,7 +145,16 @@ export default function ContactSection() {
               {faqItems.map((item, index) => (
                 <div
                   key={index}
-                  className="border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md hover:border-blue-300"
+                  className={`border border-gray-200 rounded-lg overflow-hidden transition-all duration-500 hover:shadow-md hover:border-blue-300 ${
+                    isVisible
+                      ? "opacity-100 translate-x-0"
+                      : "opacity-0 -translate-x-10"
+                  }`}
+                  style={{
+                    transitionDelay: isVisible
+                      ? `${200 + index * 50}ms`
+                      : "0ms",
+                  }}
                 >
                   <button
                     onClick={() =>
@@ -134,17 +185,28 @@ export default function ContactSection() {
           </div>
 
           {/* Contact Form Column */}
-          <div>
+          <div
+            className={`transition-all duration-1000 ease-out ${
+              isVisible
+                ? "opacity-100 translate-x-0"
+                : "opacity-0 translate-x-10"
+            }`}
+          >
             <div
               id="contact-form"
-              className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg"
+              className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500"
             >
-              <h2 className="text-3xl font-light text-gray-900 mb-8 text-center cormorant">
+              <h2 className="text-3xl font-light text-blue-900 mb-8 text-center cormorant">
                 Send us a Message
               </h2>
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Name Field */}
-                <div>
+                <div
+                  className={`transition-all duration-700 ${
+                    isVisible ? "opacity-100" : "opacity-0"
+                  }`}
+                  style={{ transitionDelay: isVisible ? "200ms" : "0ms" }}
+                >
                   <label className="block text-gray-700 font-light mb-2">
                     Full Name <span className="text-blue-900">*</span>
                   </label>
@@ -161,7 +223,12 @@ export default function ContactSection() {
                 </div>
 
                 {/* Phone Field */}
-                <div>
+                <div
+                  className={`transition-all duration-700 ${
+                    isVisible ? "opacity-100" : "opacity-0"
+                  }`}
+                  style={{ transitionDelay: isVisible ? "250ms" : "0ms" }}
+                >
                   <label className="block text-gray-700 font-light mb-2">
                     Phone Number <span className="text-blue-900">*</span>
                   </label>
@@ -181,7 +248,12 @@ export default function ContactSection() {
                 </div>
 
                 {/* Message Field */}
-                <div>
+                <div
+                  className={`transition-all duration-700 ${
+                    isVisible ? "opacity-100" : "opacity-0"
+                  }`}
+                  style={{ transitionDelay: isVisible ? "300ms" : "0ms" }}
+                >
                   <label className="block text-gray-700 font-light mb-2">
                     Message <span className="text-blue-900">*</span>
                   </label>
@@ -218,7 +290,7 @@ export default function ContactSection() {
                 <button
                   type="submit"
                   disabled={submitStatus === "loading"}
-                  className={`w-full py-4 rounded-lg font-light text-lg transition-all duration-300 ${
+                  className={`w-full py-4 rounded-lg font-light text-lg transition-all duration-300 transform hover:scale-105 ${
                     submitStatus === "success"
                       ? "bg-green-600 text-white hover:bg-green-700"
                       : submitStatus === "loading"

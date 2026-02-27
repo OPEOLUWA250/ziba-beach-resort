@@ -128,22 +128,32 @@ const guestReviews: Review[] = [
 
 const allReviews = [...googleReviews, ...guestReviews];
 
-const AverageRating = () => {
+const AverageRating = ({ isVisible }: { isVisible: boolean }) => {
   const avgRating = (
     allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length
   ).toFixed(1);
   const totalReviews = allReviews.length;
 
   return (
-    <div className="bg-linear-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 sm:p-12 border-2 border-amber-200 mb-12">
+    <div
+      className={`bg-linear-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 sm:p-12 border-2 border-amber-200 mb-12 transition-all duration-1000 ease-out ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      }`}
+    >
       <div className="flex items-center gap-8">
         <div className="text-center">
-          <div className="text-6xl font-bold text-amber-600 mb-2">
+          <div className="text-6xl font-bold text-amber-600 mb-2 transition-all duration-700">
             {avgRating}
           </div>
           <div className="flex justify-center gap-1 mb-3">
             {[...Array(5)].map((_, i) => (
-              <span key={i} className="text-2xl text-amber-500">
+              <span
+                key={i}
+                className="text-2xl text-amber-500 transition-all duration-500 transform hover:scale-125"
+                style={{
+                  transitionDelay: isVisible ? `${100 + i * 50}ms` : "0ms",
+                }}
+              >
                 ★
               </span>
             ))}
@@ -167,10 +177,25 @@ const AverageRating = () => {
   );
 };
 
-const ReviewCard = ({ review }: { review: Review }) => {
+const ReviewCard = ({
+  review,
+  index,
+  isVisible,
+}: {
+  review: Review;
+  index: number;
+  isVisible: boolean;
+}) => {
   return (
-    <div className="shrink-0 w-full sm:w-1/2 lg:w-1/3">
-      <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 hover:shadow-lg hover:border-blue-300 transition-all duration-300 h-full flex flex-col">
+    <div
+      className={`shrink-0 w-full sm:w-1/2 lg:w-1/3 transition-all duration-700 ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      }`}
+      style={{
+        transitionDelay: isVisible ? `${200 + index * 100}ms` : "0ms",
+      }}
+    >
+      <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 hover:shadow-2xl hover:border-amber-300 transition-all duration-500 transform hover:scale-105 h-full flex flex-col">
         {/* Header with name and rating */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
@@ -237,7 +262,7 @@ const ReviewCard = ({ review }: { review: Review }) => {
   );
 };
 
-const GuestTestimonialsCarousel = () => {
+const GuestTestimonialsCarousel = ({ isVisible }: { isVisible: boolean }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -315,7 +340,12 @@ const GuestTestimonialsCarousel = () => {
         }}
       >
         {scrollGuestReviews.map((review, index) => (
-          <ReviewCard key={`${review.name}-${index}`} review={review} />
+          <ReviewCard
+            key={`${review.name}-${index}`}
+            review={review}
+            index={index % guestReviews.length}
+            isVisible={isVisible}
+          />
         ))}
       </div>
 
@@ -341,21 +371,48 @@ const GuestTestimonialsCarousel = () => {
 };
 
 export default function Reviews() {
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="reviews"
-      className="py-24 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-white to-blue-50"
+      className="py-24 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-white to-blue-50 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div
+          className={`text-center max-w-3xl mx-auto mb-16 transition-all duration-1000 ease-out ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          }`}
+        >
           <span className="inline-block text-blue-600 font-semibold text-sm uppercase tracking-widest mb-4">
             ✨ What Our Guests Say
           </span>
-          <h2 className="text-5xl sm:text-6xl font-bold text-gray-900 mb-6 cormorant">
+          <h2 className="text-5xl sm:text-6xl font-bold text-blue-900 mb-4 text-center cormorant">
             Unforgettable Moments
           </h2>
-          <p className="text-lg text-gray-600 font-light leading-relaxed">
+          <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
+          <p className="text-lg text-gray-600 font-light leading-relaxed text-center">
             Read authentic reviews from travelers who've experienced the Ziba
             Beach Resort difference. Their stories inspire us to keep delivering
             excellence.
@@ -363,7 +420,7 @@ export default function Reviews() {
         </div>
 
         {/* Average Rating Card */}
-        <AverageRating />
+        <AverageRating isVisible={isVisible} />
 
         {/* Guest Testimonials Carousel */}
         <div className="mb-16">
@@ -371,7 +428,7 @@ export default function Reviews() {
             <span className="text-2xl">💬</span>
             Guest Testimonials
           </h3>
-          <GuestTestimonialsCarousel />
+          <GuestTestimonialsCarousel isVisible={isVisible} />
         </div>
 
         {/* CTA Section */}

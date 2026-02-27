@@ -2,22 +2,50 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 export default function BookingCards() {
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="booking-section"
-      className="pt-16 pb-24 px-4 sm:px-6 lg:px-8 bg-white scroll-mt-20"
+      className="pt-16 pb-24 px-4 sm:px-6 lg:px-8 bg-white scroll-mt-20 overflow-hidden"
     >
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div
+          className={`text-center mb-16 transition-all duration-1000 ease-out ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          }`}
+        >
           <h2
-            className="text-5xl md:text-6xl font-light text-blue-900 mb-6"
+            className="text-5xl md:text-6xl font-light text-blue-900 mb-6 text-center"
             style={{ fontFamily: "Cormorant Garamond" }}
           >
             Choose Your Experience
           </h2>
+          <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
           <p className="text-lg text-gray-600 font-light max-w-2xl mx-auto">
             Whether you're looking for a luxurious overnight escape or a day of
             exploration, we have the perfect option for you.
@@ -27,13 +55,20 @@ export default function BookingCards() {
         {/* Booking Options Grid */}
         <div className="grid md:grid-cols-2 gap-8 md:gap-10">
           {/* Night Experience Card */}
-          <div className="group relative overflow-hidden rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 h-96">
+          <div
+            className={`group relative overflow-hidden rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 h-96 ${
+              isVisible
+                ? "opacity-100 translate-x-0 translate-y-0"
+                : "opacity-0 -translate-x-10 translate-y-10"
+            }`}
+            style={{ transitionDelay: isVisible ? "300ms" : "0ms" }}
+          >
             {/* Background Image */}
             <Image
               src="/Ziba-hero.jpg"
               alt="Night Experience"
               fill
-              className="object-cover"
+              className="object-cover group-hover:scale-110 transition-transform duration-700"
               priority
             />
 
@@ -42,7 +77,7 @@ export default function BookingCards() {
 
             {/* Content */}
             <div className="relative h-full p-10 flex flex-col justify-end">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100/20 mb-6 backdrop-blur-sm border border-blue-100/30">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100/20 mb-6 backdrop-blur-sm border border-blue-100/30 group-hover:scale-110 transition-transform duration-500">
                 <span className="text-2xl">🌙</span>
               </div>
 
@@ -71,10 +106,19 @@ export default function BookingCards() {
                   "Fine Dining",
                   "Spa Access",
                   "24/7 Concierge",
-                ].map((feature) => (
+                ].map((feature, idx) => (
                   <li
                     key={feature}
-                    className="flex items-center gap-3 text-xs text-gray-100 font-light"
+                    className={`flex items-center gap-3 text-xs text-gray-100 font-light transition-all duration-500 ${
+                      isVisible
+                        ? "opacity-100 translate-x-0"
+                        : "opacity-0 -translate-x-5"
+                    }`}
+                    style={{
+                      transitionDelay: isVisible
+                        ? `${450 + idx * 50}ms`
+                        : "0ms",
+                    }}
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-blue-300" />
                     {feature}
@@ -83,7 +127,7 @@ export default function BookingCards() {
               </ul>
 
               <Link href="/bookings">
-                <button className="w-full bg-linear-to-r from-blue-600 to-blue-700 text-white px-6 py-3 font-light tracking-wide hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 rounded-lg">
+                <button className="w-full bg-linear-to-r from-blue-600 to-blue-700 text-white px-6 py-3 font-light tracking-wide hover:from-blue-700 hover:to-blue-800 transition-all duration-500 transform hover:scale-105 rounded-lg shadow-lg hover:shadow-xl">
                   Explore Night Experience
                 </button>
               </Link>
@@ -91,13 +135,20 @@ export default function BookingCards() {
           </div>
 
           {/* Day Experience Card */}
-          <div className="group relative overflow-hidden rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 h-96">
+          <div
+            className={`group relative overflow-hidden rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 h-96 ${
+              isVisible
+                ? "opacity-100 translate-x-0 translate-y-0"
+                : "opacity-0 translate-x-10 translate-y-10"
+            }`}
+            style={{ transitionDelay: isVisible ? "500ms" : "0ms" }}
+          >
             {/* Background Image */}
             <Image
               src="/Ziba-hero.jpg"
               alt="Day Experience"
               fill
-              className="object-cover"
+              className="object-cover group-hover:scale-110 transition-transform duration-700"
               priority
             />
 
@@ -106,7 +157,7 @@ export default function BookingCards() {
 
             {/* Content */}
             <div className="relative h-full p-10 flex flex-col justify-end">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-100/20 mb-6 backdrop-blur-sm border border-amber-100/30">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-100/20 mb-6 backdrop-blur-sm border border-amber-100/30 group-hover:scale-110 transition-transform duration-500">
                 <span className="text-2xl">☀️</span>
               </div>
 
@@ -135,10 +186,19 @@ export default function BookingCards() {
                   "All Activities",
                   "Spa Treatments",
                   "8 Hours • 10am - 6pm",
-                ].map((feature) => (
+                ].map((feature, idx) => (
                   <li
                     key={feature}
-                    className="flex items-center gap-3 text-xs text-gray-100 font-light"
+                    className={`flex items-center gap-3 text-xs text-gray-100 font-light transition-all duration-500 ${
+                      isVisible
+                        ? "opacity-100 translate-x-0"
+                        : "opacity-0 -translate-x-5"
+                    }`}
+                    style={{
+                      transitionDelay: isVisible
+                        ? `${450 + idx * 50}ms`
+                        : "0ms",
+                    }}
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-300" />
                     {feature}
@@ -147,7 +207,7 @@ export default function BookingCards() {
               </ul>
 
               <Link href="/product/day-pass/">
-                <button className="w-full bg-linear-to-r from-amber-600 to-orange-600 text-white px-6 py-3 font-light tracking-wide hover:from-amber-700 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 rounded-lg">
+                <button className="w-full bg-linear-to-r from-amber-600 to-orange-600 text-white px-6 py-3 font-light tracking-wide hover:from-amber-700 hover:to-orange-700 transition-all duration-500 transform hover:scale-105 rounded-lg shadow-lg hover:shadow-xl">
                   Explore Day Experience
                 </button>
               </Link>

@@ -1,21 +1,51 @@
+"use client";
+
 import { Facebook, Instagram, Twitter } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 export default function Footer() {
+  const [isVisible, setIsVisible] = useState(false);
+  const footerRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    if (footerRef.current) {
+      observer.observe(footerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer ref={footerRef} className="bg-gray-900 text-white overflow-hidden">
       {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid md:grid-cols-4 gap-12 mb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand Section */}
-          <div className="space-y-4">
-            <div className="mb-6">
+          <div
+            className={`space-y-4 text-center md:text-left transition-all duration-1000 ease-out ${
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-10"
+            }`}
+          >
+            <div className="mb-6 flex justify-center md:justify-start">
               <Image
                 src="/ZIBA-LOGO-WHITE.png"
                 alt="Ziba Beach Resort"
                 width={80}
                 height={80}
-                className="h-auto w-auto"
+                className="h-auto w-auto hover:scale-110 transition-transform duration-500"
               />
             </div>
             <p className="text-sm font-light text-blue-100 leading-relaxed">
@@ -24,22 +54,22 @@ export default function Footer() {
               beauty.
             </p>
             {/* Social Links */}
-            <div className="flex gap-4 pt-6">
+            <div className="flex gap-4 pt-6 justify-center md:justify-start">
               <a
                 href="#"
-                className="text-blue-200 hover:text-white transition-colors duration-300 transform hover:scale-110"
+                className="text-blue-200 hover:text-white transition-all duration-300 transform hover:scale-125"
               >
                 <Facebook size={20} />
               </a>
               <a
                 href="#"
-                className="text-blue-200 hover:text-white transition-colors duration-300 transform hover:scale-110"
+                className="text-blue-200 hover:text-white transition-all duration-300 transform hover:scale-125"
               >
                 <Instagram size={20} />
               </a>
               <a
                 href="#"
-                className="text-blue-200 hover:text-white transition-colors duration-300 transform hover:scale-110"
+                className="text-blue-200 hover:text-white transition-all duration-300 transform hover:scale-125"
               >
                 <Twitter size={20} />
               </a>
@@ -47,7 +77,14 @@ export default function Footer() {
           </div>
 
           {/* Our Rooms */}
-          <div>
+          <div
+            className={`text-center md:text-left transition-all duration-1000 ease-out ${
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-10"
+            }`}
+            style={{ transitionDelay: isVisible ? "100ms" : "0ms" }}
+          >
             <h4
               className="font-light text-lg mb-6 text-white"
               style={{ fontFamily: "Cormorant Garamond, serif" }}
@@ -131,7 +168,14 @@ export default function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div
+            className={`text-center md:text-left transition-all duration-1000 ease-out ${
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-10"
+            }`}
+            style={{ transitionDelay: isVisible ? "200ms" : "0ms" }}
+          >
             <h4
               className="font-light text-lg mb-6 text-white"
               style={{ fontFamily: "Cormorant Garamond, serif" }}
@@ -199,7 +243,14 @@ export default function Footer() {
           </div>
 
           {/* Contact Info */}
-          <div>
+          <div
+            className={`text-center md:text-left transition-all duration-1000 ease-out ${
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-10"
+            }`}
+            style={{ transitionDelay: isVisible ? "300ms" : "0ms" }}
+          >
             <h4
               className="font-light text-lg mb-6 text-white"
               style={{ fontFamily: "Cormorant Garamond, serif" }}
@@ -247,7 +298,7 @@ export default function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-800 my-12" />
+        <div className="border-t border-gray-800 my-8" />
 
         {/* Bottom Footer */}
         <div className="flex justify-center text-sm font-light text-blue-100">

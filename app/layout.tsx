@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond } from "next/font/google";
 import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import BackToTop from "@/components/back-to-top";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -30,6 +31,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased bg-white text-slate-900">
         {children}
+        <BackToTop />
         <Analytics />
       </body>
     </html>

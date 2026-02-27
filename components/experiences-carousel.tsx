@@ -21,10 +21,30 @@ const scrollExperiences = [...experiences, ...experiences];
 
 export default function ExperiencesCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [isHovering, setIsHovering] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const animationRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   const checkScroll = useCallback(() => {
     if (scrollRef.current) {
@@ -83,16 +103,24 @@ export default function ExperiencesCarousel() {
   }, [isHovering, checkScroll]);
 
   return (
-    <section className="px-4 sm:px-6 lg:px-8 py-20 bg-white">
+    <section
+      ref={sectionRef}
+      className="px-4 sm:px-6 lg:px-8 py-20 bg-white overflow-hidden"
+    >
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
+        <div
+          className={`text-center mb-12 transition-all duration-1000 ease-out ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          }`}
+        >
           <h2
-            className="text-5xl font-light text-gray-900 mb-4"
+            className="text-5xl font-light text-blue-900 mb-4 text-center"
             style={{ fontFamily: "Cormorant Garamond, serif" }}
           >
             Our Experiences
           </h2>
-          <p className="text-gray-600 font-light text-lg">
+          <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
+          <p className="text-gray-600 font-light text-lg text-center">
             Discover unforgettable moments and exclusive activities tailored for
             your perfect getaway
           </p>
@@ -117,22 +145,33 @@ export default function ExperiencesCarousel() {
             {scrollExperiences.map((experience, index) => (
               <div
                 key={`${experience.name}-${index}`}
-                className="flex-shrink-0 w-full sm:w-1/2 lg:w-1/3"
+                className={`flex-shrink-0 w-full sm:w-1/2 lg:w-1/3 transition-all duration-700 ${
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-10"
+                }`}
+                style={{
+                  transitionDelay: isVisible
+                    ? `${300 + (index % experiences.length) * 50}ms`
+                    : "0ms",
+                }}
               >
-                <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow h-full flex flex-col">
+                <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105 h-full flex flex-col">
                   {/* Image Container */}
                   <div
-                    className="relative w-full h-64 bg-cover bg-center"
+                    className="relative w-full h-64 bg-cover bg-center overflow-hidden"
                     style={{
                       backgroundImage: "url(/Ziba-hero.jpg)",
                     }}
                   >
-                    <div className="absolute inset-0 bg-black/40 hover:bg-black/30 transition-colors" />
+                    <div className="absolute inset-0 bg-black/40 hover:bg-black/30 transition-colors duration-500" />
                   </div>
 
                   {/* Content Container */}
                   <div className="p-6 flex flex-col grow">
-                    <div className="text-4xl mb-3">{experience.icon}</div>
+                    <div className="text-4xl mb-3 transform group-hover:scale-110 transition-transform duration-500 inline-block">
+                      {experience.icon}
+                    </div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">
                       {experience.name}
                     </h3>
@@ -140,7 +179,7 @@ export default function ExperiencesCarousel() {
                       {experience.price}
                     </p>
                     <Button
-                      className="w-full bg-blue-900 hover:bg-blue-800 text-white font-light"
+                      className="w-full bg-blue-900 hover:bg-blue-800 text-white font-light transition-all duration-500 transform hover:scale-105"
                       size="sm"
                     >
                       Explore
