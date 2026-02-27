@@ -4,12 +4,13 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import PageHero from "@/components/page-hero";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 export default function OurStory() {
-  const [carouselIndex, setCarouselIndex] = useState(0);
   const [expandedPolicy, setExpandedPolicy] = useState<string | null>(null);
-  const [autoScroll, setAutoScroll] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isHovering, setIsHovering] = useState(false);
+  const animationRef = useRef<number | null>(null);
 
   const brandPartners = [
     { name: "Luxury Hospitality", image: "/Ziba-hero.jpg" },
@@ -22,30 +23,47 @@ export default function OurStory() {
     { name: "Concierge Services", image: "/Ziba-hero.jpg" },
   ];
 
-  const itemsPerSlide = 4;
-  const totalSlides = Math.ceil(brandPartners.length / itemsPerSlide);
+  // Duplicate partners for seamless infinite scroll
+  const scrollPartners = [...brandPartners, ...brandPartners];
 
+  const scroll = useCallback((direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const scrollAmount = 400;
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  }, []);
+
+  // Auto-scroll effect with seamless loop
   useEffect(() => {
-    if (!autoScroll) return;
+    const animate = () => {
+      if (!scrollRef.current || isHovering) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
 
-    const interval = setInterval(() => {
-      setCarouselIndex((prev) => (prev + 1) % totalSlides);
-    }, 5000);
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      const oneSetWidth = scrollWidth / 2;
 
-    return () => clearInterval(interval);
-  }, [autoScroll, totalSlides]);
+      scrollRef.current.scrollLeft += 1.5;
 
-  const nextSlide = () => {
-    setAutoScroll(false);
-    setCarouselIndex((prev) => (prev + 1) % totalSlides);
-    setTimeout(() => setAutoScroll(true), 8000);
-  };
+      if (scrollRef.current.scrollLeft >= oneSetWidth - 10) {
+        scrollRef.current.scrollLeft = 0;
+      }
 
-  const prevSlide = () => {
-    setAutoScroll(false);
-    setCarouselIndex((prev) => (prev - 1 + totalSlides) % totalSlides);
-    setTimeout(() => setAutoScroll(true), 8000);
-  };
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isHovering]);
 
   return (
     <>
@@ -315,7 +333,7 @@ export default function OurStory() {
                     and croissants to eggs and fresh hot waffles, we have the
                     fuel to start your day right.
                   </p>
-                  <button className="bg-linear-to-r from-pink-500 to-red-500 text-white px-6 py-2 rounded-lg font-light hover:shadow-lg transition-all duration-300">
+                  <button className="bg-gradient-to-br from-blue-900 to-blue-800 text-white px-6 py-2 rounded-lg font-light hover:shadow-lg transition-all duration-300 hover:from-blue-800 hover:to-blue-700">
                     View Menu
                   </button>
                 </div>
@@ -341,65 +359,66 @@ export default function OurStory() {
               </p>
             </div>
 
-            <div className="relative">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {brandPartners
-                  .slice(
-                    carouselIndex * itemsPerSlide,
-                    carouselIndex * itemsPerSlide + itemsPerSlide,
-                  )
-                  .map((partner, i) => (
-                    <div
-                      key={i}
-                      className="relative rounded-2xl overflow-hidden h-64 group cursor-pointer"
-                    >
-                      <img
-                        src={partner.image}
-                        alt={partner.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-60 group-hover:opacity-75 transition-opacity duration-300" />
+            <div
+              className="relative group"
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+            >
+              {/* Carousel Container */}
+              <div
+                ref={scrollRef}
+                className="flex gap-6 overflow-x-auto scroll-smooth"
+                style={{
+                  scrollBehavior: "smooth",
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+                }}
+              >
+                {scrollPartners.map((partner, index) => (
+                  <div
+                    key={`${partner.name}-${index}`}
+                    className="flex-shrink-0 w-full sm:w-1/2 lg:w-1/3"
+                  >
+                    <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105 h-64 flex flex-col cursor-pointer relative">
+                      {/* Image Container */}
+                      <div
+                        className="relative w-full h-full bg-cover bg-center overflow-hidden"
+                        style={{
+                          backgroundImage: `url(${partner.image})`,
+                        }}
+                      >
+                        <div className="absolute inset-0 bg-black/40 hover:bg-black/30 transition-colors duration-500" />
+                      </div>
+
+                      {/* Content Overlay */}
                       <div className="absolute inset-0 flex items-center justify-center">
                         <h3
-                          className="text-xl font-light text-white text-center px-4 group-hover:text-blue-200 transition-colors duration-300"
+                          className="text-2xl font-light text-white text-center px-4"
                           style={{ fontFamily: "Cormorant Garamond" }}
                         >
                           {partner.name}
                         </h3>
                       </div>
                     </div>
-                  ))}
+                  </div>
+                ))}
               </div>
 
-              <div className="flex justify-center items-center gap-8 mt-12">
-                <button
-                  onClick={prevSlide}
-                  className="bg-linear-to-r from-blue-900 to-blue-800 text-white p-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-110"
-                >
-                  <ChevronLeft className="w-6 h-6" />
-                </button>
+              {/* Left Arrow */}
+              <button
+                onClick={() => scroll("left")}
+                className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all"
+              >
+                <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
+              </button>
 
-                <div className="flex gap-2">
-                  {Array.from({ length: totalSlides }).map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setCarouselIndex(i)}
-                      className={
-                        i === carouselIndex
-                          ? "h-3 bg-blue-900 w-8 rounded-full transition-all duration-300"
-                          : "h-3 bg-gray-300 w-3 rounded-full hover:bg-gray-400 transition-all duration-300"
-                      }
-                    />
-                  ))}
-                </div>
-
-                <button
-                  onClick={nextSlide}
-                  className="bg-linear-to-r from-blue-900 to-blue-800 text-white p-3 rounded-full hover:shadow-lg transition-all duration-300 hover:scale-110"
-                >
-                  <ChevronRight className="w-6 h-6" />
-                </button>
-              </div>
+              {/* Right Arrow */}
+              <button
+                onClick={() => scroll("right")}
+                className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all"
+              >
+                <ChevronRight size={20} className="sm:w-6 sm:h-6" />
+              </button>
             </div>
 
             <div className="mt-16 text-center">
@@ -590,14 +609,12 @@ export default function OurStory() {
               Experience the luxury and beauty of Ziba Beach Resort. Create
               memories that will last a lifetime.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-blue-900 px-8 py-3 rounded-lg font-light hover:bg-blue-50 transition-all duration-300 hover:shadow-lg">
-                Book Your Stay
-              </button>
-              <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-light hover:bg-white hover:text-blue-900 transition-all duration-300">
-                Learn More
-              </button>
-            </div>
+            <a
+              href="/bookings/rooms"
+              className="inline-block bg-white text-blue-900 px-8 py-3 rounded-lg font-light hover:bg-blue-50 transition-all duration-300 hover:shadow-lg"
+            >
+              Book Your Stay
+            </a>
           </div>
         </section>
       </main>
