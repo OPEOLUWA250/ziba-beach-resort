@@ -4,38 +4,48 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import PageHero from "@/components/page-hero";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function OurStory() {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [expandedPolicy, setExpandedPolicy] = useState<string | null>(null);
+  const [autoScroll, setAutoScroll] = useState(true);
 
-  const brands = [
-    { name: "Luxury Hospitality", emoji: "🏨" },
-    { name: "Premium Dining", emoji: "🍽️" },
-    { name: "Spa & Wellness", emoji: "🧖" },
-    { name: "Adventure Tours", emoji: "🚤" },
-    { name: "Event Planning", emoji: "🎉" },
-    { name: "Marina Services", emoji: "⛵" },
-    { name: "Photography", emoji: "📸" },
-    { name: "Concierge Services", emoji: "🎩" },
+  const brandPartners = [
+    { name: "Luxury Hospitality", image: "/Ziba-hero.jpg" },
+    { name: "Premium Dining", image: "/Ziba-hero.jpg" },
+    { name: "Spa & Wellness", image: "/Ziba-hero.jpg" },
+    { name: "Adventure Tours", image: "/Ziba-hero.jpg" },
+    { name: "Event Planning", image: "/Ziba-hero.jpg" },
+    { name: "Marina Services", image: "/Ziba-hero.jpg" },
+    { name: "Photography", image: "/Ziba-hero.jpg" },
+    { name: "Concierge Services", image: "/Ziba-hero.jpg" },
   ];
 
   const itemsPerSlide = 4;
-  const totalSlides = Math.ceil(brands.length / itemsPerSlide);
+  const totalSlides = Math.ceil(brandPartners.length / itemsPerSlide);
+
+  useEffect(() => {
+    if (!autoScroll) return;
+
+    const interval = setInterval(() => {
+      setCarouselIndex((prev) => (prev + 1) % totalSlides);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [autoScroll, totalSlides]);
 
   const nextSlide = () => {
+    setAutoScroll(false);
     setCarouselIndex((prev) => (prev + 1) % totalSlides);
+    setTimeout(() => setAutoScroll(true), 8000);
   };
 
   const prevSlide = () => {
+    setAutoScroll(false);
     setCarouselIndex((prev) => (prev - 1 + totalSlides) % totalSlides);
+    setTimeout(() => setAutoScroll(true), 8000);
   };
-
-  const visibleBrands = brands.slice(
-    carouselIndex * itemsPerSlide,
-    carouselIndex * itemsPerSlide + itemsPerSlide,
-  );
 
   return (
     <>
@@ -50,18 +60,12 @@ export default function OurStory() {
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <h2
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-gray-900 mb-2"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
+                className="text-5xl font-light text-blue-900 mb-4 text-center"
+                style={{ fontFamily: "Cormorant Garamond" }}
               >
-                THE
+                The Resort
               </h2>
-              <p
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-8"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
-              >
-                RESORT
-              </p>
-              <div className="w-24 h-1 bg-gray-900 mx-auto"></div>
+              <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
             </div>
 
             <div className="space-y-8 text-center text-lg text-gray-700 font-light leading-relaxed max-w-3xl mx-auto">
@@ -91,18 +95,12 @@ export default function OurStory() {
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <h2
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-gray-900 mb-2"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
+                className="text-5xl font-light text-blue-900 mb-4 text-center"
+                style={{ fontFamily: "Cormorant Garamond" }}
               >
-                WARM
+                Warm Experiences
               </h2>
-              <p
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-8"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
-              >
-                EXPERIENCES
-              </p>
-              <div className="w-24 h-1 bg-gray-900 mx-auto mt-6"></div>
+              <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
             </div>
 
             <div className="space-y-8 text-lg text-gray-700 font-light leading-relaxed max-w-3xl mx-auto">
@@ -124,16 +122,16 @@ export default function OurStory() {
         </section>
 
         {/* Featured Room Types */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-gray-900 via-gray-800 to-gray-900">
+        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-blue-900 via-blue-800 to-blue-900">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h3
-                className="text-5xl font-light text-white mb-4"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
+              <h2
+                className="text-5xl font-light text-white mb-4 text-center"
+                style={{ fontFamily: "Cormorant Garamond" }}
               >
                 Featured Room Types
-              </h3>
-              <div className="w-24 h-1 bg-gray-900 mx-auto"></div>
+              </h2>
+              <div className="w-16 h-0.5 mx-auto bg-linear-to-r from-transparent via-blue-300 to-transparent"></div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -176,11 +174,12 @@ export default function OurStory() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-gray-900 mb-4"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
+                className="text-5xl font-light text-blue-900 mb-4 text-center"
+                style={{ fontFamily: "Cormorant Garamond" }}
               >
                 World-Class Facilities
               </h2>
+              <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
               <p className="text-gray-600 font-light text-lg max-w-2xl mx-auto">
                 Everything you need for a perfect getaway
               </p>
@@ -246,14 +245,14 @@ export default function OurStory() {
               ].map((facility, i) => (
                 <div
                   key={i}
-                  className="bg-linear-to-br from-blue-50 to-white border border-blue-200 rounded-2xl p-8 hover:shadow-lg hover:border-blue-300 transition-all duration-300 group"
+                  className="bg-linear-to-br from-blue-50 to-white border border-blue-200 rounded-2xl p-8 hover:shadow-lg hover:border-blue-300 transition-all duration-300 group text-center"
                 >
-                  <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300 inline-block">
                     {facility.icon}
                   </div>
                   <h3
                     className="text-xl font-light text-gray-900 mb-3 group-hover:text-blue-900 transition-colors duration-300"
-                    style={{ fontFamily: "Cormorant Garamond, serif" }}
+                    style={{ fontFamily: "Cormorant Garamond" }}
                   >
                     {facility.title}
                   </h3>
@@ -330,11 +329,12 @@ export default function OurStory() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-gray-900 mb-4"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
+                className="text-5xl font-light text-blue-900 mb-4 text-center"
+                style={{ fontFamily: "Cormorant Garamond" }}
               >
                 Our Brand Partners
               </h2>
+              <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
               <p className="text-gray-600 font-light text-lg max-w-2xl mx-auto">
                 Collaborating with world-class brands to deliver exceptional
                 experiences
@@ -343,22 +343,32 @@ export default function OurStory() {
 
             <div className="relative">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {visibleBrands.map((partner, i) => (
-                  <div
-                    key={i}
-                    className="bg-linear-to-br from-blue-50 to-pink-50 border-2 border-blue-100 rounded-2xl p-8 text-center hover:border-blue-300 hover:shadow-lg transition-all duration-300 cursor-pointer group"
-                  >
-                    <div className="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                      {partner.emoji}
-                    </div>
-                    <h3
-                      className="text-xl font-light text-gray-900 group-hover:text-blue-900 transition-colors duration-300"
-                      style={{ fontFamily: "Cormorant Garamond, serif" }}
+                {brandPartners
+                  .slice(
+                    carouselIndex * itemsPerSlide,
+                    carouselIndex * itemsPerSlide + itemsPerSlide,
+                  )
+                  .map((partner, i) => (
+                    <div
+                      key={i}
+                      className="relative rounded-2xl overflow-hidden h-64 group cursor-pointer"
                     >
-                      {partner.name}
-                    </h3>
-                  </div>
-                ))}
+                      <img
+                        src={partner.image}
+                        alt={partner.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-60 group-hover:opacity-75 transition-opacity duration-300" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <h3
+                          className="text-xl font-light text-white text-center px-4 group-hover:text-blue-200 transition-colors duration-300"
+                          style={{ fontFamily: "Cormorant Garamond" }}
+                        >
+                          {partner.name}
+                        </h3>
+                      </div>
+                    </div>
+                  ))}
               </div>
 
               <div className="flex justify-center items-center gap-8 mt-12">
@@ -408,11 +418,12 @@ export default function OurStory() {
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <h2
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-gray-900 mb-4"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
+                className="text-5xl font-light text-blue-900 mb-4 text-center"
+                style={{ fontFamily: "Cormorant Garamond" }}
               >
                 Policies & House Rules
               </h2>
+              <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
               <p className="text-gray-600 font-light text-base max-w-3xl mx-auto leading-relaxed">
                 We are committed to delivering an exceptionally wholesome,
                 secure, and welcoming beach resort experience for our valued

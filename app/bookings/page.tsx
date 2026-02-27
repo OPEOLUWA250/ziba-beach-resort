@@ -307,7 +307,7 @@ export default function Stay() {
               <div className="flex justify-center mb-8">
                 <Link
                   href="/day-pass"
-                  className="inline-block bg-blue-900 text-white px-10 py-3 rounded-lg font-light hover:bg-blue-800 transition-all duration-300 hover:shadow-lg"
+                  className="inline-block bg-gradient-to-br from-blue-900 to-blue-800 text-white px-10 py-3 rounded-lg font-light hover:from-blue-800 hover:to-blue-700 transition-all duration-300 hover:shadow-lg"
                 >
                   View Full Day Pass Rates →
                 </Link>
@@ -370,7 +370,7 @@ export default function Stay() {
                     </div>
                   </div>
 
-                  <button className="w-full bg-blue-900 text-white py-4 rounded-lg hover:bg-blue-800 transition font-light">
+                  <button className="w-full bg-gradient-to-br from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light">
                     Purchase Ticket Only
                   </button>
                 </div>
@@ -426,7 +426,7 @@ export default function Stay() {
                     </p>
                   </div>
 
-                  <button className="w-full bg-blue-900 text-white py-4 rounded-lg hover:bg-blue-800 transition font-light">
+                  <button className="w-full bg-gradient-to-br from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light">
                     Purchase Ticket Plus+
                   </button>
                 </div>
@@ -661,7 +661,7 @@ export default function Stay() {
                       </li>
                     ))}
                   </ul>
-                  <button className="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition font-light">
+                  <button className="w-full bg-gradient-to-br from-blue-900 to-blue-800 text-white py-3 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light">
                     Book Package
                   </button>
                 </div>
