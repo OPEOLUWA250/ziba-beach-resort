@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getRoomHeroImage } from "@/lib/room-images";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,7 @@ const MOCK_ROOMS = [
       "24/7 Concierge",
       "Beach Towel Service",
     ],
-    images: ["/Ziba-hero.jpg"],
+    images: [getRoomHeroImage("room01")],
     status: "AVAILABLE",
   },
   {
@@ -41,7 +42,7 @@ const MOCK_ROOMS = [
       "Game Console",
       "Beach Equipment",
     ],
-    images: ["/Ziba-hero.jpg"],
+    images: [getRoomHeroImage("room02")],
     status: "AVAILABLE",
   },
   {
@@ -62,7 +63,7 @@ const MOCK_ROOMS = [
       "Beach Equipment",
       "Private Balcony",
     ],
-    images: ["/Ziba-hero.jpg"],
+    images: [getRoomHeroImage("room03")],
     status: "AVAILABLE",
   },
   {
@@ -82,7 +83,7 @@ const MOCK_ROOMS = [
       "24/7 Concierge",
       "Premium Toiletries",
     ],
-    images: ["/Ziba-hero.jpg"],
+    images: [getRoomHeroImage("room04")],
     status: "AVAILABLE",
   },
 ];

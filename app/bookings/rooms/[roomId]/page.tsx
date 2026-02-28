@@ -7,6 +7,8 @@ import Link from "next/link";
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import AvailabilityModal from "@/components/availability-modal";
+import RoomGalleryCarousel from "@/components/room-gallery-carousel";
+import { getRoomImages } from "@/lib/room-images";
 
 interface Room {
   id: string;
@@ -344,7 +346,7 @@ export default function RoomDetail({
         <section className="relative w-full h-screen bg-gray-900 overflow-hidden">
           <div className="absolute inset-0">
             <img
-              src="/Ziba-hero.jpg"
+              src={getRoomImages(room.id).hero}
               alt={`${room.name} - Hero Image`}
               className="w-full h-full object-cover"
             />
@@ -404,48 +406,20 @@ export default function RoomDetail({
         {/* IMAGE GALLERY */}
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-gray-100 to-gray-50">
           <div className="max-w-7xl mx-auto">
-            <div className="mb-10">
+            <div className="mb-12">
               <h2
                 className="text-4xl font-light text-blue-900 mb-2"
                 style={{ fontFamily: "Cormorant Garamond, serif" }}
               >
                 Room Gallery
               </h2>
-              <div className="w-20 h-1 bg-gray-900"></div>
+              <div className="w-20 h-1 bg-blue-900"></div>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Main Feature Image */}
-              <div className="lg:col-span-2 lg:row-span-2 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 group">
-                <div
-                  className="relative h-full overflow-hidden bg-gray-300 aspect-video lg:aspect-auto"
-                  style={{ minHeight: "500px" }}
-                >
-                  <img
-                    src="/Ziba-hero.jpg"
-                    alt={`${room.name} - Main View`}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                </div>
-              </div>
-
-              {/* Side Images */}
-              {[1, 2, 3, 4, 5, 6].map((index) => (
-                <div
-                  key={index}
-                  className="rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group"
-                >
-                  <div className="relative h-64 bg-gray-300 overflow-hidden">
-                    <img
-                      src="/Ziba-hero.jpg"
-                      alt={`${room.name} - View ${index}`}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <RoomGalleryCarousel
+              images={getRoomImages(room.id).carousel}
+              roomName={room.name}
+            />
           </div>
         </section>
 
@@ -571,7 +545,7 @@ export default function RoomDetail({
                   <div className="flex gap-3">
                     <button
                       onClick={() => setIsModalOpen(true)}
-                      className="flex-1 bg-gray-900 text-white py-4 rounded-lg hover:bg-gray-800 transition font-light"
+                      className="flex-1 bg-linear-to-r from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light"
                     >
                       Book Now
                     </button>

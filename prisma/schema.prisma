@@ -213,3 +213,23 @@ model MenuItem {
   @@unique([categoryId, name])
   @@index([categoryId])
 }
+
+// Blog model for content management
+model Blog {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  title         String
+  excerpt       String
+  content       String   @db.Text
+  featured_image String
+  author        String   @default("Ziba Beach Resort")
+  category      String   // "Proposals", "Travel Tips", "Weddings"
+  read_time     Int      @default(5)
+  date          DateTime @default(now())
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([slug])
+  @@index([category])
+}

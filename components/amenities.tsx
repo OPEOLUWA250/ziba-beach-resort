@@ -37,6 +37,10 @@ const amenities = [
     name: "Lagoon Pool",
     image: "/experience-ziba/lagoon-pool.jpg",
   },
+  {
+    name: "Full Massage Session",
+    image: "/experience-ziba/spa-2.jpg",
+  },
 ];
 
 // Duplicate amenities for seamless infinite scroll

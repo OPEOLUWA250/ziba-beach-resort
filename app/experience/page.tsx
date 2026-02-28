@@ -3,6 +3,7 @@
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import PageHero from "@/components/page-hero";
+import Image from "next/image";
 import {
   ChevronDown,
   CheckCircle,
@@ -269,7 +270,7 @@ const eventSpaces = [
       "Writing materials",
       "Bottled water & candy",
     ],
-    image: "/Ziba-hero.jpg",
+    image: "/experience-ziba/conference-room.jpg",
   },
   {
     name: "Games Room",
@@ -283,32 +284,7 @@ const eventSpaces = [
       "Air-conditioned comfort",
       "Flexible configurations",
     ],
-    image: "/Ziba-hero.jpg",
-  },
-];
-
-const teamBondingActivities = [
-  {
-    name: "Team Bonding Games",
-    desc: "Professional instructor-led activities",
-    icon: "🎯",
-  },
-  {
-    name: "Outdoor Sports",
-    desc: "Volleyball, football on sports field",
-    icon: "⚽",
-  },
-  {
-    name: "Horse Riding",
-    desc: "Scenic beach horse riding experience",
-    icon: "🐴",
-  },
-  { name: "Paint & Chill", desc: "Creative team art sessions", icon: "🎨" },
-  { name: "Catering", desc: "Delicious food and drinks included", icon: "🍽️" },
-  {
-    name: "Massage Sessions",
-    desc: "Relaxation for tired team members",
-    icon: "💆",
+    image: "/experience-ziba/indoor-games.jpg",
   },
 ];
 
@@ -368,7 +344,7 @@ export default function Celebrate() {
                 <p className="font-light text-blue-100">Events Hosted</p>
               </div>
               <div>
-                <p className="text-4xl font-light mb-2">50K+</p>
+                <p className="text-4xl font-light mb-2">10K+</p>
                 <p className="font-light text-blue-100">Happy Guests</p>
               </div>
               <div>
@@ -398,55 +374,73 @@ export default function Celebrate() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
               {/* Large featured image */}
               <div className="lg:col-span-2 lg:row-span-2 overflow-hidden rounded-2xl shadow-2xl relative h-96 lg:h-auto">
-                <img
-                  src="/Ziba-hero.jpg"
+                <Image
+                  src="/honeymoon/honeymoon-1.jpg"
                   alt="Couple on beach"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 1024px) 100vw, 66vw"
+                  quality={90}
                 />
               </div>
 
               {/* Image 2 */}
               <div className="overflow-hidden rounded-2xl shadow-lg relative h-64">
-                <img
-                  src="/Ziba-hero.jpg"
+                <Image
+                  src="/honeymoon/honeymoon-2.jpg"
                   alt="Romantic sunset"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 1024px) 50vw, 33vw"
+                  quality={90}
                 />
               </div>
 
               {/* Image 3 */}
               <div className="overflow-hidden rounded-2xl shadow-lg relative h-64">
-                <img
-                  src="/Ziba-hero.jpg"
+                <Image
+                  src="/honeymoon/honeymoon-3.jpg"
                   alt="Luxury resort"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 1024px) 50vw, 33vw"
+                  quality={90}
                 />
               </div>
 
               {/* Image 4 */}
               <div className="overflow-hidden rounded-2xl shadow-lg relative h-64">
-                <img
-                  src="/Ziba-hero.jpg"
+                <Image
+                  src="/honeymoon/honeymoon-4.jpg"
                   alt="Couple dining"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 1024px) 50vw, 33vw"
+                  quality={90}
                 />
               </div>
 
               {/* Image 5 */}
               <div className="overflow-hidden rounded-2xl shadow-lg relative h-64">
-                <img
-                  src="/Ziba-hero.jpg"
+                <Image
+                  src="/honeymoon/honeymoon-5.jpg"
                   alt="Beach paradise"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 1024px) 50vw, 33vw"
+                  quality={90}
                 />
               </div>
 
               {/* Image 6 */}
               <div className="overflow-hidden rounded-2xl shadow-lg relative h-64">
-                <img
-                  src="/Ziba-hero.jpg"
+                <Image
+                  src="/honeymoon/honeymoon-6.jpg"
                   alt="Romantic moment"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 1024px) 50vw, 33vw"
+                  quality={90}
                 />
               </div>
             </div>
@@ -593,7 +587,7 @@ export default function Celebrate() {
                     <button
                       className={`w-full py-3 rounded-lg transition font-light flex items-center justify-center gap-2 ${
                         pkg.featured
-                          ? "bg-blue-900 text-white hover:bg-blue-800"
+                          ? "bg-linear-to-r from-blue-900 to-blue-800 text-white hover:from-blue-800 hover:to-blue-700"
                           : "border border-blue-900 text-blue-900 hover:bg-blue-50"
                       }`}
                     >
@@ -614,101 +608,186 @@ export default function Celebrate() {
               className="text-5xl font-light text-blue-900 mb-4 text-center"
               style={{ fontFamily: "Cormorant Garamond, serif" }}
             >
-              Honeymoon Experiences Included
+              Experience at Ziba
             </h2>
             <p className="text-center text-gray-600 font-light mb-16 max-w-2xl mx-auto">
-              Every moment is designed to celebrate your love story with
-              unforgettable experiences
+              Immerse yourself in world-class amenities and services designed
+              for your ultimate retreat
             </p>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
+                { name: "Restaurant & Bar", image: "restaurant&bar.jpg" },
+                { name: "FirePit", image: "firepit.jpg" },
+                { name: "SPA", image: "spa.jpg" },
+                { name: "Gym", image: "gym.jpg" },
+                { name: "Conference Room", image: "conference-room.jpg" },
                 {
-                  title: "Floating Breakfast",
-                  desc: "Start your day in paradise with breakfast served on your private overwater terrace as the sun rises",
-                  image: "/Ziba-hero.jpg",
+                  name: "Kids Playground",
+                  image: "kids-outdoor-playground.jpg",
                 },
-                {
-                  title: "Beach Side Picnic",
-                  desc: "A curated feast on the sand as waves kiss the shore and palm trees sway above you",
-                  image: "/Ziba-hero.jpg",
-                },
-                {
-                  title: "Romantic Dinner",
-                  desc: "Candlelit beachfront dining under the stars with the gentle sound of the ocean as your soundtrack",
-                  image: "/Ziba-hero.jpg",
-                },
-                {
-                  title: "Massages",
-                  desc: "Rejuvenating couple spa treatments in your private sanctuary, melting away all tension",
-                  image: "/Ziba-hero.jpg",
-                },
-                {
-                  title: "Horse Riding",
-                  desc: "Gallop along pristine beaches at sunset on horseback, a timeless romantic adventure",
-                  image: "/Ziba-hero.jpg",
-                },
-                {
-                  title: "Quad Bike",
-                  desc: "Feel the adrenaline as you explore scenic beach landscapes and hidden coastal gems together",
-                  image: "/Ziba-hero.jpg",
-                },
-                {
-                  title: "Paint & Chill",
-                  desc: "Create art masterpieces together in a relaxed creative setting while sipping champagne",
-                  image: "/Ziba-hero.jpg",
-                },
-                {
-                  title: "Flying Dress",
-                  desc: "Capture magical moments in a stunning flowing dress against breathtaking beachfront backdrops",
-                  image: "/Ziba-hero.jpg",
-                },
-                {
-                  title: "Floating Movie",
-                  desc: "Private cinema experience on the water under the stars with gourmet refreshments",
-                  image: "/Ziba-hero.jpg",
-                },
-                {
-                  title: "Hand Casting",
-                  desc: "Create a permanent keepsake of your joined hands, a beautiful symbol of your love",
-                  image: "/Ziba-hero.jpg",
-                },
-                {
-                  title: "Kite Flying",
-                  desc: "Feel the ocean breeze as you soar kites together against the golden sky at day's end",
-                  image: "/Ziba-hero.jpg",
-                },
-              ].map((exp, i) => (
+                { name: "Cinema", image: "cinema.jpg" },
+                { name: "Lagoon Pool", image: "lagoon-pool.jpg" },
+                { name: "Full Massage Session", image: "spa-2.jpg" },
+              ].map((amenity, idx) => (
                 <div
-                  key={i}
-                  className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer"
+                  key={idx}
+                  className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
                 >
-                  {/* Image Container with explicit height */}
-                  <div className="relative h-96 overflow-hidden">
-                    <img
-                      src={exp.image}
-                      alt={exp.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  <div className="relative h-64 overflow-hidden bg-gray-200">
+                    <Image
+                      src={`/experience-ziba/${amenity.image}`}
+                      alt={amenity.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      quality={90}
                     />
                   </div>
 
-                  {/* Dark Overlay */}
-                  <div className="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-50 transition-all duration-300" />
-
-                  {/* Content - Positioned at bottom */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
                     <h3
-                      className="text-2xl font-light mb-2 group-hover:mb-3 transition-all duration-300"
+                      className="text-2xl font-light text-white text-center"
                       style={{ fontFamily: "Cormorant Garamond, serif" }}
                     >
-                      {exp.title}
+                      {amenity.name}
                     </h3>
-                    <p className="text-sm font-light text-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      {exp.desc}
-                    </p>
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Team Bonding Experiences */}
+        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-white">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2
+                className="text-5xl font-light text-blue-900 mb-4 text-center"
+                style={{ fontFamily: "Cormorant Garamond" }}
+              >
+                Team Bonding Experiences
+              </h2>
+              <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
+              <p className="text-gray-600 font-light text-lg max-w-2xl mx-auto">
+                Create unforgettable memories with your team in elegant settings
+              </p>
+            </div>
+
+            {/* Team Bonding Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-max">
+              {/* Large featured image - spans 2 rows */}
+              <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer lg:row-span-2 h-96 md:h-full">
+                <Image
+                  src="/team-bonding/team-bonding-1.jpg"
+                  alt="Team Bonding"
+                  fill
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                  <h3
+                    className="text-2xl font-light text-white"
+                    style={{ fontFamily: "Cormorant Garamond" }}
+                  >
+                    Outdoor Team Activities
+                  </h3>
+                </div>
+              </div>
+
+              {/* Medium images */}
+              <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer h-72">
+                <Image
+                  src="/team-bonding/team-bonding-2.jpg"
+                  alt="Team Bonding"
+                  fill
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                  <h3
+                    className="text-xl font-light text-white"
+                    style={{ fontFamily: "Cormorant Garamond" }}
+                  >
+                    Game Activities
+                  </h3>
+                </div>
+              </div>
+
+              <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer h-72">
+                <Image
+                  src="/team-bonding/team-bonding-3.jpg"
+                  alt="Team Bonding"
+                  fill
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                  <h3
+                    className="text-xl font-light text-white"
+                    style={{ fontFamily: "Cormorant Garamond" }}
+                  >
+                    Quality food
+                  </h3>
+                </div>
+              </div>
+
+              {/* Small images */}
+              <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer h-56">
+                <Image
+                  src="/team-bonding/team-bonding-4.jpg"
+                  alt="Team Bonding"
+                  fill
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                  <h3
+                    className="text-lg font-light text-white"
+                    style={{ fontFamily: "Cormorant Garamond" }}
+                  >
+                    Social Gatherings
+                  </h3>
+                </div>
+              </div>
+
+              <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer h-56">
+                <Image
+                  src="/team-bonding/team-bonding-5.jpg"
+                  alt="Team Bonding"
+                  fill
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                  <h3
+                    className="text-lg font-light text-white"
+                    style={{ fontFamily: "Cormorant Garamond" }}
+                  >
+                    Networking Events
+                  </h3>
+                </div>
+              </div>
+
+              <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer h-56">
+                <Image
+                  src="/team-bonding/team-bonding-6.jpg"
+                  alt="Team Bonding"
+                  fill
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                  <h3
+                    className="text-lg font-light text-white"
+                    style={{ fontFamily: "Cormorant Garamond" }}
+                  >
+                    Celebrations
+                  </h3>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -768,174 +847,11 @@ export default function Celebrate() {
                       ))}
                     </div>
 
-                    <button className="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition font-light">
-                      Inquire Now
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Team Bonding Activities */}
-            <div>
-              <h3
-                className="text-3xl font-light text-blue-900 mb-12 text-center"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
-              >
-                Team Bonding Activities
-              </h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {teamBondingActivities.map((activity, i) => (
-                  <div
-                    key={i}
-                    className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer"
-                  >
-                    {/* Image Container with explicit height */}
-                    <div className="relative h-64 overflow-hidden">
-                      <img
-                        src="/Ziba-hero.jpg"
-                        alt={activity.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                    </div>
-
-                    {/* Overlay */}
-                    <div className="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-50 transition-all duration-300" />
-
-                    {/* Content */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6">
-                      <h4 className="text-2xl font-light text-center mb-2">
-                        {activity.name}
-                      </h4>
-                      <p className="text-sm font-light text-center text-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        {activity.desc}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Culinary Excellence */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-white">
-          <div className="max-w-6xl mx-auto">
-            <h2
-              className="text-5xl font-light text-blue-900 mb-4 text-center"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
-            >
-              Culinary Excellence
-            </h2>
-            <p className="text-center text-gray-600 font-light mb-16 max-w-2xl mx-auto">
-              Indulge in world-class dining experiences crafted by our expert
-              chefs. From beachfront feasts to intimate dinners, every meal is a
-              celebration
-            </p>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              {[
-                {
-                  title: "Multi-Cuisine Restaurant",
-                  desc: "International and local flavors prepared with premium ingredients",
-                  image: "/Ziba-hero.jpg",
-                },
-                {
-                  title: "Beachfront Bar & Lounge",
-                  desc: "Signature cocktails and refreshing beverages with ocean views",
-                  image: "/Ziba-hero.jpg",
-                },
-                {
-                  title: "Private Dining Experiences",
-                  desc: "Bespoke menus and intimate settings tailored to your preferences",
-                  image: "/Ziba-hero.jpg",
-                },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer"
-                >
-                  {/* Image Container with explicit height */}
-                  <div className="relative h-80 overflow-hidden">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-black bg-opacity-35 group-hover:bg-opacity-45 transition-all duration-300" />
-                  <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
-                    <h3
-                      className="text-2xl font-light mb-2 group-hover:mb-3 transition-all duration-300"
-                      style={{ fontFamily: "Cormorant Garamond, serif" }}
-                    >
-                      {item.title}
-                    </h3>
-                    <p className="text-sm font-light text-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      {item.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Wellness & Relaxation */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-blue-50 via-purple-50 to-blue-50">
-          <div className="max-w-6xl mx-auto">
-            <h2
-              className="text-5xl font-light text-blue-900 mb-4 text-center"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
-            >
-              Wellness & Relaxation
-            </h2>
-            <p className="text-center text-gray-600 font-light mb-16 max-w-2xl mx-auto">
-              Renew your mind, body, and spirit with our comprehensive wellness
-              programs and spa facilities
-            </p>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              {[
-                {
-                  title: "Full-Service Spa",
-                  desc: "Luxurious treatments using natural and organic products",
-                  image: "/Ziba-hero.jpg",
-                },
-                {
-                  title: "Yoga & Meditation",
-                  desc: "Guided sessions overlooking the ocean for inner peace",
-                  image: "/Ziba-hero.jpg",
-                },
-                {
-                  title: "Wellness Packages",
-                  desc: "Holistic programs designed for healing and rejuvenation",
-                  image: "/Ziba-hero.jpg",
-                },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer"
-                >
-                  {/* Image Container with explicit height */}
-                  <div className="relative h-80 overflow-hidden">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-black bg-opacity-35 group-hover:bg-opacity-45 transition-all duration-300" />
-                  <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
-                    <h3
-                      className="text-2xl font-light mb-2 group-hover:mb-3 transition-all duration-300"
-                      style={{ fontFamily: "Cormorant Garamond, serif" }}
-                    >
-                      {item.title}
-                    </h3>
-                    <p className="text-sm font-light text-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      {item.desc}
-                    </p>
+                    <a href="/contact" className="block">
+                      <button className="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition font-light">
+                        Inquire Now
+                      </button>
+                    </a>
                   </div>
                 </div>
               ))}
@@ -960,14 +876,8 @@ export default function Celebrate() {
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
                 <a
-                  href="/blog/how-to-plan-beach-wedding-lagos"
+                  href="/contact"
                   className="bg-white text-blue-900 px-8 py-3 rounded-lg hover:bg-blue-50 transition font-light"
-                >
-                  View Wedding Guide
-                </a>
-                <a
-                  href="tel:+2347047300013"
-                  className="border-2 border-white text-white px-8 py-3 rounded-lg hover:bg-white hover:text-blue-900 transition font-light"
                 >
                   Plan Your Wedding
                 </a>
@@ -1012,7 +922,7 @@ export default function Celebrate() {
               <div className="grid md:grid-cols-2">
                 <div className="relative h-96">
                   <img
-                    src="/Ziba-hero.jpg"
+                    src="/honeymoon/honeymoon-6.jpg"
                     alt="Professional Shoots"
                     className="w-full h-full object-cover"
                   />
@@ -1043,7 +953,7 @@ export default function Celebrate() {
                     ))}
                   </ul>
                   <a
-                    href="mailto:bookings@zibabeachresort.com"
+                    href="/contact"
                     className="inline-block bg-blue-900 text-white px-8 py-3 rounded-lg hover:bg-blue-800 transition font-light w-fit"
                   >
                     Book Your Shoot

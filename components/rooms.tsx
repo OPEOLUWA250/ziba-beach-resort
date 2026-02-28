@@ -1,11 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { getRoomHeroImage } from "@/lib/room-images";
 
 const rooms = [
   {
-    id: 1,
+    id: "room01",
     name: "Beach Facing Room",
     type: "Single",
     description:
@@ -14,7 +16,7 @@ const rooms = [
     features: ["Ocean Access", "Ceiling Windows", "Private Deck"],
   },
   {
-    id: 2,
+    id: "room02",
     name: "Beach Facing Family Room",
     type: "Family",
     description:
@@ -23,7 +25,7 @@ const rooms = [
     features: ["Family Sized", "Ocean Views", "Spacious Layout"],
   },
   {
-    id: 3,
+    id: "room03",
     name: "Beach Facing Family Room",
     type: "Family",
     description:
@@ -32,7 +34,7 @@ const rooms = [
     features: ["Full Pool View", "Family Friendly", "Premium Comfort"],
   },
   {
-    id: 4,
+    id: "room04",
     name: "Beach Facing Connecting Room",
     type: "Group",
     description:
@@ -41,7 +43,7 @@ const rooms = [
     features: ["2 Adjoining Rooms", "Group Friendly", "Flexible Layout"],
   },
   {
-    id: 5,
+    id: "room05",
     name: "Beach Facing Suite",
     type: "Suite",
     description:
@@ -50,7 +52,7 @@ const rooms = [
     features: ["Living Room", "Sofa Bed", "Beach View"],
   },
   {
-    id: 6,
+    id: "room06",
     name: "Two Bedroom Apartment",
     type: "Residence",
     description:
@@ -59,7 +61,7 @@ const rooms = [
     features: ["2 Bedrooms", "Private Pool", "Ocean View"],
   },
   {
-    id: 7,
+    id: "room07",
     name: "Overwater Terrace Room",
     type: "Premium",
     description:
@@ -68,7 +70,7 @@ const rooms = [
     features: ["Direct Water Access", "Private Terrace", "Premium Access"],
   },
   {
-    id: 8,
+    id: "room08",
     name: "Overwater Terrace Suite",
     type: "Luxury",
     description:
@@ -77,7 +79,7 @@ const rooms = [
     features: ["Wooden Deck", "Pool Access", "Luxury Suite"],
   },
   {
-    id: 9,
+    id: "room09",
     name: "Ziba Black",
     type: "Exclusive",
     description:
@@ -149,13 +151,16 @@ export default function Rooms() {
                 transitionDelay: isVisible ? `${300 + idx * 100}ms` : "0ms",
               }}
             >
-              {/* Image Container */}
-              <div
-                className="relative w-full h-64 bg-cover bg-center overflow-hidden"
-                style={{
-                  backgroundImage: "url(/Ziba-hero.jpg)",
-                }}
-              >
+              {/* Image Container - using Next.js Image component */}
+              <div className="relative w-full h-64 overflow-hidden">
+                <Image
+                  src={getRoomHeroImage(room.id)}
+                  alt={`${room.name} - Hero Image`}
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  quality={85}
+                />
                 {/* Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
@@ -208,9 +213,12 @@ export default function Rooms() {
                 </ul>
 
                 {/* CTA Button */}
-                <Button className="w-full bg-blue-900 hover:bg-blue-800 text-white font-light transition-all duration-500 transform hover:scale-105 shadow-md hover:shadow-lg">
+                <Link
+                  href={`/bookings/rooms/${room.id}`}
+                  className="w-full block bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700 text-white font-light transition-all duration-500 rounded-lg text-center py-3 px-4 shadow-md hover:shadow-lg"
+                >
                   View & Book
-                </Button>
+                </Link>
               </div>
             </div>
           ))}

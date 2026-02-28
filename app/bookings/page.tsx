@@ -4,6 +4,8 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import PageHero from "@/components/page-hero";
 import Link from "next/link";
+import { getRoomHeroImage } from "@/lib/room-images";
+import Image from "next/image";
 
 export default function Stay() {
   const rooms = [
@@ -16,7 +18,6 @@ export default function Stay() {
       view: "Balcony with partial pool view",
       price: "from ₦202,000",
       roomId: "room01",
-      image: "/Ziba-hero.jpg",
     },
     {
       number: "02",
@@ -27,7 +28,6 @@ export default function Stay() {
       view: "Partial pool view",
       price: "from ₦225,000",
       roomId: "room02",
-      image: "/Ziba-hero.jpg",
     },
     {
       number: "03",
@@ -38,7 +38,6 @@ export default function Stay() {
       view: "Full pool view",
       price: "from ₦247,500",
       roomId: "room03",
-      image: "/Ziba-hero.jpg",
     },
     {
       number: "04",
@@ -49,7 +48,6 @@ export default function Stay() {
       view: "Pool view overlooking beach",
       price: "from ₦202,500",
       roomId: "room04",
-      image: "/Ziba-hero.jpg",
     },
     {
       number: "05",
@@ -60,7 +58,6 @@ export default function Stay() {
       view: "Full view overlooking beach",
       price: "from ₦231,750",
       roomId: "room05",
-      image: "/Ziba-hero.jpg",
     },
     {
       number: "06",
@@ -71,7 +68,6 @@ export default function Stay() {
       view: "Private pool & ocean view",
       price: "from ₦450,000",
       roomId: "room06",
-      image: "/Ziba-hero.jpg",
     },
     {
       number: "07",
@@ -82,7 +78,6 @@ export default function Stay() {
       view: "Direct water access",
       price: "from ₦213,750",
       roomId: "room07",
-      image: "/Ziba-hero.jpg",
     },
     {
       number: "08",
@@ -93,7 +88,6 @@ export default function Stay() {
       view: "Wooden deck with pool access",
       price: "from ₦258,750",
       roomId: "room08",
-      image: "/Ziba-hero.jpg",
     },
     {
       number: "09",
@@ -104,7 +98,6 @@ export default function Stay() {
       view: "Pool view overlooking beach",
       price: "from ₦202,500",
       roomId: "room09",
-      image: "/Ziba-hero.jpg",
     },
   ];
 
@@ -143,10 +136,13 @@ export default function Stay() {
                 >
                   {/* Image Container */}
                   <div className="relative h-56 sm:h-64 md:h-72 overflow-hidden bg-gray-200">
-                    <img
-                      src={room.image}
+                    <Image
+                      src={getRoomHeroImage(room.roomId)}
                       alt={room.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      quality={85}
                     />
                     <div className="absolute top-4 left-4 bg-blue-900 text-white px-4 py-2 rounded-full font-light">
                       {room.number}
@@ -558,9 +554,12 @@ export default function Stay() {
                 Planning a birthday or a get-together for 15 or more guests?
                 Contact us for special arrangements and exclusive group rates.
               </p>
-              <button className="bg-white text-blue-900 px-6 sm:px-10 py-3 sm:py-4 rounded-lg font-light hover:bg-blue-50 transition-all duration-300 hover:shadow-lg text-sm sm:text-base">
+              <a
+                href="mailto:bookings@zibabeachresort.com"
+                className="inline-block bg-white text-blue-900 px-6 sm:px-10 py-3 sm:py-4 rounded-lg font-light hover:bg-blue-50 transition-all duration-300 hover:shadow-lg text-sm sm:text-base"
+              >
                 Email Us For Group Inquiries
-              </button>
+              </a>
             </div>
           </div>
         </section>
@@ -687,7 +686,7 @@ export default function Stay() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="/bookings/rooms"
+                href="/bookings"
                 className="inline-block bg-white text-blue-900 px-6 sm:px-10 py-3 sm:py-4 rounded-lg font-light hover:bg-blue-50 transition-all duration-300 hover:shadow-lg text-sm sm:text-base"
               >
                 Reserve Your Room

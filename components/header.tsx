@@ -116,7 +116,7 @@ export default function Header() {
         {/* Desktop CTA Button */}
         <button
           onClick={scrollToBooking}
-          className="hidden md:inline-block px-7 py-2.5 bg-blue-900 text-white text-sm font-medium tracking-normal rounded-lg hover:bg-blue-800 transition-all duration-200 hover:shadow-md"
+          className="hidden md:inline-block px-7 py-2.5 bg-linear-to-r from-blue-900 to-blue-800 text-white text-sm font-medium tracking-normal rounded-lg hover:from-blue-800 hover:to-blue-700 transition-all duration-200 hover:shadow-md"
         >
           Book Now
         </button>
@@ -161,7 +161,7 @@ export default function Header() {
             {/* Mobile Book Now Button */}
             <button
               onClick={scrollToBooking}
-              className="w-full bg-blue-900 text-white px-6 py-3 font-light tracking-wide hover:bg-blue-800 transition mt-4 rounded-lg"
+              className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-6 py-3 font-light tracking-wide hover:from-blue-800 hover:to-blue-700 transition mt-4 rounded-lg"
             >
               Book Now
             </button>

@@ -19,6 +19,7 @@ import {
   ChevronRight,
   ShieldCheck,
   UtensilsCrossed,
+  BookOpen,
 } from "lucide-react";
 
 const adminNavItems = [
@@ -26,6 +27,7 @@ const adminNavItems = [
   { label: "Bookings", href: "/admin/bookings", icon: Calendar },
   { label: "Rooms", href: "/admin/rooms", icon: DoorOpen },
   { label: "Menus", href: "/admin/menus", icon: UtensilsCrossed },
+  { label: "Blog", href: "/admin/blog", icon: BookOpen },
   { label: "Revenue", href: "/admin/revenue", icon: TrendingUp },
   { label: "Guests", href: "/admin/guests", icon: Users },
   { label: "Reviews", href: "/admin/reviews", icon: Star },

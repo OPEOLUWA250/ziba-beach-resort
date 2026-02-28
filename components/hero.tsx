@@ -136,24 +136,10 @@ export default function Hero() {
               className="flex flex-col sm:flex-row gap-4 sm:gap-4 md:gap-6 justify-center pt-2 sm:pt-4"
               style={{ animation: "slideUp 0.8s ease-out 0.2s both" }}
             >
-              {/* Primary Button - Brand Blue Background */}
+              {/* Primary Button - Brand Blue Gradient */}
               <button
                 onClick={() => (window.location.href = "/bookings")}
-                className="group relative px-8 sm:px-10 md:px-12 py-4 sm:py-4 md:py-5 text-white font-semibold text-sm sm:text-base md:text-lg tracking-wide overflow-hidden rounded-lg transition-all duration-500 transform hover:scale-105 hover:shadow-2xl w-full sm:w-auto active:scale-95 buttonGlow"
-                style={{
-                  background: "#1e3a8a",
-                  boxShadow: "0 20px 40px rgba(30, 58, 138, 0.4)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#162e6f";
-                  e.currentTarget.style.boxShadow =
-                    "0 30px 60px rgba(30, 58, 138, 0.6), 0 0 40px rgba(96, 165, 250, 0.4)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "#1e3a8a";
-                  e.currentTarget.style.boxShadow =
-                    "0 20px 40px rgba(30, 58, 138, 0.4)";
-                }}
+                className="group relative px-8 sm:px-10 md:px-12 py-4 sm:py-4 md:py-5 text-white font-semibold text-sm sm:text-base md:text-lg tracking-wide overflow-hidden rounded-lg transition-all duration-500 transform hover:scale-105 hover:shadow-2xl w-full sm:w-auto active:scale-95 bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2 sm:gap-3">
                   Reserve Your Stay
