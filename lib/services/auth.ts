@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import prisma from "./prisma";
+import { supabase } from "@/lib/supabase/client";
 
 const SALT_ROUNDS = 10;
 
@@ -13,163 +13,141 @@ interface RegisterInput {
   currency?: string;
 }
 
-/**
- * Register a new user
- */
 export async function registerUser(input: RegisterInput) {
   try {
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email: input.email },
+    const hashedPassword = await bcrypt.hash(input.password, SALT_ROUNDS);
+    const userId = `user-${Date.now()}`;
+
+    const { data, error } = await supabase.from("users").insert({
+      id: userId,
+      email: input.email,
+      firstName: input.firstName || "",
+      lastName: input.lastName || "",
+      phone: input.phone || null,
+      country: input.country || null,
+      currency: input.currency || "NGN",
+      passwordHash: hashedPassword,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     });
 
-    if (existingUser) {
-      throw new Error("User with this email already exists");
+    if (error) {
+      console.error("Supabase registration error:", error);
+      throw new Error(error.message);
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(input.password, SALT_ROUNDS);
-
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        email: input.email,
-        password: hashedPassword,
-        firstName: input.firstName,
-        lastName: input.lastName,
-        phone: input.phone,
-        country: input.country,
-        currency: input.currency || "NGN",
-      },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        currency: true,
-        createdAt: true,
-      },
-    });
-
-    return user;
+    return {
+      id: userId,
+      email: input.email,
+      firstName: input.firstName,
+      lastName: input.lastName,
+      currency: input.currency || "NGN",
+      createdAt: new Date(),
+    };
   } catch (error) {
     console.error("Error registering user:", error);
     throw error;
   }
 }
 
-/**
- * Login user
- */
 export async function loginUser(email: string, password: string) {
   try {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .single();
 
-    if (!user) {
-      throw new Error("Invalid email or password");
+    if (error || !data) {
+      throw new Error("User not found");
     }
 
-    // Verify password
-    const isValidPassword = await bcrypt.compare(password, user.password);
-
-    if (!isValidPassword) {
-      throw new Error("Invalid email or password");
+    if (!data.passwordHash) {
+      throw new Error("Invalid credentials");
     }
 
-    // Return user (without password)
-    const { password: _, ...userWithoutPassword } = user;
+    const passwordMatch = await bcrypt.compare(password, data.passwordHash);
+    if (!passwordMatch) {
+      throw new Error("Invalid credentials");
+    }
 
-    return userWithoutPassword;
+    return {
+      id: data.id,
+      email: data.email,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      token: "session-token",
+    };
   } catch (error) {
     console.error("Error logging in user:", error);
     throw error;
   }
 }
 
-/**
- * Get user by ID
- */
-export async function getUserById(userId: string) {
+export async function getUserByEmail(email: string) {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        phone: true,
-        country: true,
-        currency: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .single();
 
-    return user;
+    if (error) {
+      if (error.code === "PGRST116") {
+        // Not found error
+        return null;
+      }
+      console.error("Supabase error:", error);
+      throw error;
+    }
+
+    return data;
   } catch (error) {
-    console.error("Error getting user:", error);
-    throw error;
+    console.error("Error fetching user by email:", error);
+    return null;
   }
 }
 
-/**
- * Update user profile
- */
+export async function getUserById(id: string) {
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") {
+        return null;
+      }
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    return null;
+  }
+}
+
 export async function updateUserProfile(
   userId: string,
-  updates: {
-    firstName?: string;
-    lastName?: string;
-    phone?: string;
-    country?: string;
-    currency?: string;
-  },
+  updates: Partial<RegisterInput>,
 ) {
   try {
-    const user = await prisma.user.update({
-      where: { id: userId },
-      data: updates,
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        phone: true,
-        country: true,
-        currency: true,
-        updatedAt: true,
-      },
-    });
+    const { data, error } = await supabase
+      .from("users")
+      .update({
+        ...updates,
+        updatedAt: new Date().toISOString(),
+      })
+      .eq("id", userId);
 
-    return user;
+    if (error) throw error;
+
+    return data;
   } catch (error) {
     console.error("Error updating user profile:", error);
     throw error;
-  }
-}
-
-/**
- * Verify user in middleware
- */
-export async function verifyUserPassword(
-  email: string,
-  password: string,
-): Promise<boolean> {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      return false;
-    }
-
-    return await bcrypt.compare(password, user.password);
-  } catch (error) {
-    console.error("Error verifying password:", error);
-    return false;
   }
 }

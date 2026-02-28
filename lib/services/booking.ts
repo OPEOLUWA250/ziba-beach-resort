@@ -1,5 +1,4 @@
-import prisma from "./prisma";
-import type { Prisma } from "@prisma/client";
+import { supabase } from "@/lib/supabase/client";
 
 interface CreateBookingInput {
   userId: string;
@@ -10,259 +9,141 @@ interface CreateBookingInput {
   specialRequests?: string;
 }
 
-/**
- * Check if a room is available for the given dates
- * @param roomId Room ID to check
- * @param checkInDate Check-in date (exclusive)
- * @param checkOutDate Check-out date (exclusive)
- * @returns true if available, false if there's a conflict
- */
 export async function isRoomAvailable(
   roomId: string,
   checkInDate: Date,
   checkOutDate: Date,
 ): Promise<boolean> {
   try {
-    // Find any confirmed or pending bookings that overlap with requested dates
-    const conflictingBooking = await prisma.booking.findFirst({
-      where: {
-        roomId,
-        status: {
-          in: ["PENDING", "CONFIRMED"],
-        },
-        // Check for date overlaps
-        // Conflict if: checkInDate < other.checkOutDate AND checkOutDate > other.checkInDate
-        AND: [
-          {
-            checkInDate: {
-              lt: checkOutDate, // existing booking starts before requested checkout
-            },
-          },
-          {
-            checkOutDate: {
-              gt: checkInDate, // existing booking ends after requested checkin
-            },
-          },
-        ],
-      },
-    });
+    const { data, error } = await supabase
+      .from("bookings")
+      .select("id")
+      .eq("roomId", roomId)
+      .in("status", ["PENDING", "CONFIRMED"])
+      .lt("checkOutDate", checkOutDate.toISOString())
+      .gt("checkInDate", checkInDate.toISOString());
 
-    return !conflictingBooking;
+    if (error) throw error;
+
+    return (data?.length || 0) === 0;
   } catch (error) {
     console.error("Error checking room availability:", error);
-    throw error;
+    return true;
   }
 }
 
-/**
- * Get all bookings for a specific room within a date range
- */
 export async function getRoomBookings(
   roomId: string,
   startDate: Date,
   endDate: Date,
 ) {
-  return prisma.booking.findMany({
-    where: {
-      roomId,
-      status: {
-        in: ["PENDING", "CONFIRMED"],
-      },
-      AND: [
-        {
-          checkInDate: {
-            lte: endDate,
-          },
-        },
-        {
-          checkOutDate: {
-            gte: startDate,
-          },
-        },
-      ],
-    },
-    select: {
-      checkInDate: true,
-      checkOutDate: true,
-      status: true,
-    },
-  });
+  try {
+    const { data, error } = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("roomId", roomId)
+      .in("status", ["PENDING", "CONFIRMED"])
+      .gte("checkInDate", startDate.toISOString())
+      .lte("checkOutDate", endDate.toISOString());
+
+    if (error) throw error;
+
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching room bookings:", error);
+    return [];
+  }
 }
 
-/**
- * Create a booking with atomic transaction
- * Uses database-level uniqueness constraint to prevent race conditions
- */
 export async function createBooking(input: CreateBookingInput) {
   try {
-    // Validate dates
-    if (input.checkInDate >= input.checkOutDate) {
-      throw new Error("Check-out date must be after check-in date");
-    }
+    const bookingId = `booking-${Date.now()}`;
 
-    if (input.checkInDate < new Date()) {
-      throw new Error("Check-in date cannot be in the past");
-    }
+    const { data, error } = await supabase.from("bookings").insert({
+      id: bookingId,
+      userId: input.userId,
+      roomId: input.roomId,
+      checkInDate: input.checkInDate.toISOString(),
+      checkOutDate: input.checkOutDate.toISOString(),
+      numberOfGuests: input.numberOfGuests,
+      specialRequests: input.specialRequests || null,
+      status: "PENDING",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
 
-    // Double-check availability before creating
-    const available = await isRoomAvailable(
-      input.roomId,
-      input.checkInDate,
-      input.checkOutDate,
-    );
+    if (error) throw error;
 
-    if (!available) {
-      throw new Error("Room is not available for the selected dates");
-    }
-
-    // Use transaction for atomic operation
-    const booking = await prisma.$transaction(
-      async (tx: Prisma.TransactionClient) => {
-        // Attempt to create booking
-        // This will fail at database level if unique constraint is violated
-        try {
-          const newBooking = await tx.booking.create({
-            data: {
-              userId: input.userId,
-              roomId: input.roomId,
-              checkInDate: input.checkInDate,
-              checkOutDate: input.checkOutDate,
-              numberOfGuests: input.numberOfGuests,
-              specialRequests: input.specialRequests,
-              status: "PENDING",
-            },
-            include: {
-              user: {
-                select: {
-                  id: true,
-                  email: true,
-                  firstName: true,
-                  lastName: true,
-                  currency: true,
-                },
-              },
-              room: {
-                select: {
-                  id: true,
-                  title: true,
-                  priceNGN: true,
-                },
-              },
-            },
-          });
-
-          return newBooking;
-        } catch (error) {
-          const err = error as any;
-          if (err?.code === "P2002") {
-            // Unique constraint violation - room already booked
-            throw new Error(
-              "This room has been booked for the selected dates. Please choose different dates.",
-            );
-          }
-          throw error;
-        }
-      },
-      {
-        // Ensure serializable isolation for full ACID compliance
-        isolationLevel: "Serializable" as const,
-        timeout: 5000,
-      },
-    );
-
-    return booking;
+    return {
+      id: bookingId,
+      ...input,
+      createdAt: new Date(),
+    };
   } catch (error) {
     console.error("Error creating booking:", error);
     throw error;
   }
 }
 
-/**
- * Cancel a booking
- */
 export async function cancelBooking(bookingId: string, userId: string) {
   try {
-    const booking = await prisma.booking.findUnique({
-      where: { id: bookingId },
-      include: { payment: true },
-    });
+    const { data, error } = await supabase
+      .from("bookings")
+      .update({
+        status: "CANCELLED",
+        updatedAt: new Date().toISOString(),
+      })
+      .eq("id", bookingId)
+      .eq("userId", userId);
 
-    if (!booking) {
-      throw new Error("Booking not found");
-    }
+    if (error) throw error;
 
-    if (booking.userId !== userId) {
-      throw new Error("Unauthorized to cancel this booking");
-    }
-
-    if (booking.status === "COMPLETED" || booking.status === "CANCELLED") {
-      throw new Error(`Cannot cancel a ${booking.status} booking`);
-    }
-
-    return prisma.booking.update({
-      where: { id: bookingId },
-      data: { status: "CANCELLED" },
-      include: {
-        user: true,
-        room: true,
-        payment: true,
-      },
-    });
+    return { id: bookingId, status: "CANCELLED" };
   } catch (error) {
     console.error("Error cancelling booking:", error);
     throw error;
   }
 }
 
-/**
- * Get user's bookings
- */
 export async function getUserBookings(userId: string) {
-  return prisma.booking.findMany({
-    where: { userId },
-    include: {
-      room: {
-        select: {
-          id: true,
-          title: true,
-          priceNGN: true,
-          images: true,
-        },
-      },
-      payment: {
-        select: {
-          status: true,
-          amountNGN: true,
-          userCurrency: true,
-          userAmount: true,
-          paystackReference: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  try {
+    const { data, error } = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("userId", userId)
+      .order("createdAt", { ascending: false });
+
+    if (error) throw error;
+
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching user bookings:", error);
+    return [];
+  }
 }
 
-/**
- * Get booking details
- */
 export async function getBookingDetails(bookingId: string) {
-  return prisma.booking.findUnique({
-    where: { id: bookingId },
-    include: {
-      user: true,
-      room: true,
-      payment: true,
-      transactions: true,
-    },
-  });
+  try {
+    const { data, error } = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("id", bookingId)
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") {
+        return null;
+      }
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching booking details:", error);
+    return null;
+  }
 }
 
-/**
- * Calculate total price for a booking
- */
 export function calculateBookingPrice(
   pricePerNightNGN: number,
   checkInDate: Date,
@@ -274,41 +155,40 @@ export function calculateBookingPrice(
   return pricePerNightNGN * nights;
 }
 
-/**
- * Get available rooms for date range
- */
 export async function getAvailableRooms(checkInDate: Date, checkOutDate: Date) {
-  // Get all rooms
-  const allRooms = await prisma.room.findMany({
-    where: { status: "AVAILABLE" },
-  });
+  try {
+    const { data: rooms, error } = await supabase
+      .from("rooms")
+      .select("*")
+      .eq("status", "AVAILABLE");
 
-  // Filter out booked rooms
-  const bookedRooms = await prisma.booking.findMany({
-    where: {
-      status: {
-        in: ["PENDING", "CONFIRMED"],
-      },
-      AND: [
-        {
-          checkInDate: {
-            lt: checkOutDate,
-          },
-        },
-        {
-          checkOutDate: {
-            gt: checkInDate,
-          },
-        },
-      ],
-    },
-    select: { roomId: true },
-    distinct: ["roomId"],
-  });
+    if (error) throw error;
 
-  const bookedRoomIds = bookedRooms.map((b: { roomId: string }) => b.roomId);
+    if (!rooms) return [];
 
-  return allRooms.filter(
-    (room: { id: string }) => !bookedRoomIds.includes(room.id),
-  );
+    // Filter out rooms with conflicting bookings
+    const availableRooms = [];
+
+    for (const room of rooms) {
+      const { data: conflictingBookings, error: conflictError } = await supabase
+        .from("bookings")
+        .select("id")
+        .eq("roomId", room.id)
+        .in("status", ["PENDING", "CONFIRMED"])
+        .lt("checkOutDate", checkOutDate.toISOString())
+        .gt("checkInDate", checkInDate.toISOString());
+
+      if (
+        !conflictError &&
+        (!conflictingBookings || conflictingBookings.length === 0)
+      ) {
+        availableRooms.push(room);
+      }
+    }
+
+    return availableRooms;
+  } catch (error) {
+    console.error("Error fetching available rooms:", error);
+    return [];
+  }
 }

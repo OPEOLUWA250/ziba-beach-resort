@@ -1,72 +1,74 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAllMenus, createMenuItem } from "@/lib/services/menus";
 import { COMPLETE_MENU_SEED } from "@/lib/menu-seed";
+import {
+  handleSupabaseError,
+  validateRequiredFields,
+} from "@/lib/supabase/utils";
 
 export const dynamic = "force-dynamic";
 
-// Use complete menu seed data as fallback
-const MOCK_CATEGORIES = COMPLETE_MENU_SEED;
-
 export async function GET(request: NextRequest) {
   try {
-    const { default: prisma } = await import("@/lib/services/prisma");
+    const menus = await getAllMenus();
 
-    const categories = await prisma.menuCategory.findMany({
-      where: { isActive: true },
-      orderBy: { displayOrder: "asc" },
-      include: {
-        items: {
-          where: { isActive: true },
-          orderBy: { name: "asc" },
-        },
-      },
-    });
+    // If no menus in database, seed with mock data
+    if (menus.length === 0) {
+      return NextResponse.json({
+        categories: COMPLETE_MENU_SEED,
+        success: true,
+        source: "fallback",
+      });
+    }
 
-    return NextResponse.json({ categories, success: true, source: "database" });
-  } catch (error: any) {
-    console.warn(
-      "Could not connect to database, using mock data fallback",
-      error.message,
-    );
-
-    // Return mock data as fallback
     return NextResponse.json({
-      categories: MOCK_CATEGORIES,
+      categories: menus,
       success: true,
-      source: "mock",
-      message: "Using mock data - database not available",
+      source: "database",
     });
+  } catch (error: any) {
+    console.warn("Error loading menu data", error.message);
+
+    // Fallback to mock data
+    return NextResponse.json(
+      { categories: COMPLETE_MENU_SEED, success: true, source: "fallback" },
+      { status: 200 },
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { default: prisma } = await import("@/lib/services/prisma");
     const body = await request.json();
-    const { name, description, timing, note } = body;
 
-    if (!name) {
+    const { valid, missingFields } = validateRequiredFields(body, [
+      "category",
+      "name",
+      "price",
+    ]);
+
+    if (!valid) {
       return NextResponse.json(
-        { error: "Category name is required" },
+        { error: `Missing required fields: ${missingFields.join(", ")}` },
         { status: 400 },
       );
     }
 
-    const category = await prisma.menuCategory.create({
-      data: {
-        name,
-        description,
-        timing,
-        note,
-        isActive: true,
-      },
+    const menuItem = await createMenuItem({
+      categoryId: body.categoryId || `cat-${Date.now()}`,
+      itemId: body.itemId || `item-${Date.now()}`,
+      category: body.category,
+      name: body.name,
+      description: body.description,
+      price: body.price,
+      image: body.image,
+      available: body.available !== false,
     });
 
-    return NextResponse.json(category, { status: 201 });
+    return NextResponse.json(menuItem, { status: 201 });
   } catch (error: any) {
-    console.error("Error creating menu category:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to create menu category" },
-      { status: 500 },
-    );
+    console.error("Error creating menu item:", error);
+    const { message, statusCode } = handleSupabaseError(error);
+    return NextResponse.json({ error: message }, { status: statusCode });
   }
 }
