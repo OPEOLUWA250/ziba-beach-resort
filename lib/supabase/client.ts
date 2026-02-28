@@ -3,14 +3,18 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+// Provide fallback values for build time - will use real values at runtime
+const url = supabaseUrl || "https://placeholder.supabase.co";
+const key = supabaseAnonKey || "placeholder-key";
+
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    "Missing Supabase URL or Anonymous Key in environment variables",
+  console.warn(
+    "⚠️ Supabase environment variables not set. Using placeholder values for build.",
   );
 }
 
 // Create a client for browser and client-side API calls
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(url, key);
 
 export type Database = {
   public: {
