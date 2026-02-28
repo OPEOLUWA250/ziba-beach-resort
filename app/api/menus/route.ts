@@ -8,11 +8,20 @@ import {
 
 export const dynamic = "force-dynamic";
 
+interface MenuCategory {
+  id: string;
+  name: string;
+  timing: string;
+  note: string;
+  isActive: boolean;
+  items: any[];
+}
+
 export async function GET(request: NextRequest) {
   try {
     const menus = await getAllMenus();
 
-    // If no menus in database, seed with mock data
+    // If no menus in database, use fallback
     if (menus.length === 0) {
       return NextResponse.json({
         categories: COMPLETE_MENU_SEED,
@@ -21,8 +30,40 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    // Transform flat menu structure into categorized structure
+    const categoriesMap = new Map<string, MenuCategory>();
+
+    menus.forEach((menu) => {
+      // Use slugified category name as consistent ID
+      const categorySlug = menu.category.toLowerCase().replace(/\s+/g, "-");
+
+      if (!categoriesMap.has(categorySlug)) {
+        categoriesMap.set(categorySlug, {
+          id: categorySlug,
+          name: menu.category,
+          timing: "", // Could be added to schema if needed
+          note: "", // Could be added to schema if needed
+          isActive: menu.available !== false,
+          items: [],
+        });
+      }
+
+      const category = categoriesMap.get(categorySlug);
+      if (category) {
+        category.items.push({
+          id: menu.id,
+          name: menu.name,
+          description: menu.description || "",
+          priceNGN: menu.price,
+          isActive: menu.available !== false,
+        });
+      }
+    });
+
+    const categories = Array.from(categoriesMap.values());
+
     return NextResponse.json({
-      categories: menus,
+      categories,
       success: true,
       source: "database",
     });

@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { customAlphabet } from "nanoid";
+import { getMenusByCategory, createMenuItem } from "@/lib/services/menus";
+import {
+  handleSupabaseError,
+  validateRequiredFields,
+} from "@/lib/supabase/utils";
 
 export const dynamic = "force-dynamic";
-const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 12);
 
 // GET all items in a category
 export async function GET(
@@ -10,15 +13,21 @@ export async function GET(
   { params }: { params: Promise<{ categoryId: string }> },
 ) {
   try {
-    const { default: prisma } = await import("@/lib/services/prisma");
     const { categoryId } = await params;
 
-    const items = await prisma.menuItem.findMany({
-      where: { categoryId },
-      orderBy: { name: "asc" },
-    });
+    // Map categoryId to category name (for now, categoryId is the category name)
+    const items = await getMenusByCategory(categoryId);
 
-    return NextResponse.json({ items, success: true });
+    return NextResponse.json({
+      items: items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        description: item.description || "",
+        priceNGN: item.price,
+        isActive: item.available !== false,
+      })),
+      success: true,
+    });
   } catch (error: any) {
     console.warn(
       "Could not fetch from database, returning empty",
@@ -35,33 +44,48 @@ export async function POST(
 ) {
   try {
     const body = await request.json();
-    const { name, description, priceNGN } = body;
+    const { categoryId } = await params;
+    const { name, description, priceNGN, categoryName } = body;
 
-    if (!name || priceNGN === undefined) {
+    const { valid, missingFields } = validateRequiredFields(body, [
+      "name",
+      "priceNGN",
+    ]);
+
+    if (!valid) {
       return NextResponse.json(
-        { error: "Name and price are required" },
+        { error: `Missing required fields: ${missingFields.join(", ")}` },
         { status: 400 },
       );
     }
 
-    // For mock mode, just return the created item
-    const newItem = {
-      id: nanoid(),
-      categoryId: (await params).categoryId,
-      name,
-      description,
-      priceNGN: parseFloat(priceNGN),
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    // Use categoryName if provided, otherwise use categoryId
+    const category = categoryName || categoryId;
 
-    return NextResponse.json(newItem, { status: 201 });
+    const newItem = await createMenuItem({
+      categoryId,
+      itemId: `item-${Date.now()}`,
+      category,
+      name,
+      description: description || "",
+      price: priceNGN,
+      image: body.image,
+      available: body.isActive !== false,
+    });
+
+    return NextResponse.json(
+      {
+        id: newItem.id,
+        name: newItem.name,
+        description: newItem.description,
+        priceNGN: newItem.price,
+        isActive: newItem.available !== false,
+      },
+      { status: 201 },
+    );
   } catch (error: any) {
     console.error("Error creating menu item:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to create menu item" },
-      { status: 500 },
-    );
+    const { message, statusCode } = handleSupabaseError(error);
+    return NextResponse.json({ error: message }, { status: statusCode });
   }
 }

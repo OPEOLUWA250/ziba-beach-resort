@@ -4,6 +4,8 @@ import {
   handleSupabaseError,
 } from "@/lib/supabase/utils";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const blogs = await getAllBlogs();

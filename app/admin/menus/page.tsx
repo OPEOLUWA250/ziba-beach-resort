@@ -104,7 +104,7 @@ export default function AdminMenusPage() {
   };
 
   // Add new menu item
-  const handleAddItem = async (categoryId: string) => {
+  const handleAddItem = async (categoryId: string, categoryName: string) => {
     if (!formData.name || formData.priceNGN === undefined) {
       setError("Name and price are required");
       return;
@@ -114,7 +114,10 @@ export default function AdminMenusPage() {
       const res = await fetch(`/api/menus/${categoryId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          categoryName, // Send the actual category name
+        }),
       });
 
       if (!res.ok) throw new Error("Failed to add item");
@@ -373,7 +376,7 @@ export default function AdminMenusPage() {
                   </div>
                   <div className="mt-4 flex gap-2">
                     <button
-                      onClick={() => handleAddItem(category.id)}
+                      onClick={() => handleAddItem(category.id, category.name)}
                       className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                     >
                       Add Item
