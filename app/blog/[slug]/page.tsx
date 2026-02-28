@@ -1,6 +1,5 @@
 "use client";
 
-import { getBlogPost, getRelatedPosts } from "@/lib/blog-data";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import Link from "next/link";
@@ -12,7 +11,20 @@ import {
   MessageCircle,
   Mail,
 } from "lucide-react";
-import { use } from "react";
+import { use, useState, useEffect } from "react";
+
+interface BlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  featured_image: string;
+  category: string;
+  read_time: number;
+  author: string;
+  createdat: string;
+}
 
 export default function BlogPost({
   params,
@@ -20,8 +32,52 @@ export default function BlogPost({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = use(params);
-  const post = getBlogPost(slug);
-  const relatedPosts = getRelatedPosts(slug);
+  const [post, setPost] = useState<BlogPost | null>(null);
+  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBlog = async () => {
+      try {
+        const response = await fetch(`/api/blogs/${slug}`);
+        const data = await response.json();
+        if (data.success && data.blog) {
+          setPost(data.blog);
+          // Fetch all blogs to get related posts
+          const allResponse = await fetch("/api/blogs");
+          const allData = await allResponse.json();
+          const related = (allData.blogs || [])
+            .filter(
+              (b: BlogPost) =>
+                b.category === data.blog.category && b.id !== data.blog.id,
+            )
+            .slice(0, 3);
+          setRelatedPosts(related);
+        }
+      } catch (error) {
+        console.error("Failed to fetch blog:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBlog();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <main className="bg-white">
+          <section className="px-4 sm:px-6 lg:px-8 py-20">
+            <div className="max-w-3xl mx-auto text-center">
+              <p className="text-gray-600 font-light">Loading blog post...</p>
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   if (!post) {
     return (
@@ -100,7 +156,13 @@ export default function BlogPost({
             <div className="flex flex-wrap items-center gap-6 pb-8 border-b border-gray-200">
               <div className="flex items-center gap-2 text-gray-600 font-light">
                 <Calendar className="w-4 h-4" />
-                <span>{post.date}</span>
+                <span>
+                  {new Date(post.createdat).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </span>
               </div>
               <div className="flex items-center gap-2 text-gray-600 font-light">
                 <Clock className="w-4 h-4" />
@@ -128,49 +190,19 @@ export default function BlogPost({
         {/* Post Content */}
         <section className="px-4 sm:px-6 lg:px-8 py-12">
           <div className="max-w-4xl mx-auto">
-            {/* Initial Content */}
+            {/* Main Content */}
             <div className="prose prose-lg max-w-none mb-12">
-              {post.content.split("\n\n").map((paragraph, i) => (
-                <p
-                  key={i}
-                  className="text-gray-700 font-light leading-relaxed mb-6"
-                >
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-
-            {/* Sections */}
-            {post.sections.map((section, i) => (
-              <div key={i} className="mb-16">
-                {section.title && (
-                  <h2
-                    className="text-3xl font-light text-blue-900 mb-6"
-                    style={{ fontFamily: "Cormorant Garamond, serif" }}
-                  >
-                    {section.title}
-                  </h2>
-                )}
-
-                <div className="prose prose-lg max-w-none mb-8">
-                  {section.content.split("\n\n").map((paragraph, j) => {
-                    // Check if paragraph contains markdown list or formatting
-                    if (paragraph.startsWith("**")) {
-                      // Bold text
-                      return (
-                        <p
-                          key={j}
-                          className="text-gray-700 font-semibold leading-relaxed mb-4"
-                        >
-                          {paragraph.replace(/\*\*/g, "")}
-                        </p>
-                      );
-                    }
-                    if (paragraph.startsWith("-")) {
-                      // List items
-                      return (
-                        <ul key={j} className="list-disc list-inside mb-4">
-                          {paragraph.split("\n").map((item, k) => (
+              {post.content
+                .split("\n\n")
+                .map((paragraph: string, i: number) => {
+                  // Check if paragraph contains markdown list formatting
+                  if (paragraph.startsWith("-")) {
+                    // List items
+                    return (
+                      <ul key={i} className="list-disc list-inside mb-4">
+                        {paragraph
+                          .split("\n")
+                          .map((item: string, k: number) => (
                             <li
                               key={k}
                               className="text-gray-700 font-light ml-4 mb-2"
@@ -178,31 +210,20 @@ export default function BlogPost({
                               {item.replace("- ", "")}
                             </li>
                           ))}
-                        </ul>
-                      );
-                    }
-                    return (
-                      <p
-                        key={j}
-                        className="text-gray-700 font-light leading-relaxed mb-6"
-                      >
-                        {paragraph}
-                      </p>
+                      </ul>
                     );
-                  })}
-                </div>
-
-                {section.image && (
-                  <div className="my-8 rounded-xl overflow-hidden shadow-md">
-                    <img
-                      src={section.image}
-                      alt={section.title}
-                      className="w-full h-auto object-cover"
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
+                  }
+                  // Regular paragraph
+                  return (
+                    <p
+                      key={i}
+                      className="text-gray-700 font-light leading-relaxed mb-6"
+                    >
+                      {paragraph}
+                    </p>
+                  );
+                })}
+            </div>
           </div>
         </section>
 
@@ -272,7 +293,15 @@ export default function BlogPost({
                           {relatedPost.excerpt}
                         </p>
                         <div className="text-xs text-gray-500 font-light">
-                          {relatedPost.date} • {relatedPost.read_time} min
+                          {new Date(relatedPost.createdat).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            },
+                          )}{" "}
+                          • {relatedPost.read_time} min
                         </div>
                       </div>
                     </div>

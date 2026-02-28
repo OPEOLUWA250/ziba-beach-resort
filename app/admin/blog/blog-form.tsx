@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Loader } from "lucide-react";
+import { X, Loader, Upload, ImageIcon } from "lucide-react";
 import { BlogPost } from "@/lib/blog-data";
+import { uploadImage } from "@/lib/supabase/image-upload";
 
 interface BlogFormProps {
   blog?: BlogPost | null;
@@ -17,14 +18,16 @@ export default function BlogForm({ blog, onClose, onSuccess }: BlogFormProps) {
     excerpt: blog?.excerpt || "",
     content: blog?.content || "",
     category: blog?.category || "Proposals",
-    featured_image: blog?.featured_image || "/ziba-blog/blog-1.jpg",
+    featured_image: blog?.featured_image || "",
     author: blog?.author || "Ziba Beach Resort",
     read_time: blog?.read_time || 5,
   });
 
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
 
   const generateSlug = (title: string) => {
     return title
@@ -55,6 +58,50 @@ export default function BlogForm({ blog, onClose, onSuccess }: BlogFormProps) {
     });
   };
 
+  const handleImageUpload = async (file: File) => {
+    try {
+      setUploading(true);
+      setError("");
+      const url = await uploadImage(file);
+      console.log("Image uploaded successfully:", url);
+      setFormData({ ...formData, featured_image: url });
+    } catch (err) {
+      const errorMsg =
+        err instanceof Error ? err.message : "Failed to upload image";
+      console.error("Image upload error:", errorMsg);
+      setError(errorMsg);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleImageUpload(file);
+    }
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleImageUpload(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -69,7 +116,10 @@ export default function BlogForm({ blog, onClose, onSuccess }: BlogFormProps) {
       }
 
       const method = blog ? "PUT" : "POST";
-      const url = blog ? `/api/blogs/${blog.slug}` : "/api/blogs";
+      // Send blog ID for edit, use slug as fallback
+      const url = blog ? `/api/blogs/${blog.id || blog.slug}` : "/api/blogs";
+
+      console.log("Saving blog:", { method, url, formData });
 
       const response = await fetch(url, {
         method,
@@ -238,30 +288,79 @@ export default function BlogForm({ blog, onClose, onSuccess }: BlogFormProps) {
           {/* Featured Image */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Featured Image URL
+              Featured Image
             </label>
-            <input
-              type="text"
-              name="featured_image"
-              value={formData.featured_image}
-              onChange={handleChange}
-              placeholder="/ziba-blog/blog-1.jpg"
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition"
-              disabled={loading}
-            />
+
+            {/* Drag & Drop Zone */}
+            <div
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+              className={`relative border-2 border-dashed rounded-lg p-6 text-center transition ${
+                dragActive
+                  ? "border-blue-500 bg-blue-500/10"
+                  : "border-gray-600 bg-gray-700/30 hover:border-gray-500"
+              }`}
+            >
+              <input
+                type="file"
+                id="image-upload"
+                onChange={handleFileInput}
+                accept="image/*"
+                disabled={uploading}
+                className="hidden"
+              />
+              <label
+                htmlFor="image-upload"
+                className="cursor-pointer flex flex-col items-center gap-2"
+              >
+                {uploading ? (
+                  <>
+                    <Loader size={32} className="text-blue-500 animate-spin" />
+                    <p className="text-sm text-gray-300">Uploading...</p>
+                  </>
+                ) : (
+                  <>
+                    <Upload size={32} className="text-gray-400" />
+                    <p className="text-sm text-gray-300">
+                      Drag and drop your image here, or click to select
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      JPEG, PNG, WebP, GIF (max 5MB)
+                    </p>
+                  </>
+                )}
+              </label>
+            </div>
+
+            {/* Image Preview */}
             {formData.featured_image && (
-              <div className="mt-2 flex items-center gap-3">
-                <div className="w-16 h-16 bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
+              <div className="mt-4 flex items-start gap-4">
+                <div className="w-24 h-24 bg-gray-700 rounded-lg overflow-hidden flex-shrink-0 border border-gray-600">
                   <img
                     src={formData.featured_image}
-                    alt="Preview"
+                    alt="Featured image preview"
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = "none";
+                      (e.target as HTMLImageElement).src = "";
                     }}
                   />
                 </div>
-                <p className="text-xs text-gray-400">Preview</p>
+                <div className="flex-1">
+                  <p className="text-sm text-gray-300 mb-2 break-all">
+                    {formData.featured_image}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData({ ...formData, featured_image: "" })
+                    }
+                    className="text-sm px-3 py-1 bg-red-600/20 hover:bg-red-600/30 text-red-300 rounded transition"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             )}
           </div>

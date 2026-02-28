@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAllMenus, createMenuItem } from "@/lib/services/menus";
+import {
+  getAllMenus,
+  getAllMenusForAdmin,
+  createMenuItem,
+} from "@/lib/services/menus";
 import { COMPLETE_MENU_SEED } from "@/lib/menu-seed";
+import { CATEGORY_METADATA } from "@/lib/category-metadata";
 import {
   handleSupabaseError,
   validateRequiredFields,
@@ -19,15 +24,18 @@ interface MenuCategory {
 
 export async function GET(request: NextRequest) {
   try {
-    const menus = await getAllMenus();
+    // Check if this is an admin request
+    const isAdmin = request.nextUrl.searchParams.get("admin") === "true";
 
-    // If no menus in database, use fallback
-    if (menus.length === 0) {
-      return NextResponse.json({
-        categories: COMPLETE_MENU_SEED,
-        success: true,
-        source: "fallback",
-      });
+    // Fetch menus (all items for admin, only available for public)
+    const menus = isAdmin ? await getAllMenusForAdmin() : await getAllMenus();
+
+    console.log("DEBUG: Menus fetched from DB:", menus.length, "items");
+    if (menus.length > 0) {
+      console.log(
+        "DEBUG: First menu item structure:",
+        JSON.stringify(menus[0]),
+      );
     }
 
     // Transform flat menu structure into categorized structure
@@ -38,11 +46,17 @@ export async function GET(request: NextRequest) {
       const categorySlug = menu.category.toLowerCase().replace(/\s+/g, "-");
 
       if (!categoriesMap.has(categorySlug)) {
+        // Get metadata for this category
+        const metadata = CATEGORY_METADATA[menu.category] || {
+          timing: "",
+          note: "",
+        };
+
         categoriesMap.set(categorySlug, {
           id: categorySlug,
           name: menu.category,
-          timing: "", // Could be added to schema if needed
-          note: "", // Could be added to schema if needed
+          timing: metadata.timing,
+          note: metadata.note,
           isActive: menu.available !== false,
           items: [],
         });
@@ -62,17 +76,43 @@ export async function GET(request: NextRequest) {
 
     const categories = Array.from(categoriesMap.values());
 
+    // If no database items but this is public view, use seed data
+    if (categories.length === 0 && !isAdmin) {
+      return NextResponse.json({
+        categories: COMPLETE_MENU_SEED,
+        success: true,
+        source: "fallback",
+      });
+    }
+
     return NextResponse.json({
       categories,
       success: true,
       source: "database",
     });
   } catch (error: any) {
-    console.warn("Error loading menu data", error.message);
+    console.error("Error loading menu data", error.message);
 
-    // Fallback to mock data
+    // If error and this is public view, use seed data
+    const isAdmin = request.nextUrl.searchParams.get("admin") === "true";
+    if (!isAdmin) {
+      return NextResponse.json(
+        {
+          categories: COMPLETE_MENU_SEED,
+          success: true,
+          source: "fallback",
+        },
+        { status: 200 },
+      );
+    }
+
+    // For admin: return empty on error
     return NextResponse.json(
-      { categories: COMPLETE_MENU_SEED, success: true, source: "fallback" },
+      {
+        categories: [],
+        success: true,
+        source: "error",
+      },
       { status: 200 },
     );
   }

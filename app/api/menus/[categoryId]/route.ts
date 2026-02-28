@@ -73,16 +73,16 @@ export async function POST(
       available: body.isActive !== false,
     });
 
-    return NextResponse.json(
-      {
-        id: newItem.id,
-        name: newItem.name,
-        description: newItem.description,
-        priceNGN: newItem.price,
-        isActive: newItem.available !== false,
-      },
-      { status: 201 },
-    );
+    // Map database fields to API response format
+    const responseItem = {
+      id: newItem.id,
+      name: newItem.name,
+      description: newItem.description || "",
+      priceNGN: newItem.price !== undefined ? newItem.price : priceNGN,
+      isActive: newItem.available !== false,
+    };
+
+    return NextResponse.json(responseItem, { status: 201 });
   } catch (error: any) {
     console.error("Error creating menu item:", error);
     const { message, statusCode } = handleSupabaseError(error);

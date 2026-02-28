@@ -37,7 +37,7 @@ export default function AdminMenusPage() {
   useEffect(() => {
     const fetchMenus = async () => {
       try {
-        const res = await fetch("/api/menus");
+        const res = await fetch("/api/menus?admin=true");
         if (!res.ok) throw new Error("Failed to fetch menus");
         const data = await res.json();
         setCategories(data.categories || []);
@@ -60,7 +60,12 @@ export default function AdminMenusPage() {
         body: JSON.stringify(item),
       });
 
-      if (!res.ok) throw new Error("Failed to update item");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(
+          errorData.error || `HTTP ${res.status}: Failed to update item`,
+        );
+      }
 
       setCategories((prev) =>
         prev.map((cat) =>
@@ -89,7 +94,12 @@ export default function AdminMenusPage() {
         method: "DELETE",
       });
 
-      if (!res.ok) throw new Error("Failed to delete item");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(
+          errorData.error || `HTTP ${res.status}: Failed to delete item`,
+        );
+      }
 
       setCategories((prev) =>
         prev.map((cat) =>
@@ -120,7 +130,12 @@ export default function AdminMenusPage() {
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to add item");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(
+          errorData.error || `HTTP ${res.status}: Failed to add item`,
+        );
+      }
       const newItem = await res.json();
 
       setCategories((prev) =>

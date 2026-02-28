@@ -71,15 +71,17 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    console.log(`[DELETE /api/blogs] Attempting to delete: ${id}`);
 
     await deleteBlog(id);
 
+    console.log(`[DELETE /api/blogs] Successfully deleted: ${id}`);
     return Response.json({
       success: true,
       message: "Blog deleted",
     });
   } catch (error) {
-    console.error("Failed to delete blog:", error);
+    console.error("[DELETE /api/blogs] Failed to delete blog:", error);
     const { message, statusCode } = handleSupabaseError(error);
     return Response.json(
       {

@@ -104,6 +104,11 @@ CREATE POLICY "Enable read for all users" ON rooms FOR SELECT USING (true);
 CREATE POLICY "Enable read for all users" ON blogs FOR SELECT USING (true);
 CREATE POLICY "Enable read for all users" ON menus FOR SELECT USING (true);
 
+-- Allow admin operations on menus (all operations)
+CREATE POLICY "Enable insert for all users" ON menus FOR INSERT WITH CHECK (true);
+CREATE POLICY "Enable update for all users" ON menus FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Enable delete for all users" ON menus FOR DELETE USING (true);
+
 -- Allow users to read their own data
 CREATE POLICY "Users can read own data" ON users FOR SELECT USING (auth.uid()::text = id);
 CREATE POLICY "Users can read own bookings" ON bookings FOR SELECT USING (auth.uid()::text = userId);
@@ -114,4 +119,14 @@ INSERT INTO rooms (id, title, description, priceNGN, capacity, amenities, images
   ('room02', 'Beach Facing Family Room', 'Partial View - Spacious family accommodation with flexible sleeping arrangements, perfect for creating unforgettable memories with loved ones.', 225000, 6, ARRAY['WiFi', 'Minibar', 'Kids Welcome Package', 'Childminding Service Available', 'Room Service', 'Family Beach Amenities', 'Game Console', 'Beach Equipment'], ARRAY['/ziba-rooms/room02.jpg'], 'AVAILABLE'),
   ('room03', 'Beach Facing Family Room', 'Full View - Premium family space with expansive pool and ocean views, offering the perfect backdrop for quality family time.', 247500, 6, ARRAY['WiFi', 'Minibar', 'Kids Welcome Package', 'Childminding Service Available', 'Room Service', 'Family Beach Amenities', 'Game Console', 'Beach Equipment', 'Private Balcony'], ARRAY['/ziba-rooms/room03.jpg'], 'AVAILABLE'),
   ('room04', 'Deluxe Sea-Facing Room', 'Elegantly designed with a blend of modern comfort and traditional charm, featuring contemporary bathroom fixtures and premium bedding.', 213000, 2, ARRAY['WiFi', 'Minibar', 'Room Service', 'Daily Housekeeping', 'Safe Deposit Box', 'Wake-up Service', '24/7 Concierge', 'Premium Toiletries'], ARRAY['/ziba-rooms/room04.jpg'], 'AVAILABLE')
+ON CONFLICT (id) DO NOTHING;
+-- Insert sample menu items
+INSERT INTO menus (id, categoryId, itemId, category, name, description, price, available) VALUES
+  ('menu-001', 'breakfast', 'bf-001', 'Breakfast', 'Toast Bread', 'Toast bread and omelette served with choice of Tea/Coffee/Hot chocolate', 9000, true),
+  ('menu-002', 'breakfast', 'bf-002', 'Breakfast', 'Full English Breakfast', 'Bread Basket, Baked beans, Steamed carrots, potatoes, Grilled sausage, Eggs your way, choice of Oatmeal|Cornflakes|Custard and choice of Tea|Coffee|Hot Chocolate', 10500, true),
+  ('menu-003', 'breakfast', 'bf-003', 'Breakfast', 'American Breakfast', 'Pancakes, Potatoes served with Bacon or sausage, Eggs your way and choice of Tea|Coffee|Hot Chocolate', 10500, true),
+  ('menu-004', 'lunch', 'l-001', 'Lunch', 'Grilled Fish', 'Fresh grilled barracuda served with jollof rice and salad', 12000, true),
+  ('menu-005', 'lunch', 'l-002', 'Lunch', 'Chicken Pepper Soup', 'Traditional spicy chicken soup served with garri or eba', 9000, true),
+  ('menu-006', 'dinner', 'd-001', 'Dinner', 'Ribeye Steak', 'Premium cut ribeye steak with grilled vegetables and mashed potatoes', 15000, true),
+  ('menu-007', 'dinner', 'd-002', 'Dinner', 'Lobster Tail', 'Fresh lobster tail served with butter sauce and seasonal vegetables', 18000, true)
 ON CONFLICT (id) DO NOTHING;

@@ -44,20 +44,41 @@ export default function BlogManagement() {
     }
   };
 
-  const handleDeleteBlog = async (id: string) => {
+  const handleDeleteBlog = async (id: string, slug?: string) => {
     try {
-      const response = await fetch(`/api/blogs/${id}`, {
+      // Use ID if available, otherwise slug
+      const endpoint = slug || id;
+      console.log(`Deleting blog: ${endpoint} (ID: ${id}, Slug: ${slug})`);
+
+      const response = await fetch(`/api/blogs/${endpoint}`, {
         method: "DELETE",
       });
 
+      const data = await response.json();
+      console.log("Delete response:", { status: response.status, data });
+
       if (response.ok) {
+        // Remove from local state
         setBlogs(blogs.filter((blog) => blog.id !== id));
         setShowDeleteConfirm(null);
         setSuccessMessage("Blog deleted successfully!");
+        console.log("Blog removed from UI, refetching...");
+
+        // Refetch to confirm deletion from database
+        setTimeout(() => {
+          fetchBlogs();
+        }, 500);
+
         setTimeout(() => setSuccessMessage(""), 3000);
+      } else {
+        throw new Error(data.error || "Delete operation failed");
       }
     } catch (error) {
       console.error("Failed to delete blog:", error);
+      setSuccessMessage("");
+      alert(
+        `Error deleting blog: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   };
 
@@ -276,7 +297,12 @@ export default function BlogManagement() {
                 Cancel
               </button>
               <button
-                onClick={() => handleDeleteBlog(showDeleteConfirm)}
+                onClick={() => {
+                  if (showDeleteConfirm) {
+                    const blog = blogs.find((b) => b.id === showDeleteConfirm);
+                    handleDeleteBlog(showDeleteConfirm, blog?.slug);
+                  }
+                }}
                 className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
               >
                 Delete

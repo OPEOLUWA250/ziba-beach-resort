@@ -19,10 +19,17 @@ export async function getAllMenus() {
 
 export async function getMenusByCategory(category: string) {
   try {
+    // Handle both slugified and regular category names
+    // If it's slugified (lowercase with hyphens), convert back to proper case
+    const categoryName = category
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+
     const { data, error } = await supabase
       .from("menus")
       .select("*")
-      .eq("category", category)
+      .ilike("category", categoryName)
       .eq("available", true);
 
     if (error) throw error;
@@ -69,23 +76,30 @@ export async function createMenuItem(menuData: {
   try {
     const id = `menu-${Date.now()}`;
 
-    const { data, error } = await supabase.from("menus").insert({
+    const insertData = {
       id,
-      categoryId: menuData.categoryId,
-      itemId: menuData.itemId,
+      categoryid: menuData.categoryId,
+      itemid: menuData.itemId,
       category: menuData.category,
       name: menuData.name,
       description: menuData.description || null,
       price: menuData.price,
       image: menuData.image || null,
       available: menuData.available !== false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    });
+    };
+
+    const { error } = await supabase.from("menus").insert([insertData]);
 
     if (error) throw error;
 
-    return { id, ...menuData };
+    // Return the item we just inserted (no .select() to avoid schema cache issues)
+    return {
+      id: insertData.id,
+      name: insertData.name,
+      description: insertData.description || "",
+      price: insertData.price,
+      available: insertData.available,
+    };
   } catch (error) {
     console.error("Error creating menu item:", error);
     throw error;
@@ -103,17 +117,14 @@ export async function updateMenuItem(
   }>,
 ) {
   try {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("menus")
-      .update({
-        ...updates,
-        updatedAt: new Date().toISOString(),
-      })
+      .update(updates)
       .eq("id", menuId);
 
     if (error) throw error;
 
-    return data;
+    return { success: true };
   } catch (error) {
     console.error("Error updating menu item:", error);
     throw error;
@@ -137,15 +148,30 @@ export async function getMenuCategories() {
   try {
     const { data, error } = await supabase
       .from("menus")
-      .select("DISTINCT category")
+      .select("category")
       .eq("available", true);
 
     if (error) throw error;
 
-    const categories = data?.map((item) => item.category) || [];
+    const categories = data?.map((item: any) => item.category) || [];
     return Array.from(new Set(categories));
   } catch (error) {
     console.error("Error fetching menu categories:", error);
+    return [];
+  }
+}
+export async function getAllMenusForAdmin() {
+  try {
+    const { data, error } = await supabase
+      .from("menus")
+      .select("*")
+      .order("category", { ascending: true });
+
+    if (error) throw error;
+
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching menus for admin:", error);
     return [];
   }
 }
