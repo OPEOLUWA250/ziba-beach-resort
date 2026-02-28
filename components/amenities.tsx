@@ -1,29 +1,55 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 
 const amenities = [
   {
-    icon: "🌊",
-    name: "Ocean Facing Rooms",
-    desc: "Wake to breathtaking ocean views",
+    name: "Restaurant & Bar",
+    image: "/experience-ziba/restaurant&bar.jpg",
   },
-  { icon: "🎮", name: "Games Room", desc: "Play and unwind with family" },
-  { icon: "🎬", name: "Cinema", desc: "Cinematic experiences with comfort" },
-  { icon: "🏊", name: "Adult Pool", desc: "Luxury poolside lounging" },
-  { icon: "👶", name: "Kids Pool", desc: "Safe family fun environment" },
-  { icon: "🎪", name: "Playground", desc: "Whimsical space for children" },
-  { icon: "👶‍🦱", name: "Childminding", desc: "Professional care services" },
-  { icon: "💆", name: "Beachside Spa", desc: "Relaxation and wellness" },
-  { icon: "🍽️", name: "Restaurant & Bar", desc: "Culinary experiences" },
-  { icon: "🏃", name: "Jungle Gym", desc: "Nature-inspired activities" },
-  { icon: "🔥", name: "Fire Pit", desc: "Cozy evening gatherings" },
-  { icon: "📡", name: "High-Speed WiFi", desc: "Seamless connectivity" },
+  {
+    name: "FirePit",
+    image: "/experience-ziba/firepit.jpg",
+  },
+  {
+    name: "SPA",
+    image: "/experience-ziba/spa.jpg",
+  },
+  {
+    name: "Gym",
+    image: "/experience-ziba/gym.jpg",
+  },
+  {
+    name: "Conference Room",
+    image: "/experience-ziba/conference-room.jpg",
+  },
+  {
+    name: "Kids Outdoor Playground",
+    image: "/experience-ziba/kids-outdoor-playground.jpg",
+  },
+  {
+    name: "Cinema",
+    image: "/experience-ziba/cinema.jpg",
+  },
+  {
+    name: "Lagoon Pool",
+    image: "/experience-ziba/lagoon-pool.jpg",
+  },
 ];
 
+// Duplicate amenities for seamless infinite scroll
+const scrollAmenities = [...amenities, ...amenities];
+
 export default function Amenities() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef(null);
+  const animationRef = useRef<number | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -43,13 +69,66 @@ export default function Amenities() {
     return () => observer.disconnect();
   }, []);
 
+  const checkScroll = useCallback(() => {
+    if (scrollRef.current) {
+      setCanScrollLeft(true);
+      setCanScrollRight(true);
+    }
+  }, []);
+
+  const scroll = useCallback(
+    (direction: "left" | "right") => {
+      if (scrollRef.current) {
+        const scrollAmount = 400;
+        scrollRef.current.scrollBy({
+          left: direction === "left" ? -scrollAmount : scrollAmount,
+          behavior: "smooth",
+        });
+        setTimeout(checkScroll, 100);
+      }
+    },
+    [checkScroll],
+  );
+
+  // Auto-scroll effect with smooth continuous scrolling using requestAnimationFrame
+  useEffect(() => {
+    const animate = () => {
+      if (!scrollRef.current || isHovering) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      const oneSetWidth = scrollWidth / 2;
+
+      // Continuously scroll right
+      scrollRef.current.scrollLeft += 2;
+
+      // Seamless reset: when reaching the end of first set, jump to beginning
+      if (scrollRef.current.scrollLeft >= oneSetWidth - 10) {
+        scrollRef.current.scrollLeft = 0;
+      }
+
+      checkScroll();
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isHovering, checkScroll]);
+
   return (
     <section
       ref={sectionRef}
       id="amenities"
       className="py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 overflow-hidden"
     >
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div
           className={`mb-16 text-center transition-all duration-1000 ease-out ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
@@ -68,31 +147,77 @@ export default function Amenities() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {amenities.map((item, idx) => (
-            <div
-              key={idx}
-              className={`bg-white p-6 rounded-lg border border-gray-100 hover:border-blue-900 hover:shadow-lg hover:scale-105 transition-all duration-500 transform ${
-                isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-10"
-              }`}
-              style={{
-                transitionDelay: isVisible ? `${300 + idx * 75}ms` : "0ms",
-                transitionDuration: "200ms",
-                transitionProperty:
-                  "border-color, box-shadow, transform, opacity",
-              }}
-            >
-              <div className="text-center md:text-left">
-                <div className="text-4xl mb-3 transform group-hover:scale-110 transition-transform duration-200 inline-block hover:scale-110">
-                  {item.icon}
+        <div
+          className="relative group"
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
+        >
+          {/* Carousel Container */}
+          <div
+            ref={scrollRef}
+            onScroll={checkScroll}
+            className="amenities-carousel flex gap-6 overflow-x-auto scroll-smooth"
+            style={{
+              scrollBehavior: "smooth",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+          >
+            {scrollAmenities.map((amenity, index) => (
+              <div
+                key={`${amenity.name}-${index}`}
+                className={`flex-shrink-0 w-full sm:w-1/2 lg:w-1/3 transition-all duration-700 ${
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-10"
+                }`}
+                style={{
+                  transitionDelay: isVisible
+                    ? `${300 + (index % amenities.length) * 50}ms`
+                    : "0ms",
+                }}
+              >
+                <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105 h-full flex flex-col cursor-pointer border border-gray-100 hover:border-blue-900">
+                  {/* Image Container */}
+                  <div className="relative w-full h-72 overflow-hidden bg-gray-200">
+                    <Image
+                      src={amenity.image}
+                      alt={amenity.name}
+                      fill
+                      className="object-cover hover:scale-110 transition-transform duration-500"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      quality={90}
+                    />
+                  </div>
+
+                  {/* Name Container */}
+                  <div className="p-6 flex items-center justify-center grow">
+                    <h3 className="text-xl font-light text-gray-900 text-center">
+                      {amenity.name}
+                    </h3>
+                  </div>
                 </div>
-                <h3 className="font-light text-gray-900 mb-2">{item.name}</h3>
-                <p className="text-sm text-gray-600 font-light">{item.desc}</p>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          {/* Left Arrow */}
+          <button
+            onClick={() => scroll("left")}
+            disabled={!canScrollLeft}
+            className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
+          </button>
+
+          {/* Right Arrow */}
+          <button
+            onClick={() => scroll("right")}
+            disabled={!canScrollRight}
+            className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronRight size={20} className="sm:w-6 sm:h-6" />
+          </button>
         </div>
       </div>
     </section>

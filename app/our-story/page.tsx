@@ -71,6 +71,7 @@ export default function OurStory() {
       <PageHero
         title="Our Story"
         subtitle="Where nature's beauty meets pristine luxury"
+        imageUrl="/ziba-hero-images/our-story-hero.jpg"
       />
       <main className="bg-white">
         {/* The Resort Section */}

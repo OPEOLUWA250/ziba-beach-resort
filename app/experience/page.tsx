@@ -356,6 +356,7 @@ export default function Celebrate() {
       <PageHero
         title="Celebrate Life's Moments"
         subtitle="From honeymoons to team bonding events, create unforgettable memories at Ziba"
+        imageUrl="/ziba-hero-images/experience-hero.jpg"
       />
       <main className="bg-white">
         {/* Trust Indicators Hero */}

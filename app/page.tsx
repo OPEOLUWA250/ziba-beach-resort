@@ -4,6 +4,7 @@ import { useState } from "react";
 import Header from "@/components/header";
 import Hero from "@/components/hero";
 import AboutUs from "@/components/about-us";
+import Ratings from "@/components/ratings";
 import BookingCards from "@/components/booking-cards";
 import Rooms from "@/components/rooms";
 import Amenities from "@/components/amenities";
@@ -19,6 +20,7 @@ export default function Home() {
       <Header />
       <Hero />
       <AboutUs />
+      <Ratings />
       <BookingCards />
       <ExperiencesCarousel />
       <Rooms />

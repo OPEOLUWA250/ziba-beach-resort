@@ -159,7 +159,7 @@ export default function DayPass() {
         <section className="relative w-full h-screen bg-gray-900 overflow-hidden flex items-center py-20">
           <div className="absolute inset-0">
             <img
-              src="/Ziba-hero.jpg"
+              src="/day-experience.jpg"
               alt="Day Pass Hero"
               className="w-full h-full object-cover"
             />

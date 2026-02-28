@@ -5,9 +5,14 @@ import { useState, useEffect } from "react";
 interface PageHeroProps {
   title: string;
   subtitle?: string;
+  imageUrl?: string;
 }
 
-export default function PageHero({ title, subtitle }: PageHeroProps) {
+export default function PageHero({
+  title,
+  subtitle,
+  imageUrl = "/Ziba-hero.jpg",
+}: PageHeroProps) {
   const [scrollPos, setScrollPos] = useState(0);
 
   useEffect(() => {
@@ -25,7 +30,7 @@ export default function PageHero({ title, subtitle }: PageHeroProps) {
       <div
         className="absolute inset-0 w-full h-full"
         style={{
-          backgroundImage: "url(/Ziba-hero.jpg)",
+          backgroundImage: `url(${imageUrl})`,
           backgroundPosition: "center",
           backgroundSize: "cover",
           backgroundAttachment: "fixed",

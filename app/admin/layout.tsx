@@ -18,12 +18,14 @@ import {
   X,
   ChevronRight,
   ShieldCheck,
+  UtensilsCrossed,
 } from "lucide-react";
 
 const adminNavItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Bookings", href: "/admin/bookings", icon: Calendar },
   { label: "Rooms", href: "/admin/rooms", icon: DoorOpen },
+  { label: "Menus", href: "/admin/menus", icon: UtensilsCrossed },
   { label: "Revenue", href: "/admin/revenue", icon: TrendingUp },
   { label: "Guests", href: "/admin/guests", icon: Users },
   { label: "Reviews", href: "/admin/reviews", icon: Star },
@@ -75,7 +77,7 @@ export default function AdminLayout({
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
+        <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto pb-4">
           {adminNavItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
@@ -100,10 +102,24 @@ export default function AdminLayout({
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-gray-800">
-          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-900/10 transition-all duration-200">
-            <LogOut size={20} />
-            <span className="font-medium">Logout</span>
+        <div className="p-6 border-t border-gray-700 bg-linear-to-t from-gray-800/40 to-transparent space-y-4">
+          <div className="px-4 py-3 rounded-lg bg-gray-800/50 border border-gray-700">
+            <p className="text-gray-400 text-xs uppercase tracking-wider font-semibold mb-2">
+              Logged In As
+            </p>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-bold">
+                A
+              </div>
+              <div>
+                <p className="text-white text-sm font-medium">Admin Owner</p>
+                <p className="text-gray-500 text-xs">system@ziba.local</p>
+              </div>
+            </div>
+          </div>
+          <button className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-gray-300 hover:text-red-400 hover:bg-red-900/20 border border-transparent hover:border-red-900/50 transition-all duration-200 font-medium text-sm">
+            <LogOut size={18} />
+            <span>Logout</span>
           </button>
         </div>
       </div>

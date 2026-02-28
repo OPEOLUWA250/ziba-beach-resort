@@ -177,3 +177,39 @@ model ExchangeRate {
   
   @@unique([fromCurrency, toCurrency])
 }
+
+// Menu Category model
+model MenuCategory {
+  id          String     @id @default(cuid())
+  name        String     @unique  // e.g., "Breakfast", "Lunch & Dinner"
+  description String?
+  timing      String?    // e.g., "7:00 AM – 10:00 AM DAILY"
+  note        String?    // Special notes like buffet/a la carte info
+  isActive    Boolean    @default(true)
+  displayOrder Int?      // Order to display categories
+  
+  items       MenuItem[]
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+// Menu Item model
+model MenuItem {
+  id          String     @id @default(cuid())
+  
+  categoryId  String
+  category    MenuCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
+  name        String     // e.g., "Toast Bread"
+  description String?    // Item description
+  priceNGN    Float      // Price in Nigerian Naira
+  
+  isActive    Boolean    @default(true)
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  
+  @@unique([categoryId, name])
+  @@index([categoryId])
+}

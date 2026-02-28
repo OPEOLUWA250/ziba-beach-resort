@@ -54,7 +54,7 @@ export default function BookingCards() {
 
         {/* Booking Options Grid */}
         <div className="grid md:grid-cols-2 gap-8 md:gap-10">
-          {/* Night Experience Card */}
+          {/* Day Experience Card */}
           <div
             className={`group relative overflow-hidden rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 h-96 hover-lift ${
               isVisible
@@ -70,7 +70,110 @@ export default function BookingCards() {
           >
             {/* Background Image */}
             <Image
-              src="/Ziba-hero.jpg"
+              src="/day-experience.jpg"
+              alt="Day Experience"
+              fill
+              className="object-cover group-hover:scale-110 transition-transform duration-700"
+              priority
+            />
+
+            {/* Overlay - Vibrant gradient matching button */}
+            <div className="absolute inset-0 bg-linear-to-t from-orange-900/75 via-orange-700/45 to-yellow-500/15" />
+
+            {/* Content */}
+            <div className="relative h-full p-10 flex flex-col justify-end">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-orange-100/20 mb-6 backdrop-blur-sm border border-orange-100/30 group-hover:scale-110 transition-transform duration-500">
+                <span className="text-2xl">☀️</span>
+              </div>
+
+              <div className="text-xs font-light text-orange-100 mb-3 tracking-widest">
+                DAY PASS
+              </div>
+
+              <h3
+                className="text-3xl font-light text-white mb-4"
+                style={{ fontFamily: "Cormorant Garamond" }}
+              >
+                Day Experience
+              </h3>
+
+              <p className="text-gray-100 font-light mb-8 leading-relaxed text-sm">
+                Spend 8 hours (10am - 6pm) enjoying full access to all
+                facilities, dining, activities, and our stunning beach views.
+                Perfect for a luxurious day out.
+              </p>
+
+              {/* Features List */}
+              <ul className="space-y-2 mb-8">
+                {[
+                  "Pool & Beach Access",
+                  "Restaurant & Bar",
+                  "All Activities",
+                  "Spa Treatments",
+                  "8 Hours • 10am - 6pm",
+                ].map((feature, idx) => (
+                  <li
+                    key={feature}
+                    className={`flex items-center gap-3 text-xs text-gray-100 font-light transition-all duration-500 ${
+                      isVisible
+                        ? "opacity-100 translate-x-0"
+                        : "opacity-0 -translate-x-5"
+                    }`}
+                    style={{
+                      transitionDelay: isVisible
+                        ? `${450 + idx * 50}ms`
+                        : "0ms",
+                    }}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-orange-300" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+
+              <Link href="/product/day-pass/">
+                <button
+                  className="w-full bg-linear-to-r from-amber-600 to-orange-600 text-white px-6 py-4 font-light tracking-wide hover:from-amber-700 hover:to-orange-700 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn -translate-y-0 hover:-translate-y-1"
+                  style={{ boxShadow: "0 4px 15px rgba(217, 119, 6, 0.3)" }}
+                >
+                  <span className="relative flex items-center justify-center gap-2">
+                    Explore Day Experience
+                    <svg
+                      className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Night Experience Card */}
+          <div
+            className={`group relative overflow-hidden rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 h-96 hover-lift ${
+              isVisible
+                ? "opacity-100 translate-x-0 translate-y-0"
+                : "opacity-0 translate-x-10 translate-y-10"
+            }`}
+            style={{
+              transitionDelay: isVisible ? "500ms" : "0ms",
+              animation: isVisible
+                ? "cardReveal 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both"
+                : "none",
+            }}
+          >
+            {/* Background Image */}
+            <Image
+              src="/night-experience.jpg"
               alt="Night Experience"
               fill
               className="object-cover group-hover:scale-110 transition-transform duration-700"
@@ -138,109 +241,6 @@ export default function BookingCards() {
                 >
                   <span className="relative flex items-center justify-center gap-2">
                     Explore Night Experience
-                    <svg
-                      className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 7l5 5m0 0l-5 5m5-5H6"
-                      />
-                    </svg>
-                  </span>
-                </button>
-              </Link>
-            </div>
-          </div>
-
-          {/* Day Experience Card */}
-          <div
-            className={`group relative overflow-hidden rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 h-96 hover-lift ${
-              isVisible
-                ? "opacity-100 translate-x-0 translate-y-0"
-                : "opacity-0 translate-x-10 translate-y-10"
-            }`}
-            style={{
-              transitionDelay: isVisible ? "500ms" : "0ms",
-              animation: isVisible
-                ? "cardReveal 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both"
-                : "none",
-            }}
-          >
-            {/* Background Image */}
-            <Image
-              src="/Ziba-hero.jpg"
-              alt="Day Experience"
-              fill
-              className="object-cover group-hover:scale-110 transition-transform duration-700"
-              priority
-            />
-
-            {/* Overlay - Lighter for day */}
-            <div className="absolute inset-0 bg-linear-to-t from-amber-900/70 via-amber-700/40 to-amber-600/20" />
-
-            {/* Content */}
-            <div className="relative h-full p-10 flex flex-col justify-end">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-100/20 mb-6 backdrop-blur-sm border border-amber-100/30 group-hover:scale-110 transition-transform duration-500">
-                <span className="text-2xl">☀️</span>
-              </div>
-
-              <div className="text-xs font-light text-amber-100 mb-3 tracking-widest">
-                DAY PASS
-              </div>
-
-              <h3
-                className="text-3xl font-light text-white mb-4"
-                style={{ fontFamily: "Cormorant Garamond" }}
-              >
-                Day Experience
-              </h3>
-
-              <p className="text-gray-100 font-light mb-8 leading-relaxed text-sm">
-                Spend 8 hours (10am - 6pm) enjoying full access to all
-                facilities, dining, activities, and our stunning beach views.
-                Perfect for a luxurious day out.
-              </p>
-
-              {/* Features List */}
-              <ul className="space-y-2 mb-8">
-                {[
-                  "Pool & Beach Access",
-                  "Restaurant & Bar",
-                  "All Activities",
-                  "Spa Treatments",
-                  "8 Hours • 10am - 6pm",
-                ].map((feature, idx) => (
-                  <li
-                    key={feature}
-                    className={`flex items-center gap-3 text-xs text-gray-100 font-light transition-all duration-500 ${
-                      isVisible
-                        ? "opacity-100 translate-x-0"
-                        : "opacity-0 -translate-x-5"
-                    }`}
-                    style={{
-                      transitionDelay: isVisible
-                        ? `${450 + idx * 50}ms`
-                        : "0ms",
-                    }}
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-300" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <Link href="/product/day-pass/">
-                <button
-                  className="w-full bg-linear-to-r from-amber-600 to-orange-600 text-white px-6 py-4 font-light tracking-wide hover:from-amber-700 hover:to-orange-700 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn -translate-y-0 hover:-translate-y-1"
-                  style={{ boxShadow: "0 4px 15px rgba(217, 119, 6, 0.3)" }}
-                >
-                  <span className="relative flex items-center justify-center gap-2">
-                    Explore Day Experience
                     <svg
                       className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform"
                       fill="none"

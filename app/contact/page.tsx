@@ -90,6 +90,7 @@ export default function Contact() {
       <PageHero
         title="Get In Touch"
         subtitle="We'd love to hear from you. Contact us with any questions or inquiries."
+        imageUrl="/ziba-hero-images/contact-hero.jpg"
       />
       <main className="bg-white">
         {/* Trust Indicators */}

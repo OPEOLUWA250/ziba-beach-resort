@@ -114,6 +114,7 @@ export default function Stay() {
       <PageHero
         title="Your Perfect Stay Awaits"
         subtitle="World-class accommodations with premium day & night services, curated activities, and unforgettable experiences"
+        imageUrl="/ziba-hero-images/bookings-hero.jpg"
       />
       <main className="bg-white">
         {/* ALL ROOMS SECTION */}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Cormorant_Garamond } from "next/font/google";
 
 const cormorant = Cormorant_Garamond({
@@ -8,8 +9,17 @@ const cormorant = Cormorant_Garamond({
   weight: ["400", "500", "600", "700"],
 });
 
+const heroImages = [
+  "/ziba-hero-images/ziba-home/ziba-home-hero-1.jpg",
+  "/ziba-hero-images/ziba-home/ziba-home-hero-2.jpg",
+  "/ziba-hero-images/ziba-home/ziba-home-hero-3.jpg",
+  "/ziba-hero-images/ziba-home/ziba-home-hero-4.jpg",
+];
+
 export default function Hero() {
   const [scrollPos, setScrollPos] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isAutoPlay, setIsAutoPlay] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +29,16 @@ export default function Hero() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!isAutoPlay) return;
+
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [isAutoPlay]);
 
   const scrollToBooking = () => {
     const bookingSection = document.getElementById("booking-section");
@@ -30,24 +50,37 @@ export default function Hero() {
   return (
     <>
       {/* HERO SECTION - Exactly 100vh */}
-      <section className="relative h-screen w-full overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
-        {/* Background with Parallax */}
+      <section className="relative h-screen w-full overflow-hidden bg-linear-to-br from-slate-900 via-blue-900 to-slate-900">
+        {/* Background with Image Slider */}
         <div className="absolute inset-0 w-full h-full">
-          <div
-            className="absolute inset-0 w-full h-full"
-            style={{
-              backgroundImage: "url(/Ziba-hero.jpg)",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              backgroundAttachment: "fixed",
-              transform: `translateY(${scrollPos * 0.5}px)`,
-              opacity: 0.85,
-            }}
-          />
+          {/* Image Slider Container */}
+          <div className="absolute inset-0 w-full h-full">
+            {heroImages.map((image, index) => (
+              <div
+                key={index}
+                className="absolute inset-0 transition-opacity duration-1000"
+                style={{
+                  opacity: currentImageIndex === index ? 1 : 0,
+                }}
+              >
+                <Image
+                  src={image}
+                  alt={`Ziba Beach Resort Hero ${index + 1}`}
+                  fill
+                  priority={index === 0}
+                  quality={95}
+                  className="object-cover"
+                  style={{
+                    transform: `translateY(${scrollPos * 0.5}px)`,
+                  }}
+                />
+              </div>
+            ))}
+          </div>
 
           {/* Overlay Gradients */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-900/50 via-transparent to-blue-900/30" />
+          <div className="absolute inset-0 bg-linear-to-b from-black/60 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-r from-slate-900/50 via-transparent to-blue-900/30" />
           <div
             className="absolute inset-0 opacity-30 mix-blend-multiply"
             style={{
@@ -81,10 +114,10 @@ export default function Hero() {
               <h1
                 className={`${cormorant.className} text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-tight`}
               >
-                <span className="bg-gradient-to-r from-white via-blue-200 to-cyan-100 bg-clip-text text-transparent block">
+                <span className="bg-linear-to-r from-white via-blue-200 to-cyan-100 bg-clip-text text-transparent block">
                   Nigeria's first
                 </span>
-                <span className="bg-gradient-to-r from-white via-blue-200 to-cyan-100 bg-clip-text text-transparent block font-bold mt-1 sm:mt-2 md:mt-3 lg:mt-4">
+                <span className="bg-linear-to-r from-white via-blue-200 to-cyan-100 bg-clip-text text-transparent block font-bold mt-1 sm:mt-2 md:mt-3 lg:mt-4">
                   overwater resort
                 </span>
               </h1>
