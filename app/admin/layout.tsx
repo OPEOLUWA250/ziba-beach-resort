@@ -89,7 +89,7 @@ export default function AdminLayout({
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
                   active
-                    ? "bg-linear-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/20"
+                    ? "bg-linear-to-r from-blue-900 to-blue-800 text-white shadow-lg shadow-blue-900/20"
                     : "text-gray-400 hover:text-white hover:bg-gray-800/50"
                 }`}
               >

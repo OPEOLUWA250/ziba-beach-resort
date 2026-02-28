@@ -212,7 +212,7 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <button className="w-full md:w-auto bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg flex items-center justify-center gap-2">
+            <button className="w-full md:w-auto bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg flex items-center justify-center gap-2">
               <Save size={20} />
               Save Changes
             </button>
@@ -232,7 +232,7 @@ export default function SettingsPage() {
             {/* Paystack Configuration */}
             <div className="pb-8 border-b border-gray-700">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-900 to-blue-800 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold">₦</span>
                 </div>
                 <h3 className="text-white text-xl font-bold">Paystack</h3>

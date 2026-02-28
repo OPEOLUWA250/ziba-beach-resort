@@ -123,7 +123,7 @@ export default function AdminDashboard() {
           icon={<Calendar size={24} className="text-blue-300" />}
           trend="+3 new today"
           trendUp={true}
-          bgGradient="bg-linear-to-br from-blue-600 to-cyan-700"
+          bgGradient="bg-linear-to-br from-blue-900 to-blue-800"
         />
         <StatCard
           title="Occupancy Rate"

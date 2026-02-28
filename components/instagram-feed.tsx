@@ -183,14 +183,6 @@ export default function InstagramFeed() {
                     style={{ backgroundImage: `url('${selectedPost.image}')` }}
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                  {/* Latest Badge */}
-                  {selectedPost.isLatest && (
-                    <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-3 py-1.5 rounded-full text-xs font-light flex items-center gap-1.5 backdrop-blur-sm border border-blue-400/30">
-                      <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-                      Latest Post
-                    </div>
-                  )}
                 </div>
               </div>
             )}
@@ -207,10 +199,10 @@ export default function InstagramFeed() {
           >
             <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-6">
               {/* Profile Icon */}
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-900 to-blue-800 flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <FontAwesomeIcon
                   icon={faInstagram}
-                  className="w-16 h-16 text-white"
+                  className="w-24 h-24 text-white"
                 />
               </div>
 
@@ -239,7 +231,7 @@ export default function InstagramFeed() {
                 href="https://www.instagram.com/zibabeachresorts"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-lg hover:shadow-xl transition-all duration-500 transform hover:scale-105 active:scale-95 font-light tracking-wide group/btn w-full sm:w-auto mt-4"
+                className="inline-flex items-center justify-center bg-gradient-to-r from-blue-900 to-blue-800 text-white px-8 py-3 rounded-lg hover:shadow-xl transition-all duration-500 transform hover:scale-105 active:scale-95 font-light tracking-wide group/btn w-full sm:w-auto mt-4"
               >
                 <span className="flex items-center gap-3">
                   <FontAwesomeIcon

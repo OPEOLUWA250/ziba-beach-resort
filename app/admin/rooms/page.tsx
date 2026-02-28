@@ -226,7 +226,7 @@ export default function RoomsManagement() {
             Manage all rooms and their configurations
           </p>
         </div>
-        <button className="bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
+        <button className="bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg">
           + Add Room
         </button>
       </div>

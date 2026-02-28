@@ -218,7 +218,7 @@ export default function AdminSystem() {
           <div className="lg:col-span-2 bg-gray-800 rounded-2xl border border-gray-700 shadow-lg overflow-hidden">
             <div className="bg-gray-950 p-4 border-b border-gray-700 flex items-center justify-between">
               <h3 className="text-white font-bold">Admin Users</h3>
-              <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-semibold transition">
+              <button className="flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white px-3 py-1.5 rounded-lg text-sm font-semibold transition">
                 <Plus size={16} />
                 Add User
               </button>
@@ -271,7 +271,7 @@ export default function AdminSystem() {
               <div className="space-y-6">
                 {/* Avatar */}
                 <div className="flex justify-center">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-900 to-blue-800 flex items-center justify-center">
                     <span className="text-white text-2xl font-bold">
                       {selectedUser.name.charAt(0)}
                     </span>

@@ -77,8 +77,8 @@ export default function BookingCards() {
               priority
             />
 
-            {/* Overlay - Vibrant gradient matching button */}
-            <div className="absolute inset-0 bg-linear-to-t from-orange-900/75 via-orange-700/45 to-yellow-500/15" />
+            {/* Overlay - Strong dark gradient for excellent text visibility */}
+            <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/70 to-black/50" />
 
             {/* Content */}
             <div className="relative h-full p-10 flex flex-col justify-end">
@@ -133,8 +133,8 @@ export default function BookingCards() {
 
               <Link href="/product/day-pass/">
                 <button
-                  className="w-full bg-linear-to-r from-amber-600 to-orange-600 text-white px-6 py-4 font-light tracking-wide hover:from-amber-700 hover:to-orange-700 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn -translate-y-0 hover:-translate-y-1"
-                  style={{ boxShadow: "0 4px 15px rgba(217, 119, 6, 0.3)" }}
+                  className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-6 py-4 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn -translate-y-0 hover:-translate-y-1"
+                  style={{ boxShadow: "0 4px 15px rgba(15, 23, 42, 0.3)" }}
                 >
                   <span className="relative flex items-center justify-center gap-2">
                     Explore Day Experience
@@ -236,8 +236,8 @@ export default function BookingCards() {
 
               <Link href="/bookings">
                 <button
-                  className="w-full bg-linear-to-r from-blue-600 to-blue-700 text-white px-6 py-4 font-light tracking-wide hover:from-blue-700 hover:to-blue-800 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn -translate-y-0 hover:-translate-y-1"
-                  style={{ boxShadow: "0 4px 15px rgba(37, 99, 235, 0.3)" }}
+                  className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-6 py-4 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn -translate-y-0 hover:-translate-y-1"
+                  style={{ boxShadow: "0 4px 15px rgba(15, 23, 42, 0.3)" }}
                 >
                   <span className="relative flex items-center justify-center gap-2">
                     Explore Night Experience

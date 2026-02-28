@@ -9,7 +9,7 @@ const ratings = [
     rating: "Fantastic",
     details: "Based on 1062 Reviews",
     icon: "🔍",
-    color: "from-blue-600 to-blue-700",
+    color: "from-blue-900 to-blue-800",
     textColor: "text-blue-700",
     accentColor: "bg-blue-500",
   },

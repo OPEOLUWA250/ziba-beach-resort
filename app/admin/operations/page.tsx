@@ -294,7 +294,7 @@ export default function OperationsTools() {
                   className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none"
                 />
               </div>
-              <button className="w-full bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg flex items-center justify-center gap-2">
+              <button className="w-full bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg flex items-center justify-center gap-2">
                 <LogOut size={20} />
                 Complete Check-Out
               </button>
@@ -396,7 +396,7 @@ export default function OperationsTools() {
       {activeTab === "housekeeping" && (
         <div>
           <div className="mb-6 flex justify-end">
-            <button className="bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2">
+            <button className="bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2">
               <Plus size={18} />
               Assign New Task
             </button>
