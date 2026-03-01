@@ -74,8 +74,8 @@ export default function BookingCards() {
               priority
             />
 
-            {/* Overlay - Strong dark gradient for excellent text visibility */}
-            <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/70 to-black/50" />
+            {/* Overlay - Premium stronger gradient for luxury aesthetic & text readability */}
+            <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/85 to-black/70" />
 
             {/* Content */}
             <div className="relative h-full p-10 flex flex-col justify-end">
@@ -177,8 +177,8 @@ export default function BookingCards() {
               priority
             />
 
-            {/* Overlay - Dark for night */}
-            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/50 to-black/30" />
+            {/* Overlay - Premium stronger gradient for luxury aesthetic & text readability */}
+            <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/75 to-black/60" />
 
             {/* Content */}
             <div className="relative h-full p-10 flex flex-col justify-end">
