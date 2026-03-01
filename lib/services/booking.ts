@@ -137,7 +137,32 @@ export async function getBookingDetails(bookingId: string) {
       throw error;
     }
 
-    return data;
+    if (!data) {
+      return null;
+    }
+
+    // Transform Supabase snake_case to confirmation page format
+    return {
+      id: data.id,
+      checkInDate: data.check_in_date,
+      checkOutDate: data.check_out_date,
+      numberOfGuests: data.number_of_guests,
+      specialRequests: data.special_requests,
+      room: {
+        title: "Standard Room", // You may want to fetch room details separately
+        priceNGN: data.room_price_ngn,
+      },
+      user: {
+        firstName: data.guest_name?.split(" ")[0] || "",
+        lastName: data.guest_name?.split(" ").slice(1).join(" ") || "",
+        email: data.guest_email,
+      },
+      payment: {
+        amountNGN: data.total_amount_ngn,
+        paystackReference: data.paystack_reference,
+        paymentStatus: data.payment_status,
+      },
+    };
   } catch (error) {
     console.error("Error fetching booking details:", error);
     return null;

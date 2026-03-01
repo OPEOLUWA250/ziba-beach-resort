@@ -489,6 +489,10 @@ function PaymentContent() {
         }).catch((err) => console.error("Failed to send email:", err));
 
         console.log("✅ Demo booking complete - redirecting to confirmation");
+
+        // Small delay to ensure sessionStorage is committed
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
         setProcessing(false);
 
         // Redirect to confirmation
@@ -631,7 +635,13 @@ function PaymentContent() {
                   }),
                 }).catch((err) => console.error("Failed to send email:", err));
 
-                console.log("✅ Redirecting to confirmation");
+                console.log(
+                  "✅ Payment confirmed - redirecting to confirmation",
+                );
+
+                // Small delay to ensure sessionStorage is committed
+                await new Promise((resolve) => setTimeout(resolve, 300));
+
                 router.push(`/booking-confirmation?bookingId=${booking.id}`);
               },
             }).openIframe();
