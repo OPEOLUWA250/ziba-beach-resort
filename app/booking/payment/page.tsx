@@ -545,10 +545,28 @@ function PaymentContent() {
             // Do background work
             (async () => {
               try {
-                // Verify payment
-                await fetch(`/api/payments/verify/${paystackReference}`).catch(
-                  () => {},
+                // CRITICAL: Confirm payment and update booking status immediately
+                console.log("🔄 Confirming payment in database...");
+                const confirmRes = await fetch(
+                  "/api/bookings/confirm-payment",
+                  {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      bookingId: bookingId,
+                      reference: paystackReference,
+                    }),
+                  },
                 );
+
+                if (confirmRes.ok) {
+                  console.log("✅ Payment confirmed in database");
+                } else {
+                  console.error(
+                    "❌ Failed to confirm payment:",
+                    confirmRes.status,
+                  );
+                }
 
                 // Send email
                 await fetch("/api/emails/send-confirmation", {
@@ -626,10 +644,28 @@ function PaymentContent() {
 
                 (async () => {
                   try {
-                    // Verify payment
-                    await fetch(
-                      `/api/payments/verify/${paystackReference}`,
-                    ).catch(() => {});
+                    // CRITICAL: Confirm payment and update booking status immediately
+                    console.log("🔄 Confirming payment in database...");
+                    const confirmRes = await fetch(
+                      "/api/bookings/confirm-payment",
+                      {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          bookingId: bookingId,
+                          reference: paystackReference,
+                        }),
+                      },
+                    );
+
+                    if (confirmRes.ok) {
+                      console.log("✅ Payment confirmed in database");
+                    } else {
+                      console.error(
+                        "❌ Failed to confirm payment:",
+                        confirmRes.status,
+                      );
+                    }
 
                     // Send email
                     await fetch("/api/emails/send-confirmation", {
