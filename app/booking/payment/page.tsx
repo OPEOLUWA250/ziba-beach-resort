@@ -504,7 +504,7 @@ function PaymentContent() {
       console.log("💳 Real Paystack mode - initializing payment");
       if (typeof window !== "undefined" && window.PaystackPop) {
         console.log("✅ PaystackPop loaded");
-        window.PaystackPop.setup({
+        const handler = window.PaystackPop.setup({
           key: paystackKey,
           email: guestEmail,
           amount: totalPrice * 100, // Paystack expects amount in kobo
@@ -597,7 +597,8 @@ function PaymentContent() {
               setProcessing(false);
             }
           },
-        }).pay();
+        });
+        handler.openIframe();
       } else {
         // Load Paystack script if not loaded
         console.log("📥 Loading Paystack script...");
@@ -608,7 +609,7 @@ function PaymentContent() {
           console.log("✅ Paystack script loaded");
           if (window.PaystackPop) {
             console.log("✅ PaystackPop available");
-            window.PaystackPop.setup({
+            const handler = window.PaystackPop.setup({
               key: paystackKey,
               email: guestEmail,
               amount: totalPrice * 100,
@@ -704,7 +705,8 @@ function PaymentContent() {
                   setProcessing(false);
                 }
               },
-            }).pay();
+            });
+            handler.openIframe();
           } else {
             console.error("❌ PaystackPop not available after script load");
             setError("Payment system failed to load");
