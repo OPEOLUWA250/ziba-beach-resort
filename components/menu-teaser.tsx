@@ -139,7 +139,7 @@ export default function MenuTeaser() {
             {/* CTA Button */}
             <Link href="/menu">
               <button
-                className={`inline-flex items-center justify-center gap-3 px-10 py-4 bg-linear-to-r from-blue-900 to-blue-800 text-white font-light tracking-wide rounded-lg hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-xl transition-all ${
+                className={`w-full flex items-center justify-center gap-3 px-6 sm:px-10 py-3 sm:py-4 bg-linear-to-r from-blue-900 to-blue-800 text-white font-light tracking-wide rounded-lg hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-xl ${
                   isVisible
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-5"
