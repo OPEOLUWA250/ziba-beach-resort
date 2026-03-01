@@ -597,7 +597,7 @@ function PaymentContent() {
               setProcessing(false);
             }
           },
-        }).openIframe();
+        }).pay();
       } else {
         // Load Paystack script if not loaded
         console.log("📥 Loading Paystack script...");
@@ -704,7 +704,7 @@ function PaymentContent() {
                   setProcessing(false);
                 }
               },
-            }).openIframe();
+            }).pay();
           } else {
             console.error("❌ PaystackPop not available after script load");
             setError("Payment system failed to load");
