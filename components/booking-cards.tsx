@@ -78,7 +78,7 @@ export default function BookingCards() {
             <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/85 to-black/70" />
 
             {/* Content */}
-            <div className="relative h-full p-6 sm:p-8 lg:p-10 flex flex-col justify-end">
+            <div className="relative h-full p-6 sm:p-8 lg:p-10 pt-56 sm:pt-64 lg:pt-72 flex flex-col justify-end">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-orange-100/20 mb-6 backdrop-blur-sm border border-orange-100/30 group-hover:scale-110 transition-transform duration-500">
                 <span className="text-2xl">☀️</span>
               </div>
@@ -181,7 +181,7 @@ export default function BookingCards() {
             <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/75 to-black/60" />
 
             {/* Content */}
-            <div className="relative h-full p-6 sm:p-8 lg:p-10 flex flex-col justify-end">
+            <div className="relative h-full p-6 sm:p-8 lg:p-10 pt-56 sm:pt-64 lg:pt-72 flex flex-col justify-end">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100/20 mb-6 backdrop-blur-sm border border-blue-100/30 group-hover:scale-110 transition-transform duration-500">
                 <span className="text-2xl">🌙</span>
               </div>
