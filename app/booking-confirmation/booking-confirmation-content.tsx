@@ -43,12 +43,39 @@ export default function BookingConfirmationContent() {
 
     const fetchBooking = async () => {
       try {
-        // First, try to get from sessionStorage (for mock bookings and recent real bookings)
+        // First, verify payment from server-side
+        console.log("[Confirmation] Verifying payment for booking:", bookingId);
+        try {
+          const verifyRes = await fetch("/api/bookings/verify-and-confirm", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ bookingId }),
+          });
+
+          const verifyData = await verifyRes.json();
+          console.log("[Confirmation] Server verification result:", verifyData);
+
+          if (verifyData.success && verifyData.booking) {
+            // Payment was verified and confirmed
+            setBooking(verifyData.booking);
+            setLoading(false);
+            return;
+          }
+        } catch (verifyErr) {
+          console.error(
+            "[Confirmation] Verification error (non-critical):",
+            verifyErr,
+          );
+          // Continue anyway - we'll try sessionStorage/API fallback
+        }
+
+        // Fall back to sessionStorage for recent bookings
         if (typeof window !== "undefined") {
           const cachedBooking = sessionStorage.getItem("lastBooking");
           if (cachedBooking) {
             const booking = JSON.parse(cachedBooking);
             if (booking.id === bookingId) {
+              console.log("[Confirmation] Loaded from sessionStorage");
               setBooking(booking);
               setLoading(false);
               return;
@@ -57,6 +84,7 @@ export default function BookingConfirmationContent() {
         }
 
         // Fall back to API for database bookings
+        console.log("[Confirmation] Fetching from API");
         const res = await fetch(`/api/bookings/${bookingId}`);
 
         if (!res.ok) {
