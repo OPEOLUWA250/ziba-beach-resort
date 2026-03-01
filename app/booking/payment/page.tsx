@@ -513,16 +513,13 @@ function PaymentContent() {
             console.log("🚫 Paystack modal closed by user");
             setProcessing(false);
           },
-          onSuccess: async () => {
+          onSuccess: async (response: any) => {
             try {
-              console.log("💰 Payment successful - verifying");
+              console.log("💰 Payment successful - response:", response);
 
               // Verify payment
               const verifyRes = await fetch(
                 `/api/payments/verify/${paystackReference}`,
-                {
-                  method: "POST",
-                },
               );
 
               if (!verifyRes.ok) {
@@ -537,15 +534,12 @@ function PaymentContent() {
 
               const verifyData = await verifyRes.json();
 
-              if (!verifyData.success && verifyData.status !== "success") {
+              if (!verifyData.success) {
                 console.error(
                   "❌ Paystack verification not successful:",
                   verifyData,
                 );
-                setError(
-                  "Payment verification failed - Status: " +
-                    (verifyData.status || "unknown"),
-                );
+                setError("Payment verification failed");
                 setProcessing(false);
                 return;
               }
@@ -588,6 +582,9 @@ function PaymentContent() {
 
               console.log("✅ Payment confirmed - redirecting to confirmation");
 
+              // Small delay to ensure sessionStorage is committed
+              await new Promise((resolve) => setTimeout(resolve, 300));
+
               // Redirect to confirmation
               router.push(`/booking-confirmation?bookingId=${booking.id}`);
               setProcessing(false);
@@ -598,6 +595,7 @@ function PaymentContent() {
             }
           },
         });
+        console.log("🎬 Opening Paystack iframe");
         handler.openIframe();
       } else {
         // Load Paystack script if not loaded
@@ -618,15 +616,12 @@ function PaymentContent() {
                 console.log("🚫 User closed Paystack modal");
                 setProcessing(false);
               },
-              onSuccess: async () => {
+              onSuccess: async (response: any) => {
                 try {
-                  console.log("💰 Payment successful");
+                  console.log("💰 Payment successful - response:", response);
 
                   const verifyRes = await fetch(
                     `/api/payments/verify/${paystackReference}`,
-                    {
-                      method: "POST",
-                    },
                   );
 
                   if (!verifyRes.ok) {
@@ -641,15 +636,12 @@ function PaymentContent() {
 
                   const verifyData = await verifyRes.json();
 
-                  if (!verifyData.success && verifyData.status !== "success") {
+                  if (!verifyData.success) {
                     console.error(
                       "❌ Paystack verification not successful:",
                       verifyData,
                     );
-                    setError(
-                      "Payment verification failed - Status: " +
-                        (verifyData.status || "unknown"),
-                    );
+                    setError("Payment verification failed");
                     setProcessing(false);
                     return;
                   }
@@ -706,6 +698,7 @@ function PaymentContent() {
                 }
               },
             });
+            console.log("🎬 Opening Paystack iframe from script load");
             handler.openIframe();
           } else {
             console.error("❌ PaystackPop not available after script load");
