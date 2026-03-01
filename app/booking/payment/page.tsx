@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import PaymentSuccessModal from "@/components/payment-success-modal";
 import { format, parse, differenceInDays } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
@@ -30,6 +31,9 @@ function PaymentContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [currentBookingId, setCurrentBookingId] = useState("");
+  const [currentAmount, setCurrentAmount] = useState(0);
 
   // Guest info
   const [guestName, setGuestName] = useState("");
@@ -514,85 +518,53 @@ function PaymentContent() {
             setProcessing(false);
           },
           onSuccess: async (response: any) => {
-            try {
-              console.log("💰 Payment successful - response:", response);
+            console.log("💰 Payment successful from Paystack!");
 
-              // Verify payment
-              const verifyRes = await fetch(
-                `/api/payments/verify/${paystackReference}`,
-              );
+            // Show success modal immediately
+            setCurrentBookingId(booking.id);
+            setCurrentAmount(totalPrice);
+            setShowSuccessModal(true);
+            setProcessing(false);
 
-              if (!verifyRes.ok) {
-                console.error(
-                  "❌ Payment verification failed - HTTP error:",
-                  verifyRes.status,
+            // Background tasks
+            (async () => {
+              try {
+                if (typeof window !== "undefined") {
+                  sessionStorage.setItem(
+                    "lastBooking",
+                    JSON.stringify(transformedBooking),
+                  );
+                }
+
+                await fetch(`/api/payments/verify/${paystackReference}`).catch(
+                  () => {},
                 );
-                setError("Payment verification failed");
-                setProcessing(false);
-                return;
+
+                await fetch("/api/emails/send-confirmation", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    bookingId: booking.id,
+                    email: guestEmail,
+                    bookingDetails: {
+                      id: booking.id,
+                      checkInDate: checkInDate.toISOString(),
+                      checkOutDate: checkOutDate.toISOString(),
+                      roomTitle: room.title,
+                      totalAmount: totalPrice,
+                      numberOfGuests: 1,
+                    },
+                  }),
+                }).catch(() => {});
+
+                await new Promise((resolve) => setTimeout(resolve, 2000));
+                router.push(`/booking-confirmation?bookingId=${booking.id}`);
+              } catch (err) {
+                setTimeout(() => {
+                  router.push(`/booking-confirmation?bookingId=${booking.id}`);
+                }, 2000);
               }
-
-              const verifyData = await verifyRes.json();
-
-              if (!verifyData.success) {
-                console.error(
-                  "❌ Paystack verification not successful:",
-                  verifyData,
-                );
-                setError("Payment verification failed");
-                setProcessing(false);
-                return;
-              }
-
-              console.log("✅ Payment verified successfully:", verifyData);
-
-              // Store booking details in sessionStorage
-              if (typeof window !== "undefined") {
-                sessionStorage.setItem(
-                  "lastBooking",
-                  JSON.stringify(transformedBooking),
-                );
-              }
-
-              // Send confirmation email with booking details included
-              const nights = Math.ceil(
-                (new Date(checkOutDate).getTime() -
-                  new Date(checkInDate).getTime()) /
-                  (1000 * 60 * 60 * 24),
-              );
-
-              // Send confirmation email
-              console.log("📧 Sending confirmation email");
-              await fetch("/api/emails/send-confirmation", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  bookingId: booking.id,
-                  email: guestEmail,
-                  bookingDetails: {
-                    id: booking.id,
-                    checkInDate: checkInDate.toISOString(),
-                    checkOutDate: checkOutDate.toISOString(),
-                    roomTitle: room.title,
-                    totalAmount: totalPrice,
-                    numberOfGuests: 1,
-                  },
-                }),
-              }).catch((err) => console.error("Failed to send email:", err));
-
-              console.log("✅ Payment confirmed - redirecting to confirmation");
-
-              // Small delay to ensure sessionStorage is committed
-              await new Promise((resolve) => setTimeout(resolve, 300));
-
-              // Redirect to confirmation
-              router.push(`/booking-confirmation?bookingId=${booking.id}`);
-              setProcessing(false);
-            } catch (err: any) {
-              console.error("❌ Error in onSuccess callback:", err);
-              setError("Error processing payment: " + err.message);
-              setProcessing(false);
-            }
+            })();
           },
         });
         console.log("🎬 Opening Paystack iframe");
@@ -617,85 +589,57 @@ function PaymentContent() {
                 setProcessing(false);
               },
               onSuccess: async (response: any) => {
-                try {
-                  console.log("💰 Payment successful - response:", response);
+                console.log("💰 Payment successful from Paystack!");
 
-                  const verifyRes = await fetch(
-                    `/api/payments/verify/${paystackReference}`,
-                  );
+                // Show success modal immediately
+                setCurrentBookingId(booking.id);
+                setCurrentAmount(totalPrice);
+                setShowSuccessModal(true);
+                setProcessing(false);
 
-                  if (!verifyRes.ok) {
-                    console.error(
-                      "❌ Verification failed - HTTP error:",
-                      verifyRes.status,
+                // Background tasks
+                (async () => {
+                  try {
+                    if (typeof window !== "undefined") {
+                      sessionStorage.setItem(
+                        "lastBooking",
+                        JSON.stringify(transformedBooking),
+                      );
+                    }
+
+                    await fetch(
+                      `/api/payments/verify/${paystackReference}`,
+                    ).catch(() => {});
+
+                    await fetch("/api/emails/send-confirmation", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        bookingId: booking.id,
+                        email: guestEmail,
+                        bookingDetails: {
+                          id: booking.id,
+                          checkInDate: checkInDate.toISOString(),
+                          checkOutDate: checkOutDate.toISOString(),
+                          roomTitle: room.title,
+                          totalAmount: totalPrice,
+                          numberOfGuests: 1,
+                        },
+                      }),
+                    }).catch(() => {});
+
+                    await new Promise((resolve) => setTimeout(resolve, 2000));
+                    router.push(
+                      `/booking-confirmation?bookingId=${booking.id}`,
                     );
-                    setError("Payment verification failed");
-                    setProcessing(false);
-                    return;
+                  } catch (err) {
+                    setTimeout(() => {
+                      router.push(
+                        `/booking-confirmation?bookingId=${booking.id}`,
+                      );
+                    }, 2000);
                   }
-
-                  const verifyData = await verifyRes.json();
-
-                  if (!verifyData.success) {
-                    console.error(
-                      "❌ Paystack verification not successful:",
-                      verifyData,
-                    );
-                    setError("Payment verification failed");
-                    setProcessing(false);
-                    return;
-                  }
-
-                  console.log("✅ Payment verified successfully:", verifyData);
-
-                  // Store booking details in sessionStorage
-                  if (typeof window !== "undefined") {
-                    sessionStorage.setItem(
-                      "lastBooking",
-                      JSON.stringify(transformedBooking),
-                    );
-                  }
-
-                  // Send confirmation email with booking details included
-                  const nights = Math.ceil(
-                    (new Date(checkOutDate).getTime() -
-                      new Date(checkInDate).getTime()) /
-                      (1000 * 60 * 60 * 24),
-                  );
-
-                  await fetch("/api/emails/send-confirmation", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      bookingId: booking.id,
-                      email: guestEmail,
-                      bookingDetails: {
-                        id: booking.id,
-                        checkInDate: checkInDate.toISOString(),
-                        checkOutDate: checkOutDate.toISOString(),
-                        roomTitle: room.title,
-                        totalAmount: totalPrice,
-                        numberOfGuests: 1,
-                      },
-                    }),
-                  }).catch((err) =>
-                    console.error("Failed to send email:", err),
-                  );
-
-                  console.log(
-                    "✅ Payment confirmed - redirecting to confirmation",
-                  );
-
-                  // Small delay to ensure sessionStorage is committed
-                  await new Promise((resolve) => setTimeout(resolve, 300));
-
-                  router.push(`/booking-confirmation?bookingId=${booking.id}`);
-                  setProcessing(false);
-                } catch (err: any) {
-                  console.error("❌ Error in onSuccess callback:", err);
-                  setError("Error processing payment: " + err.message);
-                  setProcessing(false);
-                }
+                })();
               },
             });
             console.log("🎬 Opening Paystack iframe from script load");
@@ -870,6 +814,14 @@ function PaymentContent() {
             </p>
           </div>
         </div>
+
+        {/* Payment Success Modal */}
+        <PaymentSuccessModal
+          isOpen={showSuccessModal}
+          guestName={guestName}
+          amount={currentAmount}
+          bookingId={currentBookingId}
+        />
       </main>
       <Footer />
     </>
