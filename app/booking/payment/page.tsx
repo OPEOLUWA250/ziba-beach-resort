@@ -559,12 +559,15 @@ function PaymentContent() {
                   },
                 );
 
+                const confirmData = await confirmRes.json();
+
                 if (confirmRes.ok) {
-                  console.log("✅ Payment confirmed in database");
+                  console.log("✅ Payment confirmed in database:", confirmData);
                 } else {
                   console.error(
                     "❌ Failed to confirm payment:",
                     confirmRes.status,
+                    confirmData,
                   );
                 }
 
