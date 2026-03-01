@@ -212,7 +212,7 @@ export default function Contact() {
         </section>
 
         {/* FAQ & Contact Form Section - Side by Side */}
-        <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
+        <section className="px-4 sm:px-6 lg:px-8 pt-16 sm:pt-28 pb-28 bg-white">
           <div className="max-w-7xl mx-auto">
             <h2 className="h2 text-blue-900 mb-4 text-center">
               Questions? We're Here to Help

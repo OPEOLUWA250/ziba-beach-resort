@@ -105,7 +105,7 @@ export default function ContactSection() {
     <section
       ref={sectionRef}
       id="contact"
-      className="px-4 sm:px-6 lg:px-8 py-28 bg-white overflow-hidden"
+      className="px-4 sm:px-6 lg:px-8 pt-16 sm:pt-28 pb-28 bg-white overflow-hidden"
     >
       <div className="max-w-7xl mx-auto">
         <h2
