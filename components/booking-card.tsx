@@ -39,7 +39,7 @@ export default function BookingCard({
 
   const handlePayment = async () => {
     // Validate inputs
-    if (!email || !firstName || !lastName) {
+    if (!email || !firstName || !lastName || !phone) {
       setError("Please fill in all required fields");
       return;
     }
