@@ -39,10 +39,7 @@ export default function BookingCards() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <h2
-            className="text-5xl md:text-6xl font-light text-blue-900 mb-6 text-center"
-            style={{ fontFamily: "Cormorant Garamond" }}
-          >
+          <h2 className="h2 text-blue-900 mb-6 text-center">
             Choose Your Experience
           </h2>
           <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
@@ -77,11 +74,11 @@ export default function BookingCards() {
               priority
             />
 
-            {/* Overlay - Strong dark gradient for excellent text visibility */}
-            <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/70 to-black/50" />
+            {/* Overlay - Premium stronger gradient for luxury aesthetic & text readability */}
+            <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/85 to-black/70" />
 
             {/* Content */}
-            <div className="relative h-full p-10 flex flex-col justify-end">
+            <div className="relative h-full p-6 sm:p-8 lg:p-10 flex flex-col justify-end">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-orange-100/20 mb-6 backdrop-blur-sm border border-orange-100/30 group-hover:scale-110 transition-transform duration-500">
                 <span className="text-2xl">☀️</span>
               </div>
@@ -133,10 +130,10 @@ export default function BookingCards() {
 
               <Link href="/product/day-pass/">
                 <button
-                  className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-6 py-4 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn -translate-y-0 hover:-translate-y-1"
+                  className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-4 sm:px-6 py-5 sm:py-6 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn -translate-y-0 hover:-translate-y-1"
                   style={{ boxShadow: "0 4px 15px rgba(15, 23, 42, 0.3)" }}
                 >
-                  <span className="relative flex items-center justify-center gap-2">
+                  <span className="relative flex items-center justify-center gap-2 whitespace-nowrap">
                     Explore Day Experience
                     <svg
                       className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform"
@@ -180,11 +177,11 @@ export default function BookingCards() {
               priority
             />
 
-            {/* Overlay - Dark for night */}
-            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/50 to-black/30" />
+            {/* Overlay - Premium stronger gradient for luxury aesthetic & text readability */}
+            <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/75 to-black/60" />
 
             {/* Content */}
-            <div className="relative h-full p-10 flex flex-col justify-end">
+            <div className="relative h-full p-6 sm:p-8 lg:p-10 flex flex-col justify-end">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100/20 mb-6 backdrop-blur-sm border border-blue-100/30 group-hover:scale-110 transition-transform duration-500">
                 <span className="text-2xl">🌙</span>
               </div>
@@ -236,10 +233,10 @@ export default function BookingCards() {
 
               <Link href="/bookings">
                 <button
-                  className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-6 py-4 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn -translate-y-0 hover:-translate-y-1"
+                  className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-4 sm:px-6 py-5 sm:py-6 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn -translate-y-0 hover:-translate-y-1"
                   style={{ boxShadow: "0 4px 15px rgba(15, 23, 42, 0.3)" }}
                 >
-                  <span className="relative flex items-center justify-center gap-2">
+                  <span className="relative flex items-center justify-center gap-2 whitespace-nowrap">
                     Explore Night Experience
                     <svg
                       className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform"

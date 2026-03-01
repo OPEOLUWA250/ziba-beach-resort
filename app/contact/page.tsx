@@ -212,12 +212,9 @@ export default function Contact() {
         </section>
 
         {/* FAQ & Contact Form Section - Side by Side */}
-        <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
+        <section className="px-4 sm:px-6 lg:px-8 pt-16 sm:pt-28 pb-28 bg-white">
           <div className="max-w-7xl mx-auto">
-            <h2
-              className="text-5xl font-light text-blue-900 mb-4 text-center"
-              style={{ fontFamily: "Cormorant Garamond" }}
-            >
+            <h2 className="h2 text-blue-900 mb-4 text-center">
               Questions? We're Here to Help
             </h2>
             <div className="w-16 h-0.5 mx-auto mb-16 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
@@ -426,12 +423,7 @@ export default function Contact() {
         {/* Map Section */}
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-blue-50">
           <div className="max-w-6xl mx-auto">
-            <h2
-              className="text-5xl font-light text-blue-900 mb-4 text-center"
-              style={{ fontFamily: "Cormorant Garamond" }}
-            >
-              Visit Us
-            </h2>
+            <h2 className="h2 text-blue-900 mb-4 text-center">Visit Us</h2>
             <div className="w-16 h-0.5 mx-auto mb-12 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
             <div className="rounded-2xl overflow-hidden shadow-lg">
               <iframe

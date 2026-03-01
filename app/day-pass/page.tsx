@@ -210,12 +210,7 @@ export default function DayPass() {
           <div className="max-w-7xl mx-auto">
             {/* TICKETS SECTION */}
             <div className="mb-20">
-              <h2
-                className="text-4xl font-light text-blue-900 mb-12"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
-              >
-                Day Pass Tickets
-              </h2>
+              <h2 className="h2 text-blue-900 mb-12">Day Pass Tickets</h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12">
                 {ticketProducts.map((product) => (
@@ -232,12 +227,7 @@ export default function DayPass() {
 
             {/* EXPERIENCES SECTION */}
             <div className="mb-20">
-              <h2
-                className="text-4xl font-light text-blue-900 mb-12"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
-              >
-                Add-On Experiences
-              </h2>
+              <h2 className="h2 text-blue-900 mb-12">Add-On Experiences</h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {experienceProducts.map((product) => (
