@@ -3,16 +3,22 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+// Validate credentials are present
 if (!supabaseUrl || !supabaseServiceKey) {
   console.error(
-    "❌ Missing Supabase credentials. NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not set",
+    "❌ CRITICAL: Missing Supabase credentials for server client.",
+    {
+      hasUrl: !!supabaseUrl,
+      hasServiceKey: !!supabaseServiceKey,
+      env: process.env.NODE_ENV,
+    },
   );
 }
 
 // Create a server client with service role key (bypasses RLS)
 export const supabaseServer = createClient(
-  supabaseUrl || "https://placeholder.supabase.co",
-  supabaseServiceKey || "placeholder-key",
+  supabaseUrl || "",
+  supabaseServiceKey || "",
   {
     auth: {
       autoRefreshToken: false,
@@ -20,3 +26,8 @@ export const supabaseServer = createClient(
     },
   },
 );
+
+// Export credential check helper
+export function isSupabaseConfigured(): boolean {
+  return !!(supabaseUrl && supabaseServiceKey);
+}

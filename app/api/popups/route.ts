@@ -1,9 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseServer } from "@/lib/supabase/server";
+import { supabaseServer, isSupabaseConfigured } from "@/lib/supabase/server";
 import { createPopup } from "@/lib/services/popups";
 
 export async function GET(request: NextRequest) {
   try {
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured()) {
+      console.error(
+        "[GET /api/popups] Supabase not configured. Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY",
+      );
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Server configuration error",
+          hint: "Ensure environment variables are set in production: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY",
+        },
+        { status: 500 },
+      );
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const activeOnly = searchParams.get("active");
 
@@ -23,8 +38,8 @@ export async function GET(request: NextRequest) {
         .order("createdat", { ascending: false });
 
       if (error) {
-        console.error("[GET /api/popups] Supabase error:", error);
-        throw error;
+        console.error("[GET /api/popups] Supabase query error:", error);
+        throw new Error(`Database query failed: ${error.message}`);
       }
       popups = data || [];
     } else {
@@ -35,8 +50,8 @@ export async function GET(request: NextRequest) {
         .order("createdat", { ascending: false });
 
       if (error) {
-        console.error("[GET /api/popups] Supabase error:", error);
-        throw error;
+        console.error("[GET /api/popups] Supabase query error:", error);
+        throw new Error(`Database query failed: ${error.message}`);
       }
       popups = data || [];
     }
@@ -50,13 +65,15 @@ export async function GET(request: NextRequest) {
       { headers },
     );
   } catch (error: any) {
+    const errorMessage = error?.message || "Unknown error";
     console.error("[GET /api/popups] Error:", error);
+
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to fetch popups",
+        error: "Failed to fetch popups",
         details:
-          process.env.NODE_ENV === "development" ? error.toString() : undefined,
+          process.env.NODE_ENV === "development" ? errorMessage : undefined,
       },
       { status: 500 },
     );

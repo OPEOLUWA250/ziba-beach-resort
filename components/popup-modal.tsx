@@ -77,7 +77,12 @@ export function PopupModal() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [popup, hasTriggered]);
 
-  if (isLoading || !popup) {
+  // Don't render anything while loading or if no popup
+  if (isLoading) {
+    return null;
+  }
+
+  if (!popup) {
     return null;
   }
 
