@@ -6,8 +6,8 @@ CREATE TABLE IF NOT EXISTS popups (
   excerpt TEXT NOT NULL,
   content TEXT NOT NULL,
   featured_image TEXT NOT NULL,
-  cta_button_text TEXT DEFAULT 'Learn More',
-  cta_button_url TEXT,
+  modal_cta_text TEXT DEFAULT 'Learn More',
+  modal_cta_url TEXT,
   dedicated_page_cta_text TEXT,
   dedicated_page_cta_url TEXT,
   tags TEXT[] DEFAULT '{}',
@@ -19,20 +19,28 @@ CREATE TABLE IF NOT EXISTS popups (
 CREATE INDEX IF NOT EXISTS idx_popups_slug ON popups(slug);
 CREATE INDEX IF NOT EXISTS idx_popups_status ON popups(status);
 
+-- Drop existing policies if they exist (to prevent conflicts)
+DROP POLICY IF EXISTS "Enable read active popups for all users" ON popups;
+DROP POLICY IF EXISTS "Enable insert for popups" ON popups;
+DROP POLICY IF EXISTS "Enable update for popups" ON popups;
+DROP POLICY IF EXISTS "Enable delete for popups" ON popups;
+
 -- Enable RLS for popups
 ALTER TABLE popups ENABLE ROW LEVEL SECURITY;
 
--- Allow anyone to read active popups
-CREATE POLICY "Enable read active popups for all users" ON popups FOR SELECT 
+-- RLS Policy 1: Allow anyone to read only ACTIVE popups (for homepage)
+CREATE POLICY "Allow public read active popups" ON popups 
+  FOR SELECT 
   USING (status = 'ACTIVE');
 
--- Allow admin insert/update/delete (you'll need to handle auth separately)
-CREATE POLICY "Enable insert for popups" ON popups FOR INSERT WITH CHECK (true);
-CREATE POLICY "Enable update for popups" ON popups FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Enable delete for popups" ON popups FOR DELETE USING (true);
+-- RLS Policy 2: Allow service role to do all operations (bypasses RLS with proper key)
+CREATE POLICY "Allow service role full access" ON popups 
+  FOR ALL 
+  USING (true) 
+  WITH CHECK (true);
 
--- Insert initial sample popup
-INSERT INTO popups (id, title, slug, excerpt, content, featured_image, cta_button_text, cta_button_url, status)
+-- Insert initial sample popup (if not exists)
+INSERT INTO popups (id, title, slug, excerpt, content, featured_image, modal_cta_text, status)
 VALUES (
   'popup-001',
   'Summer Beach Getaway Special',
@@ -48,6 +56,11 @@ VALUES (
 - Late checkout (until 6 PM)
 
 Don''t miss this limited-time opportunity to create unforgettable memories at Ziba Beach Resort!',
+  '/ziba-hero-images/beach-special-hero.jpg',
+  'Learn More',
+  'ACTIVE'
+)
+ON CONFLICT (id) DO NOTHING;
   '/ziba-hero-images/hero-1.jpg',
   'Claim Your Offer',
   '/booking',
