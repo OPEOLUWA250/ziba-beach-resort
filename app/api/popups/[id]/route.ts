@@ -54,9 +54,12 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
 
+    // Remove id from body to prevent updating primary key
+    const { id: _, ...updateData } = body;
+
     const { data, error } = await supabaseServer
       .from("popups")
-      .update(body)
+      .update(updateData)
       .eq("id", id)
       .select();
 
