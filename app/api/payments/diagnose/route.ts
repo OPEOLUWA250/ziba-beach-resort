@@ -19,12 +19,17 @@ export async function POST(request: NextRequest) {
 
     if (!paystackSecretKey) {
       return NextResponse.json(
-        { error: "PAYSTACK_SECRET_KEY not configured", details: "Check Vercel env vars" },
+        {
+          error: "PAYSTACK_SECRET_KEY not configured",
+          details: "Check Vercel env vars",
+        },
         { status: 500 },
       );
     }
 
-    console.log(`[Paystack Diagnostic] Testing verification for reference: ${reference}`);
+    console.log(
+      `[Paystack Diagnostic] Testing verification for reference: ${reference}`,
+    );
 
     const verifyRes = await fetch(
       `https://api.paystack.co/transaction/verify/${reference}`,

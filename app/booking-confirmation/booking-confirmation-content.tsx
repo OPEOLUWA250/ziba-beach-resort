@@ -54,12 +54,26 @@ export default function BookingConfirmationContent() {
 
           const verifyData = await verifyRes.json();
           console.log("[Confirmation] Server verification result:", verifyData);
+          console.error(
+            "[Confirmation] FULL response from verify-and-confirm:",
+            JSON.stringify(verifyData, null, 2),
+          );
 
           if (verifyData.success && verifyData.booking) {
             // Payment was verified and confirmed
+            console.log("[Confirmation] ✅ Payment verified successfully!");
             setBooking(verifyData.booking);
             setLoading(false);
             return;
+          } else if (verifyData.paystackResponse) {
+            console.error(
+              "[Confirmation] Paystack said payment status is:",
+              verifyData.paystackStatus,
+            );
+            console.error(
+              "[Confirmation] Full Paystack response:",
+              verifyData.paystackResponse,
+            );
           }
         } catch (verifyErr) {
           console.error(

@@ -98,10 +98,19 @@ export async function POST(request: NextRequest) {
         "[Verify And Confirm] Payment not successful on Paystack:",
         paystackData.data?.status,
       );
+
+      // Log full response for debugging
+      console.error(
+        "[Verify And Confirm] Full Paystack response:",
+        JSON.stringify(paystackData, null, 2),
+      );
+
       return NextResponse.json(
         {
           success: false,
           message: "Payment not yet confirmed",
+          paystackStatus: paystackData.data?.status,
+          paystackResponse: paystackData,
           booking,
         },
         { status: 200 },
