@@ -381,16 +381,16 @@ function PaymentContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          guestEmail: guestEmail,
+          guestName: guestName,
+          guestPhone: guestPhone,
           roomId: room.id,
-          checkInDate: checkInDate.toISOString(),
-          checkOutDate: checkOutDate.toISOString(),
+          checkInDate: format(checkInDate, "yyyy-MM-dd"),
+          checkOutDate: format(checkOutDate, "yyyy-MM-dd"),
           numberOfGuests: 1,
-          email: guestEmail,
-          firstName: guestName.split(" ")[0],
-          lastName: guestName.split(" ").slice(1).join(" "),
-          phone: guestPhone,
           specialRequests,
-          totalAmount: totalPrice,
+          roomPriceNGN: room.priceNGN,
+          numberOfNights: nights,
         }),
       });
 
@@ -401,26 +401,27 @@ function PaymentContent() {
       }
 
       const booking = bookingData.booking;
-      const paystackReference = bookingData.paystackReference;
+      const { payment } = bookingData;
+      const paystackReference = payment.reference;
 
       // Transform booking to match confirmation page expectations
       const transformedBooking = {
         id: booking.id,
-        checkInDate: booking.checkInDate,
-        checkOutDate: booking.checkOutDate,
-        numberOfGuests: booking.numberOfGuests,
-        specialRequests: booking.specialRequests,
+        checkInDate: booking.check_in_date,
+        checkOutDate: booking.check_out_date,
+        numberOfGuests: booking.number_of_guests,
+        specialRequests: booking.special_requests,
         room: {
           title: room.title,
           priceNGN: room.priceNGN,
         },
         user: {
-          firstName: booking.firstName || guestName.split(" ")[0],
-          lastName: booking.lastName || guestName.split(" ").slice(1).join(" "),
-          email: booking.email || guestEmail,
+          firstName: guestName.split(" ")[0],
+          lastName: guestName.split(" ").slice(1).join(" "),
+          email: booking.guest_email,
         },
         payment: {
-          amountNGN: totalPrice,
+          amountNGN: booking.total_amount_ngn,
           paystackReference,
         },
       };
