@@ -519,7 +519,11 @@ function PaymentContent() {
             setProcessing(false);
           },
           onSuccess: async (response: any) => {
-            console.log("💰 Payment successful from Paystack!");
+            console.error(
+              "💰 💰 💰 PAYMENT SUCCESSFUL FROM PAYSTACK! 💰 💰 💰",
+            );
+            console.error("Response:", response);
+            alert("✅ PAYMENT SUCCESSFUL! Updating database now...");
 
             // Immediately set redirecting flag to prevent any re-renders from interrupting
             setIsRedirecting(true);
@@ -622,7 +626,11 @@ function PaymentContent() {
                 setProcessing(false);
               },
               onSuccess: async (response: any) => {
-                console.log("💰 Payment successful from Paystack!");
+                console.error(
+                  "💰 💰 💰 PAYMENT SUCCESSFUL FROM PAYSTACK! 💰 💰 💰",
+                );
+                console.error("Response:", response);
+                alert("✅ PAYMENT SUCCESSFUL! Updating database now...");
 
                 // Immediately set redirecting flag
                 setIsRedirecting(true);
@@ -661,13 +669,21 @@ function PaymentContent() {
                       },
                     );
 
+                    const confirmData = await confirmRes.json();
+
                     if (confirmRes.ok) {
-                      console.log("✅ Payment confirmed in database");
+                      console.error(
+                        "✅ ✅ ✅ PAYMENT CONFIRMED IN DATABASE:",
+                        confirmData,
+                      );
+                      alert("✅ DATABASE UPDATED! Redirecting...");
                     } else {
                       console.error(
-                        "❌ Failed to confirm payment:",
+                        "❌ FAILED TO CONFIRM PAYMENT:",
                         confirmRes.status,
+                        confirmData,
                       );
+                      alert(`❌ ERROR: ${confirmData.error}`);
                     }
 
                     // Send email
