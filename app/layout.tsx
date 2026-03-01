@@ -31,11 +31,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* Paystack Script - Load globally for payment processing */}
-        <script
-          src="https://js.paystack.co/v1/inline.js"
-          async
-          defer
-        ></script>
+        <script src="https://js.paystack.co/v1/inline.js" async defer></script>
       </head>
       <body className="font-sans antialiased bg-white text-slate-900">
         {children}

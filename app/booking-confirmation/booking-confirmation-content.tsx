@@ -77,9 +77,9 @@ export default function BookingConfirmationContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-green-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-green-200 border-t-green-900 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-900 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">Confirming your booking...</p>
         </div>
       </div>
@@ -122,16 +122,16 @@ export default function BookingConfirmationContent() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-blue-50 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-50 py-12 px-4">
       <div className="max-w-2xl mx-auto">
         {/* Success Header */}
         <div className="text-center mb-8">
           <div className="mb-4 flex justify-center">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
               <span className="text-5xl">✅</span>
             </div>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-green-600 mb-2 cormorant">
+          <h1 className="text-4xl sm:text-5xl font-bold text-blue-900 mb-2 cormorant">
             Booking Confirmed!
           </h1>
           <p className="text-lg text-gray-600">

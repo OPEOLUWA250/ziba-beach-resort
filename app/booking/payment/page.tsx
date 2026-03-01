@@ -42,20 +42,34 @@ function PaymentContent() {
     room01: {
       id: "room01",
       title: "Beach Facing Room",
-      description: "Experience the essence of beach luxury with stunning ocean views",
+      description:
+        "Experience the essence of beach luxury with stunning ocean views",
       priceNGN: 202000,
       capacity: 3,
       images: ["/Ziba-hero.jpg"],
-      amenities: ["WiFi", "Minibar", "Room Service", "Daily Housekeeping", "Beach Access"],
+      amenities: [
+        "WiFi",
+        "Minibar",
+        "Room Service",
+        "Daily Housekeeping",
+        "Beach Access",
+      ],
     },
     room02: {
       id: "room02",
       title: "Beach Facing Family Room",
-      description: "Spacious family accommodation with flexible sleeping arrangements",
+      description:
+        "Spacious family accommodation with flexible sleeping arrangements",
       priceNGN: 225000,
       capacity: 6,
       images: ["/Ziba-hero.jpg"],
-      amenities: ["WiFi", "Kids Welcome", "Room Service", "Family Beach Amenities", "Game Console"],
+      amenities: [
+        "WiFi",
+        "Kids Welcome",
+        "Room Service",
+        "Family Beach Amenities",
+        "Game Console",
+      ],
     },
     room03: {
       id: "room03",
@@ -64,7 +78,13 @@ function PaymentContent() {
       priceNGN: 247500,
       capacity: 6,
       images: ["/Ziba-hero.jpg"],
-      amenities: ["WiFi", "Premium Service", "Ocean View", "Family Activities", "Telescope"],
+      amenities: [
+        "WiFi",
+        "Premium Service",
+        "Ocean View",
+        "Family Activities",
+        "Telescope",
+      ],
     },
   };
 
@@ -86,7 +106,7 @@ function PaymentContent() {
     const fetchRoom = async () => {
       try {
         setLoading(true);
-        
+
         // First check fallback data
         if (roomIdParam && fallbackRooms[roomIdParam]) {
           setRoom(fallbackRooms[roomIdParam]);
@@ -259,13 +279,38 @@ function PaymentContent() {
       const booking = bookingData.booking;
       const paystackReference = bookingData.paystackReference;
 
+      // Transform booking to match confirmation page expectations
+      const transformedBooking = {
+        id: booking.id,
+        checkInDate: booking.checkInDate,
+        checkOutDate: booking.checkOutDate,
+        numberOfGuests: booking.numberOfGuests,
+        specialRequests: booking.specialRequests,
+        room: {
+          title: room.title,
+          priceNGN: room.priceNGN,
+        },
+        user: {
+          firstName: booking.firstName || guestName.split(" ")[0],
+          lastName: booking.lastName || guestName.split(" ").slice(1).join(" "),
+          email: booking.email || guestEmail,
+        },
+        payment: {
+          amountNGN: totalPrice,
+          paystackReference,
+        },
+      };
+
       if (!isValidPaystackKey) {
         // Demo mode - simulate successful payment
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
         // Store booking details in sessionStorage
         if (typeof window !== "undefined") {
-          sessionStorage.setItem("lastBooking", JSON.stringify(booking));
+          sessionStorage.setItem(
+            "lastBooking",
+            JSON.stringify(transformedBooking),
+          );
         }
 
         // Send confirmation email with booking details included
@@ -322,7 +367,10 @@ function PaymentContent() {
 
             // Store booking details in sessionStorage
             if (typeof window !== "undefined") {
-              sessionStorage.setItem("lastBooking", JSON.stringify(booking));
+              sessionStorage.setItem(
+                "lastBooking",
+                JSON.stringify(transformedBooking),
+              );
             }
 
             // Send confirmation email with booking details included
@@ -384,7 +432,7 @@ function PaymentContent() {
                 if (typeof window !== "undefined") {
                   sessionStorage.setItem(
                     "lastBooking",
-                    JSON.stringify(booking),
+                    JSON.stringify(transformedBooking),
                   );
                 }
 
