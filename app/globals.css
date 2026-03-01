@@ -38,6 +38,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --font-cormorant: var(--font-cormorant, serif);
+  --font-inter: var(--font-inter, sans-serif);
+  --font-noto-sans: var(--font-noto-sans, sans-serif);
 }
 
 .dark {
@@ -77,6 +80,8 @@
 
 @theme inline {
   --font-sans: "Inter", "Inter Fallback";
+  --font-cormorant: var(--font-cormorant, serif);
+  --font-noto-sans: var(--font-noto-sans, sans-serif);
   --font-mono: "Geist Mono", "Geist Mono Fallback";
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -122,6 +127,139 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* ============================================================================
+   TYPOGRAPHY SYSTEM - Based on Figma Design System
+   ============================================================================ */
+
+@layer components {
+  /* ========== Cormorant Garamond - Headers (Serif, Luxury) ========== */
+
+  .h1 {
+    @apply text-5xl md:text-6xl lg:text-7xl font-light leading-tight tracking-tight;
+    font-family: var(--font-cormorant);
+  }
+
+  .h2 {
+    @apply text-4xl md:text-5xl lg:text-6xl font-light leading-tight tracking-wide;
+    font-family: var(--font-cormorant);
+  }
+
+  .h3 {
+    @apply text-3xl md:text-4xl lg:text-5xl font-light leading-normal;
+    font-family: var(--font-cormorant);
+  }
+
+  .h4 {
+    @apply text-2xl md:text-3xl lg:text-4xl font-light leading-normal;
+    font-family: var(--font-cormorant);
+  }
+
+  .h5 {
+    @apply text-xl md:text-2xl lg:text-3xl font-light leading-normal;
+    font-family: var(--font-cormorant);
+  }
+
+  .h6 {
+    @apply text-lg md:text-xl lg:text-2xl font-light leading-normal;
+    font-family: var(--font-cormorant);
+  }
+
+  /* ========== Body Text (Noto Sans - Clean, Modern) ========== */
+
+  .body-lg {
+    @apply text-lg leading-relaxed font-normal;
+    font-family: var(--font-noto-sans);
+  }
+
+  .body-base {
+    @apply text-base leading-relaxed font-normal;
+    font-family: var(--font-noto-sans);
+  }
+
+  .body-sm {
+    @apply text-sm leading-relaxed font-normal;
+    font-family: var(--font-noto-sans);
+  }
+
+  .body-xs {
+    @apply text-xs leading-relaxed font-normal;
+    font-family: var(--font-noto-sans);
+  }
+
+  /* ========== Body Text Bold ========== */
+
+  .body-lg-semibold {
+    @apply text-lg leading-relaxed font-semibold;
+    font-family: var(--font-noto-sans);
+  }
+
+  .body-base-semibold {
+    @apply text-base leading-relaxed font-semibold;
+    font-family: var(--font-noto-sans);
+  }
+
+  .body-sm-semibold {
+    @apply text-sm leading-relaxed font-semibold;
+    font-family: var(--font-noto-sans);
+  }
+
+  /* ========== Buttons & Captions ========== */
+
+  .button-text {
+    @apply text-base font-medium leading-none tracking-wide;
+    font-family: var(--font-noto-sans);
+  }
+
+  .button-text-sm {
+    @apply text-sm font-medium leading-none tracking-wide;
+    font-family: var(--font-noto-sans);
+  }
+
+  .caption {
+    @apply text-sm font-normal leading-tight tracking-tight text-muted-foreground;
+    font-family: var(--font-noto-sans);
+  }
+
+  .caption-sm {
+    @apply text-xs font-normal leading-tight tracking-tight text-muted-foreground;
+    font-family: var(--font-noto-sans);
+  }
+
+  /* ========== Labels ========== */
+
+  .label-lg {
+    @apply text-base font-semibold leading-none tracking-wide;
+    font-family: var(--font-noto-sans);
+  }
+
+  .label {
+    @apply text-sm font-semibold leading-none tracking-wide;
+    font-family: var(--font-noto-sans);
+  }
+
+  .label-sm {
+    @apply text-xs font-semibold leading-none tracking-widest uppercase;
+    font-family: var(--font-noto-sans);
+  }
+
+  /* ========== Display Text (Large Headers) ========== */
+
+  .display-lg {
+    @apply text-6xl md:text-7xl lg:text-8xl font-light leading-tight;
+    font-family: var(--font-cormorant);
+  }
+
+  .display {
+    @apply text-5xl md:text-6xl lg:text-7xl font-light leading-tight;
+    font-family: var(--font-cormorant);
+  }
+
+  .display-sm {
+    @apply text-4xl md:text-5xl lg:text-6xl font-light leading-tight;
+    font-family: var(--font-cormorant);
   }
 }
 
