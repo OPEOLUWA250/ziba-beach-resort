@@ -206,7 +206,7 @@ export default function DayPass() {
         </section>
 
         {/* PRODUCTS SECTION */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-white">
+        <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
           <div className="max-w-7xl mx-auto">
             {/* TICKETS SECTION */}
             <div className="mb-20">

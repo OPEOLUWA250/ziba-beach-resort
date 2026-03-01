@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   UtensilsCrossed,
   BookOpen,
+  Zap,
 } from "lucide-react";
 
 const adminNavItems = [
@@ -28,6 +29,7 @@ const adminNavItems = [
   { label: "Rooms", href: "/admin/rooms", icon: DoorOpen },
   { label: "Menus", href: "/admin/menus", icon: UtensilsCrossed },
   { label: "Blog", href: "/admin/blog", icon: BookOpen },
+  { label: "Popups", href: "/admin/popups", icon: Zap },
   { label: "Revenue", href: "/admin/revenue", icon: TrendingUp },
   { label: "Guests", href: "/admin/guests", icon: Users },
   { label: "Reviews", href: "/admin/reviews", icon: Star },
@@ -52,10 +54,10 @@ export default function AdminLayout({
   };
 
   return (
-    <div className="flex h-screen bg-gray-900">
+    <div className="flex min-h-screen bg-gray-900">
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 border-r border-gray-800 transition-transform duration-300 md:relative md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-linear-to-b from-gray-950 via-gray-900 to-gray-950 border-r border-gray-800 transition-transform duration-300 md:sticky md:top-0 md:h-screen md:translate-x-0 overflow-y-auto ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -127,9 +129,9 @@ export default function AdminLayout({
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-screen">
         {/* TopBar */}
-        <div className="h-20 bg-gradient-to-r from-gray-800 to-gray-900 border-b border-gray-700 flex items-center justify-between px-6">
+        <div className="h-20 bg-linear-to-r from-gray-800 to-gray-900 border-b border-gray-700 flex items-center justify-between px-6">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -159,7 +161,9 @@ export default function AdminLayout({
 
         {/* Page Content */}
         <div className="flex-1 overflow-auto bg-gray-950">
-          <div className="p-6 md:p-8 max-w-full">{children}</div>
+          <div className="p-6 md:p-8 max-w-full min-h-full bg-gray-950">
+            {children}
+          </div>
         </div>
       </div>
     </div>

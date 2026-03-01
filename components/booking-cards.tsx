@@ -30,7 +30,7 @@ export default function BookingCards() {
     <section
       ref={sectionRef}
       id="booking-section"
-      className="pt-16 pb-24 px-4 sm:px-6 lg:px-8 bg-white scroll-mt-20 overflow-hidden"
+      className="pt-28 pb-32 px-4 sm:px-6 lg:px-8 bg-white scroll-mt-20 overflow-hidden"
     >
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}

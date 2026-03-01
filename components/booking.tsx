@@ -10,7 +10,7 @@ export default function Booking() {
   });
 
   return (
-    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+    <section className="py-32 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-6xl mx-auto">
         <h2
           className="text-5xl font-light text-blue-900 mb-4"

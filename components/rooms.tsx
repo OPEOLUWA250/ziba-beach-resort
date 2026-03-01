@@ -115,7 +115,7 @@ export default function Rooms() {
     <section
       ref={sectionRef}
       id="rooms"
-      className="py-24 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden"
+      className="py-32 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}

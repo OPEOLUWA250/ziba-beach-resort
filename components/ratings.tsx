@@ -58,7 +58,7 @@ export default function Ratings() {
   return (
     <section
       ref={sectionRef}
-      className="py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-white via-blue-50/30 to-white overflow-hidden"
+      className="py-28 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-white via-blue-50/30 to-white overflow-hidden"
     >
       <div className="max-w-6xl mx-auto">
         {/* Ratings Grid */}

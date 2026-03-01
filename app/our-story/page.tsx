@@ -149,7 +149,7 @@ export default function OurStory() {
       <main className="bg-white">
         {/* The Resort Section */}
         <section
-          className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-blue-50 via-white to-pink-50 overflow-hidden"
+          className="px-4 sm:px-6 lg:px-8 py-28 bg-linear-to-br from-blue-50 via-white to-pink-50 overflow-hidden"
           style={{ animation: "fadeInUp 0.8s ease-out" }}
         >
           <div className="max-w-5xl mx-auto">
@@ -186,7 +186,7 @@ export default function OurStory() {
         </section>
 
         {/* Warm Experiences Section */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-white">
+        <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <h2
@@ -268,7 +268,7 @@ export default function OurStory() {
         </section>
 
         {/* Facilities Section - With Experience Cards & Amenities Grid */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-white">
+        <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2
@@ -348,7 +348,7 @@ export default function OurStory() {
         </section>
 
         {/* Team Bonding Section */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-white">
+        <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2
@@ -561,7 +561,7 @@ export default function OurStory() {
         </section>
 
         {/* Brand Partners Carousel */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-white">
+        <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2

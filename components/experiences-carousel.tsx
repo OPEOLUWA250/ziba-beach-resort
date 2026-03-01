@@ -116,7 +116,7 @@ export default function ExperiencesCarousel() {
   return (
     <section
       ref={sectionRef}
-      className="px-4 sm:px-6 lg:px-8 py-20 bg-white overflow-hidden"
+      className="px-4 sm:px-6 lg:px-8 py-28 bg-white overflow-hidden"
     >
       <div className="max-w-7xl mx-auto">
         <div

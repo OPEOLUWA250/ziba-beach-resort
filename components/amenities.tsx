@@ -130,7 +130,7 @@ export default function Amenities() {
     <section
       ref={sectionRef}
       id="amenities"
-      className="py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 overflow-hidden"
+      className="py-32 px-4 sm:px-6 lg:px-8 bg-gray-50 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto">
         <div

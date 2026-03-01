@@ -48,7 +48,7 @@ export default function MenuTeaser() {
   return (
     <section
       ref={sectionRef}
-      className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-blue-50 via-white to-blue-50 overflow-hidden"
+      className="px-4 sm:px-6 lg:px-8 py-28 bg-linear-to-br from-blue-50 via-white to-blue-50 overflow-hidden"
     >
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}

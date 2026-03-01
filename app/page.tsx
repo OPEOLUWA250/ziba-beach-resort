@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Header from "@/components/header";
 import Hero from "@/components/hero";
+import { PopupModal } from "@/components/popup-modal";
 import AboutUs from "@/components/about-us";
 import Ratings from "@/components/ratings";
 import BookingCards from "@/components/booking-cards";
@@ -21,6 +22,7 @@ export default function Home() {
     <main className="min-h-screen bg-white">
       <Header />
       <Hero />
+      <PopupModal />
       <AboutUs />
       <Ratings />
       <BookingCards />

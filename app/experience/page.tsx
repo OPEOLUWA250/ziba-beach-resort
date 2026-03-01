@@ -661,7 +661,7 @@ export default function Celebrate() {
         </section>
 
         {/* Team Bonding Experiences */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-white">
+        <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2

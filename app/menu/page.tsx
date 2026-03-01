@@ -147,7 +147,7 @@ export default function Menu() {
         </section>
 
         {/* MENU CONTENT */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-white">
+        <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
           <div className="max-w-4xl mx-auto">
             {loading ? (
               <div className="flex items-center justify-center min-h-96">
@@ -200,7 +200,7 @@ export default function Menu() {
               Reserve your table or book your stay at Ziba Beach Resort
             </p>
             <Link href="/day-pass">
-              <button className="bg-gradient-to-br from-white to-blue-50 text-blue-900 px-10 py-4 rounded-lg font-light hover:shadow-lg transition-all duration-300 hover:from-blue-50 hover:to-white text-lg cursor-pointer">
+              <button className="bg-linear-to-br from-white to-blue-50 text-blue-900 px-10 py-4 rounded-lg font-light hover:shadow-lg transition-all duration-300 hover:from-blue-50 hover:to-white text-lgxt-lg cursor-pointer">
                 Make a Reservation
               </button>
             </Link>

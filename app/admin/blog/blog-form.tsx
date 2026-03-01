@@ -337,7 +337,7 @@ export default function BlogForm({ blog, onClose, onSuccess }: BlogFormProps) {
             {/* Image Preview */}
             {formData.featured_image && (
               <div className="mt-4 flex items-start gap-4">
-                <div className="w-24 h-24 bg-gray-700 rounded-lg overflow-hidden flex-shrink-0 border border-gray-600">
+                <div className="w-24 h-24 bg-gray-700 rounded-lg overflow-hidden shrink-0 border border-gray-600">
                   <img
                     src={formData.featured_image}
                     alt="Featured image preview"

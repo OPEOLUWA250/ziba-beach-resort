@@ -30,7 +30,7 @@ export default function AboutUs() {
     <section
       ref={sectionRef}
       id="about"
-      className="py-24 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden"
+      className="py-32 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden"
     >
       <div className="max-w-6xl mx-auto">
         {/* Heading */}

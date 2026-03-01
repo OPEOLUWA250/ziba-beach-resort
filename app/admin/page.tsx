@@ -327,7 +327,7 @@ export default function AdminDashboard() {
           <div className="space-y-4">
             <div className="p-4 bg-red-900/20 border border-red-900/50 rounded-xl">
               <div className="flex items-start gap-3">
-                <AlertCircle size={20} className="text-red-400 flex-shrink-0" />
+                <AlertCircle size={20} className="text-red-400 shrink-0" />
                 <div>
                   <p className="text-red-300 font-semibold">Payment Failed</p>
                   <p className="text-red-200 text-sm">
@@ -339,10 +339,7 @@ export default function AdminDashboard() {
 
             <div className="p-4 bg-yellow-900/20 border border-yellow-900/50 rounded-xl">
               <div className="flex items-start gap-3">
-                <AlertCircle
-                  size={20}
-                  className="text-yellow-400 flex-shrink-0"
-                />
+                <AlertCircle size={20} className="text-yellow-400 shrink-0" />
                 <div>
                   <p className="text-yellow-300 font-semibold">
                     Maintenance Scheduled
@@ -356,7 +353,7 @@ export default function AdminDashboard() {
 
             <div className="p-4 bg-blue-900/20 border border-blue-900/50 rounded-xl">
               <div className="flex items-start gap-3">
-                <Calendar size={20} className="text-blue-400 flex-shrink-0" />
+                <Calendar size={20} className="text-blue-400 shrink-0" />
                 <div>
                   <p className="text-blue-300 font-semibold">Check-ins Today</p>
                   <p className="text-blue-200 text-sm">

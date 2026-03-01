@@ -187,7 +187,7 @@ export default function AdminMenusPage() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+            <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
             <p className="text-red-700">{error}</p>
           </div>
         )}
@@ -200,7 +200,7 @@ export default function AdminMenusPage() {
               className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
             >
               {/* Category Header */}
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200 px-6 py-4">
+              <div className="bg-linear-to-r from-blue-50 to-blue-100 border-b border-blue-200 px-6 py-4">
                 <h2 className="text-2xl font-bold text-blue-900 mb-1">
                   {category.name}
                 </h2>

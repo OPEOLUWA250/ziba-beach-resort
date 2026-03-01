@@ -111,7 +111,7 @@ export default function Stay() {
       />
       <main className="bg-white">
         {/* ALL ROOMS SECTION */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-white">
+        <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2

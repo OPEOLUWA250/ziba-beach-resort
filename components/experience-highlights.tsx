@@ -68,7 +68,7 @@ export default function ExperienceHighlights() {
   return (
     <section
       ref={sectionRef}
-      className="py-24 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-gray-50 to-white overflow-hidden"
+      className="py-32 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-gray-50 to-white overflow-hidden"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}

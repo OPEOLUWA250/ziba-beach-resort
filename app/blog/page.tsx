@@ -57,7 +57,7 @@ export default function Blog() {
       <main className="bg-white">
         {/* Category Filter */}
         <section
-          className="px-4 sm:px-6 lg:px-8 py-16 overflow-hidden"
+          className="px-4 sm:px-6 lg:px-8 py-24 overflow-hidden"
           style={{ animation: "fadeInUp 0.8s ease-out" }}
         >
           <div className="max-w-6xl mx-auto">

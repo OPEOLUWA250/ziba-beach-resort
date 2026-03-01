@@ -396,7 +396,7 @@ export default function Reviews() {
     <section
       ref={sectionRef}
       id="reviews"
-      className="py-24 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-white to-blue-50 overflow-hidden"
+      className="py-32 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-white to-blue-50 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
