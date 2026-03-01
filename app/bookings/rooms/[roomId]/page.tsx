@@ -423,6 +423,56 @@ export default function RoomDetail({
           </div>
         </section>
 
+        {/* Booking Card - Mobile Only */}
+        <section className="px-4 sm:px-6 lg:px-8 py-8 md:hidden">
+          <div className="max-w-6xl mx-auto">
+            <div className="bg-linear-to-b from-blue-50 to-white border-2 border-blue-200 rounded-2xl p-8 space-y-6">
+              <div>
+                <p className="text-sm text-gray-600 font-light mb-2">
+                  Starting from
+                </p>
+                <p className="text-4xl font-light text-gray-900">
+                  {room.price}
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="flex-1 bg-linear-to-r from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light"
+                >
+                  Book Now
+                </button>
+                <button className="flex-1 border-2 border-gray-900 text-gray-900 py-4 rounded-lg hover:bg-gray-50 transition font-light">
+                  Inquiry
+                </button>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
+                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                  Quick Info
+                </h3>
+                <div className="space-y-2 text-sm font-light text-gray-700">
+                  <p>✓ Breakfast Included</p>
+                  <p>✓ Free WiFi</p>
+                  <p>✓ Airport Transfers Available</p>
+                  <p>✓ 24/7 Concierge</p>
+                  <p>✓ Free Cancellation (7 days before)</p>
+                </div>
+              </div>
+
+              <div className="bg-linear-to-br from-amber-50 to-white border border-amber-200 rounded-xl p-4">
+                <p className="text-sm font-light text-gray-700 leading-relaxed">
+                  <strong className="font-semibold">
+                    Best Price Guarantee:
+                  </strong>{" "}
+                  Get the best rate when you book directly with us.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Room Details */}
         <section className="px-4 sm:px-6 lg:px-8 py-20">
           <div className="max-w-6xl mx-auto">
@@ -530,8 +580,8 @@ export default function RoomDetail({
                 </div>
               </div>
 
-              {/* Right: Sidebar */}
-              <div>
+              {/* Right: Sidebar - Desktop Only */}
+              <div className="hidden md:block">
                 <div className="bg-linear-to-b from-blue-50 to-white border-2 border-blue-200 rounded-2xl p-8 sticky top-20 space-y-6">
                   <div>
                     <p className="text-sm text-gray-600 font-light mb-2">

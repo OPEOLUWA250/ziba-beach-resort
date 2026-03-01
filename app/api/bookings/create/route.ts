@@ -1,10 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  createBooking,
-  isRoomAvailable,
-  calculateBookingPrice,
-} from "@/lib/services/booking";
-import { getUserByEmail } from "@/lib/services/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +11,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     const {
-      userId,
       roomId,
       checkInDate,
       checkOutDate,
@@ -27,6 +20,7 @@ export async function POST(request: NextRequest) {
       firstName,
       lastName,
       phone,
+      totalAmount,
     } = body;
 
     // Validation
@@ -58,49 +52,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check room availability
-    const available = await isRoomAvailable(roomId, checkIn, checkOut);
-    if (!available) {
-      return NextResponse.json(
-        { error: "Room is not available for selected dates" },
-        { status: 409 },
-      );
-    }
+    // Generate booking ID
+    const bookingId = `booking-${Date.now()}-${Math.random().toString(36).substring(7)}`;
 
-    // Find or create user
-    let actualUserId = userId;
-    if (!actualUserId && email) {
-      const existingUser = await getUserByEmail(email);
-      if (existingUser) {
-        actualUserId = existingUser.id;
-      } else {
-        // For guest bookings, generate a temporary ID
-        actualUserId = `guest-${Date.now()}`;
-      }
-    }
-
-    if (!actualUserId) {
-      return NextResponse.json(
-        { error: "User information is required" },
-        { status: 400 },
-      );
-    }
-
-    // Calculate price
-    const totalAmount = await calculateBookingPrice(roomId, checkIn, checkOut);
-
-    // Create booking
-    const booking = await createBooking({
-      userId: actualUserId,
+    // Create booking object (mock - no database call)
+    const booking = {
+      id: bookingId,
       roomId,
-      checkInDate: checkIn,
-      checkOutDate: checkOut,
+      checkInDate: checkIn.toISOString(),
+      checkOutDate: checkOut.toISOString(),
       numberOfGuests,
       specialRequests: specialRequests || "",
       status: "PENDING",
-    });
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
-    const paystackReference = `${booking.id}-${Date.now()}`;
+    const paystackReference = `${bookingId}-${Date.now()}`;
 
     return NextResponse.json(
       {

@@ -37,6 +37,37 @@ function PaymentContent() {
   const [guestPhone, setGuestPhone] = useState("");
   const [specialRequests, setSpecialRequests] = useState("");
 
+  // Fallback room data for demo mode
+  const fallbackRooms: { [key: string]: RoomData } = {
+    room01: {
+      id: "room01",
+      title: "Beach Facing Room",
+      description: "Experience the essence of beach luxury with stunning ocean views",
+      priceNGN: 202000,
+      capacity: 3,
+      images: ["/Ziba-hero.jpg"],
+      amenities: ["WiFi", "Minibar", "Room Service", "Daily Housekeeping", "Beach Access"],
+    },
+    room02: {
+      id: "room02",
+      title: "Beach Facing Family Room",
+      description: "Spacious family accommodation with flexible sleeping arrangements",
+      priceNGN: 225000,
+      capacity: 6,
+      images: ["/Ziba-hero.jpg"],
+      amenities: ["WiFi", "Kids Welcome", "Room Service", "Family Beach Amenities", "Game Console"],
+    },
+    room03: {
+      id: "room03",
+      title: "Beach Facing Family Room",
+      description: "Premium family space with expansive pool and ocean views",
+      priceNGN: 247500,
+      capacity: 6,
+      images: ["/Ziba-hero.jpg"],
+      amenities: ["WiFi", "Premium Service", "Ocean View", "Family Activities", "Telescope"],
+    },
+  };
+
   // Parse dates
   const checkInDate = checkInParam
     ? parse(checkInParam, "yyyy-MM-dd", new Date())
@@ -55,22 +86,32 @@ function PaymentContent() {
     const fetchRoom = async () => {
       try {
         setLoading(true);
+        
+        // First check fallback data
+        if (roomIdParam && fallbackRooms[roomIdParam]) {
+          setRoom(fallbackRooms[roomIdParam]);
+          return;
+        }
+
+        // Try API
         const res = await fetch("/api/rooms");
         const data = await res.json();
         const roomsList = data.rooms || data || [];
 
         if (!Array.isArray(roomsList) || roomsList.length === 0) {
+          // Fallback if API returns empty
+          if (roomIdParam && fallbackRooms[roomIdParam]) {
+            setRoom(fallbackRooms[roomIdParam]);
+            return;
+          }
           setError("Unable to load room data");
           return;
         }
 
         // Search for room by multiple criteria
         let foundRoom = null;
-
-        // First, try exact ID match
         foundRoom = roomsList.find((r: RoomData) => r.id === roomIdParam);
 
-        // Then try by title/name
         if (!foundRoom && roomNameParam) {
           foundRoom = roomsList.find(
             (r: RoomData) =>
@@ -79,7 +120,6 @@ function PaymentContent() {
           );
         }
 
-        // Last resort: search by any field containing roomId
         if (!foundRoom && roomIdParam) {
           foundRoom = roomsList.find(
             (r: RoomData) =>
@@ -87,6 +127,11 @@ function PaymentContent() {
                 r.title.toLowerCase().includes(roomIdParam.toLowerCase())) ||
               (r.id && r.id.toLowerCase().includes(roomIdParam.toLowerCase())),
           );
+        }
+
+        // Last resort: use fallback
+        if (!foundRoom && roomIdParam && fallbackRooms[roomIdParam]) {
+          foundRoom = fallbackRooms[roomIdParam];
         }
 
         if (!foundRoom) {
@@ -103,14 +148,19 @@ function PaymentContent() {
         setRoom(foundRoom);
       } catch (err) {
         console.error("Failed to fetch room:", err);
-        setError("Failed to load room details");
+        // Use fallback on error
+        if (roomIdParam && fallbackRooms[roomIdParam]) {
+          setRoom(fallbackRooms[roomIdParam]);
+        } else {
+          setError("Failed to load room details");
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchRoom();
-  }, [roomIdParam]);
+  }, [roomIdParam, roomNameParam]);
 
   if (!checkInDate || !checkOutDate || !roomIdParam) {
     return (
