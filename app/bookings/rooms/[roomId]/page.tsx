@@ -582,7 +582,7 @@ export default function RoomDetail({
         </section>
 
         {/* More Rooms CTA */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-r from-gray-900 to-gray-800">
+        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-r from-blue-900 to-blue-800">
           <div className="max-w-4xl mx-auto text-center">
             <h2
               className="text-5xl font-light text-white mb-6"
