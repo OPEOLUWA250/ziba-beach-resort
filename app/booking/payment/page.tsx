@@ -374,8 +374,20 @@ function PaymentContent() {
     }
 
     setProcessing(true);
+    setError("");
 
     try {
+      console.log("📝 Creating booking with data:", {
+        guestEmail,
+        guestName,
+        guestPhone,
+        roomId: room.id,
+        checkInDate: format(checkInDate, "yyyy-MM-dd"),
+        checkOutDate: format(checkOutDate, "yyyy-MM-dd"),
+        roomPriceNGN: room.priceNGN,
+        numberOfNights: nights,
+      });
+
       // Create booking
       const bookingRes = await fetch("/api/bookings/create", {
         method: "POST",
@@ -394,15 +406,26 @@ function PaymentContent() {
         }),
       });
 
+      console.log("📬 Booking API response status:", bookingRes.status);
       const bookingData = await bookingRes.json();
+      console.log("📥 Booking API response:", bookingData);
+
+      if (!bookingRes.ok) {
+        const errorMsg = bookingData.error || `API error: ${bookingRes.status}`;
+        console.error("❌ Booking creation failed:", errorMsg);
+        throw new Error(errorMsg);
+      }
 
       if (!bookingData.booking) {
-        throw new Error(bookingData.error || "Failed to create booking");
+        throw new Error(bookingData.error || "No booking returned from API");
       }
 
       const booking = bookingData.booking;
       const { payment } = bookingData;
       const paystackReference = payment.reference;
+
+      console.log("✅ Booking created:", booking.id);
+      console.log("💳 Paystack reference:", paystackReference);
 
       // Transform booking to match confirmation page expectations
       const transformedBooking = {
@@ -426,8 +449,11 @@ function PaymentContent() {
         },
       };
 
+      console.log("🎬 Demo mode?", !isValidPaystackKey);
+
       if (!isValidPaystackKey) {
         // Demo mode - simulate successful payment
+        console.log("🔄 Entering demo mode - simulating payment");
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
         // Store booking details in sessionStorage
@@ -444,6 +470,7 @@ function PaymentContent() {
             (1000 * 60 * 60 * 24),
         );
 
+        console.log("📧 Sending confirmation email");
         await fetch("/api/emails/send-confirmation", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -461,22 +488,29 @@ function PaymentContent() {
           }),
         }).catch((err) => console.error("Failed to send email:", err));
 
+        console.log("✅ Demo booking complete - redirecting to confirmation");
+        setProcessing(false);
+
         // Redirect to confirmation
         router.push(`/booking-confirmation?bookingId=${booking.id}`);
         return;
       }
 
       // Initialize Paystack with real key
+      console.log("💳 Real Paystack mode - initializing payment");
       if (typeof window !== "undefined" && window.PaystackPop) {
+        console.log("✅ PaystackPop loaded");
         window.PaystackPop.setup({
           key: paystackKey,
           email: guestEmail,
           amount: totalPrice * 100, // Paystack expects amount in kobo
           ref: paystackReference,
           onClose: () => {
+            console.log("🚫 Paystack modal closed by user");
             setProcessing(false);
           },
           onSuccess: async () => {
+            console.log("💰 Payment successful - verifying");
             // Verify payment
             const verifyRes = await fetch(
               `/api/payments/verify/${paystackReference}`,
@@ -486,7 +520,9 @@ function PaymentContent() {
             );
 
             if (!verifyRes.ok) {
+              console.error("❌ Payment verification failed");
               setError("Payment verification failed");
+              setProcessing(false);
               return;
             }
 
@@ -506,6 +542,7 @@ function PaymentContent() {
             );
 
             // Send confirmation email
+            console.log("📧 Sending confirmation email");
             await fetch("/api/emails/send-confirmation", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -529,18 +566,25 @@ function PaymentContent() {
         }).openIframe();
       } else {
         // Load Paystack script if not loaded
+        console.log("📥 Loading Paystack script...");
         const script = document.createElement("script");
         script.src = "https://js.paystack.co/v1/inline.js";
         script.async = true;
         script.onload = () => {
+          console.log("✅ Paystack script loaded");
           if (window.PaystackPop) {
+            console.log("✅ PaystackPop available");
             window.PaystackPop.setup({
               key: paystackKey,
               email: guestEmail,
               amount: totalPrice * 100,
               ref: paystackReference,
-              onClose: () => setProcessing(false),
+              onClose: () => {
+                console.log("🚫 User closed Paystack modal");
+                setProcessing(false);
+              },
               onSuccess: async () => {
+                console.log("💰 Payment successful");
                 const verifyRes = await fetch(
                   `/api/payments/verify/${paystackReference}`,
                   {
@@ -549,7 +593,9 @@ function PaymentContent() {
                 );
 
                 if (!verifyRes.ok) {
+                  console.error("❌ Verification failed");
                   setError("Payment verification failed");
+                  setProcessing(false);
                   return;
                 }
 
@@ -585,10 +631,20 @@ function PaymentContent() {
                   }),
                 }).catch((err) => console.error("Failed to send email:", err));
 
+                console.log("✅ Redirecting to confirmation");
                 router.push(`/booking-confirmation?bookingId=${booking.id}`);
               },
             }).openIframe();
+          } else {
+            console.error("❌ PaystackPop not available after script load");
+            setError("Payment system failed to load");
+            setProcessing(false);
           }
+        };
+        script.onerror = () => {
+          console.error("❌ Failed to load Paystack script");
+          setError("Failed to load payment system");
+          setProcessing(false);
         };
         document.body.appendChild(script);
       }
