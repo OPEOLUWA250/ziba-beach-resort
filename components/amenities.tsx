@@ -138,10 +138,7 @@ export default function Amenities() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <h2
-            className="text-5xl font-light text-blue-900 mb-4 text-center"
-            style={{ fontFamily: "Cormorant Garamond" }}
-          >
+          <h2 className="h2 text-blue-900 mb-4 text-center">
             World-Class Amenities
           </h2>
           <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />

@@ -12,12 +12,7 @@ export default function Booking() {
   return (
     <section className="py-32 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-6xl mx-auto">
-        <h2
-          className="text-5xl font-light text-blue-900 mb-4"
-          style={{ fontFamily: "Cormorant Garamond" }}
-        >
-          Check Availability
-        </h2>
+        <h2 className="h2 text-blue-900 mb-4">Check Availability</h2>
         <p className="text-gray-600 font-light mb-12 max-w-2xl">
           Real-time room availability. See exactly what's available before you
           book.

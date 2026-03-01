@@ -408,10 +408,7 @@ export default function Reviews() {
           <span className="inline-block text-blue-600 font-semibold text-sm uppercase tracking-widest mb-4">
             ✨ What Our Guests Say
           </span>
-          <h2
-            className="text-5xl sm:text-6xl font-light text-blue-900 mb-4 text-center"
-            style={{ fontFamily: "Cormorant Garamond" }}
-          >
+          <h2 className="h2 text-blue-900 mb-4 text-center">
             Unforgettable Moments
           </h2>
           <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />

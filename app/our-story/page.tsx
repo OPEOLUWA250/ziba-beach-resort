@@ -154,12 +154,7 @@ export default function OurStory() {
         >
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
-              <h2
-                className="text-5xl font-light text-blue-900 mb-4 text-center"
-                style={{ fontFamily: "Cormorant Garamond" }}
-              >
-                The Resort
-              </h2>
+              <h2 className="h2 text-blue-900 mb-4 text-center">The Resort</h2>
               <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
             </div>
 
@@ -189,10 +184,7 @@ export default function OurStory() {
         <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
-              <h2
-                className="text-5xl font-light text-blue-900 mb-4 text-center"
-                style={{ fontFamily: "Cormorant Garamond" }}
-              >
+              <h2 className="h2 text-blue-900 mb-4 text-center">
                 Warm Experiences
               </h2>
               <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
@@ -220,10 +212,7 @@ export default function OurStory() {
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-blue-900 via-blue-800 to-blue-900">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2
-                className="text-5xl font-light text-white mb-4 text-center"
-                style={{ fontFamily: "Cormorant Garamond" }}
-              >
+              <h2 className="h2 text-white mb-4 text-center">
                 Featured Room Types
               </h2>
               <div className="w-16 h-0.5 mx-auto bg-linear-to-r from-transparent via-blue-300 to-transparent"></div>
@@ -271,10 +260,7 @@ export default function OurStory() {
         <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2
-                className="text-5xl font-light text-blue-900 mb-4 text-center"
-                style={{ fontFamily: "Cormorant Garamond" }}
-              >
+              <h2 className="h2 text-blue-900 mb-4 text-center">
                 World-Class Facilities
               </h2>
               <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
@@ -351,10 +337,7 @@ export default function OurStory() {
         <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2
-                className="text-5xl font-light text-blue-900 mb-4 text-center"
-                style={{ fontFamily: "Cormorant Garamond" }}
-              >
+              <h2 className="h2 text-blue-900 mb-4 text-center">
                 Team Bonding Experiences
               </h2>
               <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
@@ -564,10 +547,7 @@ export default function OurStory() {
         <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2
-                className="text-5xl font-light text-blue-900 mb-4 text-center"
-                style={{ fontFamily: "Cormorant Garamond" }}
-              >
+              <h2 className="h2 text-blue-900 mb-4 text-center">
                 Our Brand Partners
               </h2>
               <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
@@ -655,10 +635,7 @@ export default function OurStory() {
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-gray-50 via-white to-gray-50">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
-              <h2
-                className="text-5xl font-light text-blue-900 mb-4 text-center"
-                style={{ fontFamily: "Cormorant Garamond" }}
-              >
+              <h2 className="h2 text-blue-900 mb-4 text-center">
                 Policies & House Rules
               </h2>
               <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
