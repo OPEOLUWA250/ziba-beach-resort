@@ -22,9 +22,21 @@ export async function POST(request: NextRequest) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    if (!supabaseUrl || !serviceRoleKey) {
+    if (!supabaseUrl) {
+      console.error("[Confirm Payment] NEXT_PUBLIC_SUPABASE_URL is missing!");
       return NextResponse.json(
-        { error: "Server configuration error" },
+        { error: "NEXT_PUBLIC_SUPABASE_URL not configured" },
+        { status: 500 },
+      );
+    }
+
+    if (!serviceRoleKey) {
+      console.error("[Confirm Payment] SUPABASE_SERVICE_ROLE_KEY is missing!");
+      return NextResponse.json(
+        {
+          error:
+            "SUPABASE_SERVICE_ROLE_KEY not configured - payments cannot be confirmed",
+        },
         { status: 500 },
       );
     }
