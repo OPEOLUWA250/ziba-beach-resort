@@ -2,13 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyPayment } from "@/lib/services/paystack";
 
 // Dynamic route: /api/payments/verify/[reference]
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { reference: string } },
-) {
+async function handleVerifyRequest(reference: string) {
   try {
-    const reference = params.reference;
-
     if (!reference) {
       return NextResponse.json(
         { error: "Payment reference is required" },
@@ -26,4 +21,18 @@ export async function GET(
       { status: 500 },
     );
   }
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { reference: string } },
+) {
+  return handleVerifyRequest(params.reference);
+}
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { reference: string } },
+) {
+  return handleVerifyRequest(params.reference);
 }

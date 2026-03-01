@@ -514,58 +514,88 @@ function PaymentContent() {
             setProcessing(false);
           },
           onSuccess: async () => {
-            console.log("💰 Payment successful - verifying");
-            // Verify payment
-            const verifyRes = await fetch(
-              `/api/payments/verify/${paystackReference}`,
-              {
-                method: "POST",
-              },
-            );
+            try {
+              console.log("💰 Payment successful - verifying");
 
-            if (!verifyRes.ok) {
-              console.error("❌ Payment verification failed");
-              setError("Payment verification failed");
-              setProcessing(false);
-              return;
-            }
-
-            // Store booking details in sessionStorage
-            if (typeof window !== "undefined") {
-              sessionStorage.setItem(
-                "lastBooking",
-                JSON.stringify(transformedBooking),
-              );
-            }
-
-            // Send confirmation email with booking details included
-            const nights = Math.ceil(
-              (new Date(checkOutDate).getTime() -
-                new Date(checkInDate).getTime()) /
-                (1000 * 60 * 60 * 24),
-            );
-
-            // Send confirmation email
-            console.log("📧 Sending confirmation email");
-            await fetch("/api/emails/send-confirmation", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                bookingId: booking.id,
-                email: guestEmail,
-                bookingDetails: {
-                  id: booking.id,
-                  checkInDate: checkInDate.toISOString(),
-                  checkOutDate: checkOutDate.toISOString(),
-                  roomTitle: room.title,
-                  totalAmount: totalPrice,
-                  numberOfGuests: 1,
+              // Verify payment
+              const verifyRes = await fetch(
+                `/api/payments/verify/${paystackReference}`,
+                {
+                  method: "POST",
                 },
-              }),
-            }).catch((err) => console.error("Failed to send email:", err));
+              );
 
-            // Redirect to confirmation
-            router.push(`/booking-confirmation?bookingId=${booking.id}`);
+              if (!verifyRes.ok) {
+                console.error(
+                  "❌ Payment verification failed - HTTP error:",
+                  verifyRes.status,
+                );
+                setError("Payment verification failed");
+                setProcessing(false);
+                return;
+              }
+
+              const verifyData = await verifyRes.json();
+
+              if (!verifyData.success && verifyData.status !== "success") {
+                console.error(
+                  "❌ Paystack verification not successful:",
+                  verifyData,
+                );
+                setError(
+                  "Payment verification failed - Status: " +
+                    (verifyData.status || "unknown"),
+                );
+                setProcessing(false);
+                return;
+              }
+
+              console.log("✅ Payment verified successfully:", verifyData);
+
+              // Store booking details in sessionStorage
+              if (typeof window !== "undefined") {
+                sessionStorage.setItem(
+                  "lastBooking",
+                  JSON.stringify(transformedBooking),
+                );
+              }
+
+              // Send confirmation email with booking details included
+              const nights = Math.ceil(
+                (new Date(checkOutDate).getTime() -
+                  new Date(checkInDate).getTime()) /
+                  (1000 * 60 * 60 * 24),
+              );
+
+              // Send confirmation email
+              console.log("📧 Sending confirmation email");
+              await fetch("/api/emails/send-confirmation", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  bookingId: booking.id,
+                  email: guestEmail,
+                  bookingDetails: {
+                    id: booking.id,
+                    checkInDate: checkInDate.toISOString(),
+                    checkOutDate: checkOutDate.toISOString(),
+                    roomTitle: room.title,
+                    totalAmount: totalPrice,
+                    numberOfGuests: 1,
+                  },
+                }),
+              }).catch((err) => console.error("Failed to send email:", err));
+
+              console.log("✅ Payment confirmed - redirecting to confirmation");
+
+              // Redirect to confirmation
+              router.push(`/booking-confirmation?bookingId=${booking.id}`);
+              setProcessing(false);
+            } catch (err: any) {
+              console.error("❌ Error in onSuccess callback:", err);
+              setError("Error processing payment: " + err.message);
+              setProcessing(false);
+            }
           },
         }).openIframe();
       } else {
@@ -588,61 +618,91 @@ function PaymentContent() {
                 setProcessing(false);
               },
               onSuccess: async () => {
-                console.log("💰 Payment successful");
-                const verifyRes = await fetch(
-                  `/api/payments/verify/${paystackReference}`,
-                  {
-                    method: "POST",
-                  },
-                );
+                try {
+                  console.log("💰 Payment successful");
 
-                if (!verifyRes.ok) {
-                  console.error("❌ Verification failed");
-                  setError("Payment verification failed");
-                  setProcessing(false);
-                  return;
-                }
-
-                // Store booking details in sessionStorage
-                if (typeof window !== "undefined") {
-                  sessionStorage.setItem(
-                    "lastBooking",
-                    JSON.stringify(transformedBooking),
-                  );
-                }
-
-                // Send confirmation email with booking details included
-                const nights = Math.ceil(
-                  (new Date(checkOutDate).getTime() -
-                    new Date(checkInDate).getTime()) /
-                    (1000 * 60 * 60 * 24),
-                );
-
-                await fetch("/api/emails/send-confirmation", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    bookingId: booking.id,
-                    email: guestEmail,
-                    bookingDetails: {
-                      id: booking.id,
-                      checkInDate: checkInDate.toISOString(),
-                      checkOutDate: checkOutDate.toISOString(),
-                      roomTitle: room.title,
-                      totalAmount: totalPrice,
-                      numberOfGuests: 1,
+                  const verifyRes = await fetch(
+                    `/api/payments/verify/${paystackReference}`,
+                    {
+                      method: "POST",
                     },
-                  }),
-                }).catch((err) => console.error("Failed to send email:", err));
+                  );
 
-                console.log(
-                  "✅ Payment confirmed - redirecting to confirmation",
-                );
+                  if (!verifyRes.ok) {
+                    console.error(
+                      "❌ Verification failed - HTTP error:",
+                      verifyRes.status,
+                    );
+                    setError("Payment verification failed");
+                    setProcessing(false);
+                    return;
+                  }
 
-                // Small delay to ensure sessionStorage is committed
-                await new Promise((resolve) => setTimeout(resolve, 300));
+                  const verifyData = await verifyRes.json();
 
-                router.push(`/booking-confirmation?bookingId=${booking.id}`);
+                  if (!verifyData.success && verifyData.status !== "success") {
+                    console.error(
+                      "❌ Paystack verification not successful:",
+                      verifyData,
+                    );
+                    setError(
+                      "Payment verification failed - Status: " +
+                        (verifyData.status || "unknown"),
+                    );
+                    setProcessing(false);
+                    return;
+                  }
+
+                  console.log("✅ Payment verified successfully:", verifyData);
+
+                  // Store booking details in sessionStorage
+                  if (typeof window !== "undefined") {
+                    sessionStorage.setItem(
+                      "lastBooking",
+                      JSON.stringify(transformedBooking),
+                    );
+                  }
+
+                  // Send confirmation email with booking details included
+                  const nights = Math.ceil(
+                    (new Date(checkOutDate).getTime() -
+                      new Date(checkInDate).getTime()) /
+                      (1000 * 60 * 60 * 24),
+                  );
+
+                  await fetch("/api/emails/send-confirmation", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      bookingId: booking.id,
+                      email: guestEmail,
+                      bookingDetails: {
+                        id: booking.id,
+                        checkInDate: checkInDate.toISOString(),
+                        checkOutDate: checkOutDate.toISOString(),
+                        roomTitle: room.title,
+                        totalAmount: totalPrice,
+                        numberOfGuests: 1,
+                      },
+                    }),
+                  }).catch((err) =>
+                    console.error("Failed to send email:", err),
+                  );
+
+                  console.log(
+                    "✅ Payment confirmed - redirecting to confirmation",
+                  );
+
+                  // Small delay to ensure sessionStorage is committed
+                  await new Promise((resolve) => setTimeout(resolve, 300));
+
+                  router.push(`/booking-confirmation?bookingId=${booking.id}`);
+                  setProcessing(false);
+                } catch (err: any) {
+                  console.error("❌ Error in onSuccess callback:", err);
+                  setError("Error processing payment: " + err.message);
+                  setProcessing(false);
+                }
               },
             }).openIframe();
           } else {
