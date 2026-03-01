@@ -53,15 +53,16 @@ export default function BookingCard({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email,
-          firstName,
-          lastName,
-          phone,
+          guestEmail: email,
+          guestName: `${firstName} ${lastName}`,
+          guestPhone: phone,
           roomId: room.id,
           checkInDate: format(checkIn, "yyyy-MM-dd"),
           checkOutDate: format(checkOut, "yyyy-MM-dd"),
           numberOfGuests: guests,
           specialRequests,
+          roomPriceNGN: room.priceNGN,
+          numberOfNights: nights,
         }),
       });
 
@@ -70,8 +71,10 @@ export default function BookingCard({
         throw new Error(errorData.error || "Failed to create booking");
       }
 
-      const { bookingId, amountNGN, paystackReference } =
-        await bookingRes.json();
+      const { booking, payment } = await bookingRes.json();
+      const bookingId = booking.id;
+      const paystackReference = payment.reference;
+      const amountNGN = booking.total_amount_ngn; // Amount in NGN (stored in DB)
 
       // Step 2: Load Paystack script dynamically
       const script = document.createElement("script");
