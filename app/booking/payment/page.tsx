@@ -32,6 +32,7 @@ function PaymentContent() {
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [currentBookingId, setCurrentBookingId] = useState("");
   const [currentAmount, setCurrentAmount] = useState(0);
 
@@ -520,34 +521,44 @@ function PaymentContent() {
           onSuccess: async (response: any) => {
             console.log("💰 Payment successful from Paystack!");
 
-            // Show success modal immediately
+            // Immediately set redirecting flag to prevent any re-renders from interrupting
+            setIsRedirecting(true);
+
+            // Show success modal
             setCurrentBookingId(booking.id);
             setCurrentAmount(totalPrice);
             setShowSuccessModal(true);
             setProcessing(false);
 
-            // Background tasks
+            // Store booking immediately
+            if (typeof window !== "undefined") {
+              sessionStorage.setItem(
+                "lastBooking",
+                JSON.stringify(transformedBooking),
+              );
+            }
+
+            // Start background tasks
+            const bookingId = booking.id;
+            const confirmUrl = `/booking-confirmation?bookingId=${bookingId}`;
+
+            // Do background work
             (async () => {
               try {
-                if (typeof window !== "undefined") {
-                  sessionStorage.setItem(
-                    "lastBooking",
-                    JSON.stringify(transformedBooking),
-                  );
-                }
-
+                // Verify payment
                 await fetch(`/api/payments/verify/${paystackReference}`).catch(
                   () => {},
                 );
 
+                // Send email
                 await fetch("/api/emails/send-confirmation", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
-                    bookingId: booking.id,
+                    bookingId: bookingId,
                     email: guestEmail,
                     bookingDetails: {
-                      id: booking.id,
+                      id: bookingId,
                       checkInDate: checkInDate.toISOString(),
                       checkOutDate: checkOutDate.toISOString(),
                       roomTitle: room.title,
@@ -556,14 +567,15 @@ function PaymentContent() {
                     },
                   }),
                 }).catch(() => {});
-
-                await new Promise((resolve) => setTimeout(resolve, 2000));
-                router.push(`/booking-confirmation?bookingId=${booking.id}`);
               } catch (err) {
-                setTimeout(() => {
-                  router.push(`/booking-confirmation?bookingId=${booking.id}`);
-                }, 2000);
+                console.error("Background task error:", err);
               }
+
+              // Always redirect after 2 seconds
+              setTimeout(() => {
+                console.log("🔄 Redirecting to confirmation:", confirmUrl);
+                router.push(confirmUrl);
+              }, 2000);
             })();
           },
         });
@@ -591,34 +603,43 @@ function PaymentContent() {
               onSuccess: async (response: any) => {
                 console.log("💰 Payment successful from Paystack!");
 
-                // Show success modal immediately
+                // Immediately set redirecting flag
+                setIsRedirecting(true);
+
+                // Show success modal
                 setCurrentBookingId(booking.id);
                 setCurrentAmount(totalPrice);
                 setShowSuccessModal(true);
                 setProcessing(false);
 
-                // Background tasks
+                // Store booking immediately
+                if (typeof window !== "undefined") {
+                  sessionStorage.setItem(
+                    "lastBooking",
+                    JSON.stringify(transformedBooking),
+                  );
+                }
+
+                // Background tasks and redirect
+                const bookingId = booking.id;
+                const confirmUrl = `/booking-confirmation?bookingId=${bookingId}`;
+
                 (async () => {
                   try {
-                    if (typeof window !== "undefined") {
-                      sessionStorage.setItem(
-                        "lastBooking",
-                        JSON.stringify(transformedBooking),
-                      );
-                    }
-
+                    // Verify payment
                     await fetch(
                       `/api/payments/verify/${paystackReference}`,
                     ).catch(() => {});
 
+                    // Send email
                     await fetch("/api/emails/send-confirmation", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({
-                        bookingId: booking.id,
+                        bookingId: bookingId,
                         email: guestEmail,
                         bookingDetails: {
-                          id: booking.id,
+                          id: bookingId,
                           checkInDate: checkInDate.toISOString(),
                           checkOutDate: checkOutDate.toISOString(),
                           roomTitle: room.title,
@@ -627,18 +648,15 @@ function PaymentContent() {
                         },
                       }),
                     }).catch(() => {});
-
-                    await new Promise((resolve) => setTimeout(resolve, 2000));
-                    router.push(
-                      `/booking-confirmation?bookingId=${booking.id}`,
-                    );
                   } catch (err) {
-                    setTimeout(() => {
-                      router.push(
-                        `/booking-confirmation?bookingId=${booking.id}`,
-                      );
-                    }, 2000);
+                    console.error("Background task error:", err);
                   }
+
+                  // Always redirect after 2 seconds
+                  setTimeout(() => {
+                    console.log("🔄 Redirecting to confirmation:", confirmUrl);
+                    router.push(confirmUrl);
+                  }, 2000);
                 })();
               },
             });
@@ -790,14 +808,22 @@ function PaymentContent() {
             {/* Payment Button */}
             <button
               onClick={handlePayment}
-              disabled={processing || !guestName || !guestEmail || !guestPhone}
+              disabled={
+                processing ||
+                isRedirecting ||
+                !guestName ||
+                !guestEmail ||
+                !guestPhone
+              }
               className="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition disabled:opacity-50 disabled:cursor-not-allowed font-bold text-base shadow-lg"
             >
-              {processing
-                ? "Processing..."
-                : isValidPaystackKey
-                  ? "Pay with Paystack"
-                  : "Complete Booking (Demo)"}
+              {isRedirecting
+                ? "Redirecting..."
+                : processing
+                  ? "Processing..."
+                  : isValidPaystackKey
+                    ? "Pay with Paystack"
+                    : "Complete Booking (Demo)"}
             </button>
 
             {!isValidPaystackKey && (

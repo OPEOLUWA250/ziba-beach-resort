@@ -57,7 +57,7 @@ export default function PaymentSuccessModal({
               style={{ animationDelay: "0.4s" }}
             ></div>
           </div>
-          Confirming your booking...
+          Redirecting to confirmation page...
         </div>
       </div>
     </div>
