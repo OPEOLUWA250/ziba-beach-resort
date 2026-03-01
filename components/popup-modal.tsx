@@ -13,25 +13,52 @@ export function PopupModal() {
   useEffect(() => {
     const fetchPopup = async () => {
       try {
-        const response = await fetch("/api/popups?active=true");
-        const data = await response.json();
+        // Use absolute URL for production compatibility
+        const baseUrl =
+          typeof window !== "undefined"
+            ? window.location.origin
+            : process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
-        if (data.popups && data.popups.length > 0) {
+        const fetchUrl = `${baseUrl}/api/popups?active=true`;
+        console.log("[PopupModal] Fetching from:", fetchUrl);
+
+        const response = await fetch(fetchUrl, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`API responded with status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("[PopupModal] API Response:", data);
+
+        if (data.success && data.popups && data.popups.length > 0) {
           setPopup(data.popups[0]);
+          console.log("[PopupModal] Popup loaded:", data.popups[0].title);
+
           // Check if coming from popup dedicated page via referrer
           const fromPopupPage = document.referrer.includes("/popups/");
           if (fromPopupPage) {
             setHasTriggered(true); // Don't show if coming back from popup page
           }
+        } else {
+          console.warn("[PopupModal] No active popups found", data);
         }
-      } catch (error) {
-        console.error("Error fetching popup:", error);
+      } catch (error: any) {
+        const errorMsg = error?.message || "Unknown error";
+        console.error("[PopupModal] Error fetching popup:", errorMsg, error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchPopup();
+    // Delay fetch slightly to ensure page is fully loaded
+    const timer = setTimeout(fetchPopup, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {

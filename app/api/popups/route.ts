@@ -7,6 +7,12 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const activeOnly = searchParams.get("active");
 
+    // Add CORS headers for production
+    const headers = {
+      "Content-Type": "application/json",
+      "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
+    };
+
     let popups;
     if (activeOnly === "true") {
       // Fetch active popups only (for homepage)
@@ -16,7 +22,10 @@ export async function GET(request: NextRequest) {
         .eq("status", "ACTIVE")
         .order("createdat", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("[GET /api/popups] Supabase error:", error);
+        throw error;
+      }
       popups = data || [];
     } else {
       // Fetch all popups (for admin dashboard)
@@ -25,22 +34,29 @@ export async function GET(request: NextRequest) {
         .select("*")
         .order("createdat", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("[GET /api/popups] Supabase error:", error);
+        throw error;
+      }
       popups = data || [];
     }
 
-    return NextResponse.json({
-      success: true,
-      count: popups.length,
-      popups,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        count: popups.length,
+        popups,
+      },
+      { headers },
+    );
   } catch (error: any) {
     console.error("[GET /api/popups] Error:", error);
     return NextResponse.json(
       {
         success: false,
         error: error.message || "Failed to fetch popups",
-        details: error.toString(),
+        details:
+          process.env.NODE_ENV === "development" ? error.toString() : undefined,
       },
       { status: 500 },
     );
