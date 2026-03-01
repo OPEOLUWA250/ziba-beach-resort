@@ -93,8 +93,8 @@ export async function PUT(
       }
     }
 
-    // Always update the updatedAt timestamp
-    updateData.updatedAt = new Date().toISOString();
+    // Note: Do NOT add updatedAt here - the column may not exist in older schemas
+    // Users can manually run migration if needed
 
     console.log(`[PUT /api/popups/[${id}]] Attempting update with fields:`, {
       id,
