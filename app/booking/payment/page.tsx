@@ -514,8 +514,13 @@ function PaymentContent() {
           email: guestEmail,
           amount: totalPrice * 100, // Paystack expects amount in kobo
           ref: paystackReference,
+          redirect: `${typeof window !== "undefined" ? window.location.origin : ""}/booking-confirmation?bookingId=${booking.id}`,
           onClose: () => {
             console.log("🚫 Paystack modal closed by user");
+            // After modal closes, redirect anyway to check status
+            setTimeout(() => {
+              router.push(`/booking-confirmation?bookingId=${booking.id}`);
+            }, 1000);
             setProcessing(false);
           },
           onSuccess: async (response: any) => {
@@ -570,8 +575,13 @@ function PaymentContent() {
               email: guestEmail,
               amount: totalPrice * 100,
               ref: paystackReference,
+              redirect: `${typeof window !== "undefined" ? window.location.origin : ""}/booking-confirmation?bookingId=${booking.id}`,
               onClose: () => {
                 console.log("🚫 User closed Paystack modal");
+                // After modal closes, redirect anyway to check status
+                setTimeout(() => {
+                  router.push(`/booking-confirmation?bookingId=${booking.id}`);
+                }, 1000);
                 setProcessing(false);
               },
               onSuccess: async (response: any) => {
