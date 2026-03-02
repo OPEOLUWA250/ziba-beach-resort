@@ -516,46 +516,13 @@ function PaymentContent() {
           ref: paystackReference,
           redirect: `${typeof window !== "undefined" ? window.location.origin : ""}/booking-confirmation?bookingId=${booking.id}`,
           onClose: () => {
-            console.log("🚫 Paystack modal closed by user");
-            // After modal closes, redirect anyway to check status
-            setTimeout(() => {
-              router.push(`/booking-confirmation?bookingId=${booking.id}`);
-            }, 1000);
+            console.log("🚫 Paystack modal closed");
             setProcessing(false);
           },
-          onSuccess: async (response: any) => {
-            console.error(
-              "💰 💰 💰 PAYMENT SUCCESSFUL FROM PAYSTACK! 💰 💰 💰",
-            );
-            console.error("Response:", response);
-            alert("✅ PAYMENT SUCCESSFUL! Updating database now...");
-
-            // Immediately set redirecting flag to prevent any re-renders from interrupting
-            setIsRedirecting(true);
-
-            // Show success modal
-            setCurrentBookingId(booking.id);
-            setCurrentAmount(totalPrice);
-            setShowSuccessModal(true);
+          onSuccess: (response: any) => {
+            console.log("💰 Payment successful - Paystack will redirect");
+            // Paystack redirect will happen automatically
             setProcessing(false);
-
-            // Store booking immediately
-            if (typeof window !== "undefined") {
-              sessionStorage.setItem(
-                "lastBooking",
-                JSON.stringify(transformedBooking),
-              );
-            }
-
-            // Start background tasks
-            const bookingId = booking.id;
-            const confirmUrl = `/booking-confirmation?bookingId=${bookingId}`;
-
-            // Redirect to confirmation page after showing modal briefly
-            setTimeout(() => {
-              console.log("🔄 Redirecting to confirmation:", confirmUrl);
-              router.push(confirmUrl);
-            }, 3000); // 3 seconds to show modal and let webhook process
           },
         });
         console.log("🎬 Opening Paystack iframe");
@@ -577,45 +544,12 @@ function PaymentContent() {
               ref: paystackReference,
               redirect: `${typeof window !== "undefined" ? window.location.origin : ""}/booking-confirmation?bookingId=${booking.id}`,
               onClose: () => {
-                console.log("🚫 User closed Paystack modal");
-                // After modal closes, redirect anyway to check status
-                setTimeout(() => {
-                  router.push(`/booking-confirmation?bookingId=${booking.id}`);
-                }, 1000);
+                console.log("🚫 Paystack modal closed");
                 setProcessing(false);
               },
-              onSuccess: async (response: any) => {
-                console.error(
-                  "💰 💰 💰 PAYMENT SUCCESSFUL FROM PAYSTACK! 💰 💰 💰",
-                );
-                console.error("Response:", response);
-                alert("✅ PAYMENT SUCCESSFUL! Updating database now...");
-
-                // Immediately set redirecting flag
-                setIsRedirecting(true);
-
-                // Show success modal
-                setCurrentBookingId(booking.id);
-                setCurrentAmount(totalPrice);
-                setShowSuccessModal(true);
+              onSuccess: (response: any) => {
+                console.log("💰 Payment successful - Paystack will redirect");
                 setProcessing(false);
-
-                // Store booking immediately
-                if (typeof window !== "undefined") {
-                  sessionStorage.setItem(
-                    "lastBooking",
-                    JSON.stringify(transformedBooking),
-                  );
-                }
-                // Background tasks and redirect
-                const bookingId = booking.id;
-                const confirmUrl = `/booking-confirmation?bookingId=${bookingId}`;
-
-                // Redirect to confirmation page after showing modal briefly
-                setTimeout(() => {
-                  console.log("🔄 Redirecting to confirmation:", confirmUrl);
-                  router.push(confirmUrl);
-                }, 3000); // 3 seconds to show modal and let webhook process
               },
             });
             console.log("🎬 Opening Paystack iframe from script load");
