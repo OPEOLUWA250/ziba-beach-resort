@@ -1,150 +1,182 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseServer } from "@/lib/supabase/server";
+import { createClient } from "@supabase/supabase-js";
+import crypto from "crypto";
+
+export const dynamic = "force-dynamic";
 
 /**
  * Paystack Webhook Handler
- * Receives payment notifications from Paystack servers
- * Triggered for charge.success and other events
- * https://paystack.com/docs/webhooks/events
+ * Receives payment confirmation events from Paystack
+ * Verifies HMAC signature and updates booking status
+ * 
+ * Webhook URL to configure in Paystack Dashboard:
+ * https://ziba-beach-resort.vercel.app/api/webhooks/paystack
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify Paystack signature
-    const signature = request.headers.get("x-paystack-signature");
+    // Get raw body for signature verification
     const body = await request.text();
+    const signature = request.headers.get("x-paystack-signature");
+
+    console.log("[Paystack Webhook] Received event");
 
     if (!signature) {
-      console.warn("[Paystack Webhook] Missing signature");
+      console.error("[Paystack Webhook] ❌ Missing signature header");
       return NextResponse.json(
-        { success: false, error: "Missing signature" },
+        { error: "Missing signature" },
         { status: 401 },
       );
     }
 
-    // Verify signature matches (optional but recommended)
-    // For now, we'll trust Paystack requests - add crypto verification if needed
-    console.log("[Paystack Webhook] Received notification");
+    const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;
 
-    const event = JSON.parse(body);
-    const { type, data } = event;
-
-    // Handle different Paystack events
-    if (type === "charge.success") {
-      await handleChargeSuccess(data);
-    } else if (type === "charge.failed") {
-      await handleChargeFailed(data);
-    } else if (type === "transfer.failed") {
-      console.warn("[Paystack Webhook] Transfer failed:", data);
+    if (!paystackSecretKey) {
+      console.error("[Paystack Webhook] ❌ PAYSTACK_SECRET_KEY not configured");
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500 },
+      );
     }
 
-    return NextResponse.json(
-      { success: true, message: "Webhook processed" },
-      { status: 200 },
-    );
-  } catch (error: any) {
-    console.error("[Paystack Webhook] Error processing webhook:", {
-      message: error.message,
-      stack: error.stack?.split("\n")[0],
-    });
+    // Verify webhook signature
+    const hash = crypto
+      .createHmac("sha512", paystackSecretKey)
+      .update(body)
+      .digest("hex");
 
+    if (hash !== signature) {
+      console.error(
+        "[Paystack Webhook] ❌ Invalid signature - NOT from Paystack!",
+      );
+      return NextResponse.json(
+        { error: "Invalid signature" },
+        { status: 401 },
+      );
+    }
+
+    console.log("[Paystack Webhook] ✅ Signature verified - genuine Paystack event");
+
+    // Parse event
+    const event = JSON.parse(body);
+    console.log("[Paystack Webhook] Event type:", event.event);
+
+    // Handle different event types
+    if (event.event === "charge.success") {
+      return await handleChargeSuccess(event.data);
+    }
+
+    if (event.event === "charge.failed") {
+      console.log("[Paystack Webhook] Charge failed event");
+      return NextResponse.json({ success: true });
+    }
+
+    console.log("[Paystack Webhook] Unhandled event type, returning success");
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error("[Paystack Webhook] Error:", error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { error: error.message || "Webhook processing failed" },
       { status: 500 },
     );
   }
 }
 
-/**
- * Handle successful charge
- * Update booking status and trigger email
- */
 async function handleChargeSuccess(data: any) {
   try {
-    const { reference, amount, customer, metadata } = data;
+    const reference = data.reference;
+    const amount = data.amount; // in kobo
 
-    console.log("[Webhook] Processing charge.success:", {
-      reference,
-      amount,
-      customer: customer.email,
-    });
+    console.log(
+      `[Paystack Webhook] ✅ Processing successful charge: ${reference}`,
+    );
 
-    // Extract booking info from metadata
-    const {
-      bookingId,
-      roomId,
-      checkInDate,
-      checkOutDate,
-      guestName,
-      guestEmail,
-    } = metadata || {};
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    // Create or update booking in Supabase
-    if (bookingId) {
-      const { data: booking, error } = await supabaseServer
-        .from("bookings")
-        .update({
-          status: "CONFIRMED",
-          paystackReference: reference,
-          paystackAmount: Math.round(amount / 100), // Convert from kobo to naira
-          confirmedAt: new Date().toISOString(),
-        })
-        .eq("id", bookingId)
-        .select();
+    if (!supabaseUrl || !serviceRoleKey) {
+      console.error(
+        "[Paystack Webhook] ❌ Missing Supabase configuration",
+      );
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500 },
+      );
+    }
 
-      if (error) {
-        console.error("[Webhook] Error updating booking:", error);
-        return;
-      }
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-      console.log("[Webhook] Booking confirmed:", {
-        bookingId,
-        reference,
-        amount: amount / 100,
+    // Find booking by paystack_reference
+    console.log(`[Paystack Webhook] Searching for booking with reference: ${reference}`);
+    const { data: bookings, error: searchError } = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("paystack_reference", reference)
+      .limit(1);
+
+    if (searchError) {
+      console.error("[Paystack Webhook] Search error:", searchError);
+      return NextResponse.json(
+        { error: "Database search error" },
+        { status: 500 },
+      );
+    }
+
+    if (!bookings || bookings.length === 0) {
+      console.warn(
+        `[Paystack Webhook] ⚠️ No booking found for reference: ${reference}`,
+      );
+      return NextResponse.json({
+        success: true,
+        message: "Booking not found (may be from another system)",
       });
-
-      // TODO: Send confirmation email
-      // await sendConfirmationEmail({
-      //   email: guestEmail,
-      //   guestName,
-      //   reference,
-      //   amount: amount / 100,
-      //   checkInDate,
-      //   checkOutDate
-      // });
     }
-  } catch (error: any) {
-    console.error("[Webhook] handleChargeSuccess error:", error.message);
-  }
-}
 
-/**
- * Handle failed charge
- */
-async function handleChargeFailed(data: any) {
-  try {
-    const { reference, customer, metadata } = data;
+    const booking = bookings[0];
+    console.log(`[Paystack Webhook] Found booking: ${booking.id}`);
 
-    console.log("[Webhook] Processing charge.failed:", {
-      reference,
-      customer: customer.email,
+    // Check if already completed
+    if (booking.payment_status === "COMPLETED") {
+      console.log(`[Paystack Webhook] Booking already completed, skipping`);
+      return NextResponse.json({
+        success: true,
+        message: "Booking already confirmed",
+      });
+    }
+
+    // Update booking status
+    console.log(`[Paystack Webhook] Updating booking ${booking.id} to COMPLETED`);
+    const { data: updated, error: updateError } = await supabase
+      .from("bookings")
+      .update({
+        payment_status: "COMPLETED",
+        paid_at: new Date().toISOString(),
+      })
+      .eq("id", booking.id)
+      .select()
+      .single();
+
+    if (updateError) {
+      console.error("[Paystack Webhook] ❌ Database update error:", updateError);
+      return NextResponse.json(
+        { error: `Database error: ${updateError.message}` },
+        { status: 500 },
+      );
+    }
+
+    console.log(
+      `[Paystack Webhook] ✅ SUCCESS - Booking ${booking.id} updated to COMPLETED`,
+    );
+
+    return NextResponse.json({
+      success: true,
+      message: "Payment confirmed",
+      bookingId: booking.id,
     });
-
-    // Update booking status to FAILED
-    if (metadata?.bookingId) {
-      await supabaseServer
-        .from("bookings")
-        .update({
-          status: "FAILED",
-          paystackReference: reference,
-          failedAt: new Date().toISOString(),
-        })
-        .eq("id", metadata.bookingId);
-
-      console.log("[Webhook] Booking marked as failed:", metadata.bookingId);
-    }
-
-    // TODO: Send failure notification email
   } catch (error: any) {
-    console.error("[Webhook] handleChargeFailed error:", error.message);
+    console.error("[Paystack Webhook] Error handling charge success:", error);
+    return NextResponse.json(
+      { error: error.message },
+      { status: 500 },
+    );
   }
 }
