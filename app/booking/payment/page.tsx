@@ -327,7 +327,7 @@ function PaymentContent() {
             <ChevronLeft className="w-5 h-5" />
             <span className="font-light">Back</span>
           </button>
-          <div className="text-center">
+          <div className="text-center pt-16">
             <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
             <p className="text-gray-900 font-semibold">
               Missing booking information
@@ -353,7 +353,7 @@ function PaymentContent() {
             <ChevronLeft className="w-5 h-5" />
             <span className="font-light">Back</span>
           </button>
-          <div className="text-center">
+          <div className="text-center pt-16">
             <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-900 rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-gray-600">Loading room details...</p>
           </div>
@@ -374,7 +374,7 @@ function PaymentContent() {
             <ChevronLeft className="w-5 h-5" />
             <span className="font-light">Back</span>
           </button>
-          <div className="text-center">
+          <div className="text-center pt-16">
             <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
             <p className="text-gray-900 font-semibold">
               {error || "Room not found"}
@@ -551,10 +551,13 @@ function PaymentContent() {
         console.log("🎬 Opening Paystack iframe");
         handler.openIframe();
 
-        // Show receipt popup when Paystack opens
-        setShowReceiptPopup(true);
         setReceiptBookingId(booking.id);
         setReceiptPaystackRef(paystackReference);
+
+        // Show receipt popup after 10 seconds (when Paystack is fully loaded)
+        const timeoutId = setTimeout(() => {
+          setShowReceiptPopup(true);
+        }, 10000);
       } else {
         // Load Paystack script if not loaded
         console.log("📥 Loading Paystack script...");
@@ -584,10 +587,13 @@ function PaymentContent() {
             console.log("🎬 Opening Paystack iframe from script load");
             handler.openIframe();
 
-            // Show receipt popup when Paystack opens
-            setShowReceiptPopup(true);
             setReceiptBookingId(booking.id);
             setReceiptPaystackRef(paystackReference);
+
+            // Show receipt popup after 10 seconds (when Paystack is fully loaded)
+            setTimeout(() => {
+              setShowReceiptPopup(true);
+            }, 10000);
           } else {
             console.error("❌ PaystackPop not available after script load");
             setError("Payment system failed to load");
@@ -619,7 +625,7 @@ function PaymentContent() {
           <ChevronLeft className="w-5 h-5" />
           <span className="font-light">Back</span>
         </button>
-        <div className="max-w-md mx-auto">
+        <div className="max-w-md mx-auto pt-16">
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">

@@ -106,7 +106,7 @@ export default function BookingConfirmationContent() {
   if (loading) {
     return (
       <>
-        <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center px-4 py-12">
+        <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center px-4 py-12 pt-20">
           <div className="text-center">
             <Loader2 className="w-12 h-12 text-blue-900 animate-spin mx-auto mb-4" />
             <p className="text-gray-600">Processing your booking...</p>
@@ -120,7 +120,7 @@ export default function BookingConfirmationContent() {
   if (error || !booking) {
     return (
       <>
-        <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center px-4 py-12">
+        <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center px-4 py-12 pt-20">
           <div className="text-center max-w-md">
             <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-gray-900 mb-2">

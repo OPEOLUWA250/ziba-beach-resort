@@ -276,17 +276,17 @@ export default function AvailabilityModal({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-gray-100 border-t-2 border-gray-200 px-6 sm:px-8 py-4 flex gap-3 justify-end">
+        <div className="sticky bottom-0 bg-gray-100 border-t-2 border-gray-200 px-6 sm:px-8 py-4 flex flex-col sm:flex-row gap-3 justify-end">
           <button
             onClick={onClose}
-            className="px-6 py-3 border-2 border-gray-400 text-gray-900 rounded-lg hover:bg-gray-200 transition font-semibold"
+            className="w-full sm:w-auto px-6 py-3 border-2 border-gray-400 text-gray-900 rounded-lg hover:bg-gray-200 transition font-semibold order-2 sm:order-1"
           >
             Cancel
           </button>
           <button
             onClick={handleProceed}
             disabled={availabilityStatus !== "available"}
-            className="px-8 py-3 bg-linear-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg"
+            className="w-full sm:w-auto px-8 py-3 bg-linear-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg order-1 sm:order-2"
           >
             Proceed to Booking
           </button>
