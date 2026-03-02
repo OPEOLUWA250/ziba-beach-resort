@@ -68,6 +68,11 @@ export async function POST(request: NextRequest) {
     // Generate unique Paystack reference
     const paystackReference = `ziba-${Date.now()}-${Math.random().toString(36).substring(7)}`;
 
+    // Generate booking reference code: ZB-YYYY-NNNNN
+    const year = new Date().getFullYear();
+    const randomNumber = Math.floor(Math.random() * 90000) + 10000; // 5 digit random number
+    const bookingReferenceCode = `ZB-${year}-${randomNumber}`;
+
     // Save booking to database with PENDING status
     const { data: booking, error: bookingError } = await supabase
       .from("bookings")
@@ -85,6 +90,7 @@ export async function POST(request: NextRequest) {
         total_amount_ngn: totalAmountNGN,
         payment_status: "PENDING",
         paystack_reference: paystackReference,
+        booking_reference_code: bookingReferenceCode,
       })
       .select()
       .single();
@@ -143,20 +149,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update booking with Paystack details
+    // Update booking with Paystack details (optional - columns may not exist yet)
     const { error: updateError } = await supabase
       .from("bookings")
       .update({
+        paystack_reference: paystackReference,
         paystack_access_code: paystackData.data.access_code,
         paystack_authorization_url: paystackData.data.authorization_url,
       })
       .eq("id", booking.id);
 
     if (updateError) {
-      console.error(
-        "Error updating booking with Paystack details:",
-        updateError,
-      );
+      // Log but don't fail if columns don't exist
+      if (updateError.code === "PGRST204") {
+        console.warn(
+          "⚠️  Paystack columns not yet created in database (will add in next migration):",
+          updateError.message,
+        );
+      } else {
+        console.error(
+          "Error updating booking with Paystack details:",
+          updateError,
+        );
+      }
     }
 
     return NextResponse.json(

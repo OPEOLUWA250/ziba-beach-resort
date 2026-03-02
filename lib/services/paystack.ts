@@ -81,6 +81,8 @@ export async function verifyPayment(reference: string) {
   }
 
   try {
+    console.log(`\n🔍 Verifying payment with reference: ${reference}`);
+
     const response = await fetch(
       `${PAYSTACK_API_BASE}/transaction/verify/${reference}`,
       {
@@ -92,24 +94,41 @@ export async function verifyPayment(reference: string) {
     );
 
     const data = await response.json();
+    console.log(
+      `📊 Paystack API response status: ${data.status}, message: ${data.message}`,
+    );
 
     if (!data.status) {
       throw new Error(data.message || "Failed to verify payment");
     }
 
     const transaction = data.data;
+    console.log(
+      `💳 Transaction status: ${transaction.status}, amount: ${transaction.amount} kobo`,
+    );
 
     // Update booking status if payment is successful
     if (transaction.status === "success") {
       const supabase = getSupabaseClient();
 
-      await supabase
+      console.log(`✋ Updating booking with paystack_reference: ${reference}`);
+
+      const { data: updateData, error: updateError } = await supabase
         .from("bookings")
         .update({
-          payment_status: "COMPLETED",
-          paid_at: new Date().toISOString(),
+          payment_status: "CONFIRMED",
         })
         .eq("paystack_reference", reference);
+
+      if (updateError) {
+        console.error(`❌ Update error:`, updateError);
+      } else {
+        console.log(`✅ Booking updated successfully`);
+      }
+    } else {
+      console.warn(
+        `⚠️ Transaction status is not 'success': ${transaction.status}`,
+      );
     }
 
     return {
@@ -159,7 +178,7 @@ export async function handlePaystackWebhook(
         await supabase
           .from("bookings")
           .update({
-            payment_status: "COMPLETED",
+            payment_status: "CONFIRMED",
             paid_at: new Date().toISOString(),
           })
           .eq("paystack_reference", data.reference);

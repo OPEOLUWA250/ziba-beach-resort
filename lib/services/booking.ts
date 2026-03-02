@@ -18,10 +18,10 @@ export async function isRoomAvailable(
     const { data, error } = await supabase
       .from("bookings")
       .select("id")
-      .eq("roomId", roomId)
-      .in("status", ["PENDING", "CONFIRMED"])
-      .lt("checkOutDate", checkOutDate.toISOString())
-      .gt("checkInDate", checkInDate.toISOString());
+      .eq("room_id", roomId)
+      .in("payment_status", ["PENDING", "CONFIRMED"])
+      .lt("check_out_date", checkOutDate.toISOString())
+      .gt("check_in_date", checkInDate.toISOString());
 
     if (error) throw error;
 
@@ -41,10 +41,10 @@ export async function getRoomBookings(
     const { data, error } = await supabase
       .from("bookings")
       .select("*")
-      .eq("roomId", roomId)
-      .in("status", ["PENDING", "CONFIRMED"])
-      .gte("checkInDate", startDate.toISOString())
-      .lte("checkOutDate", endDate.toISOString());
+      .eq("room_id", roomId)
+      .in("payment_status", ["PENDING", "CONFIRMED"])
+      .gte("check_in_date", startDate.toISOString())
+      .lte("check_out_date", endDate.toISOString());
 
     if (error) throw error;
 
@@ -141,28 +141,8 @@ export async function getBookingDetails(bookingId: string) {
       return null;
     }
 
-    // Transform Supabase snake_case to confirmation page format
-    return {
-      id: data.id,
-      checkInDate: data.check_in_date,
-      checkOutDate: data.check_out_date,
-      numberOfGuests: data.number_of_guests,
-      specialRequests: data.special_requests,
-      room: {
-        title: "Standard Room", // You may want to fetch room details separately
-        priceNGN: data.room_price_ngn,
-      },
-      user: {
-        firstName: data.guest_name?.split(" ")[0] || "",
-        lastName: data.guest_name?.split(" ").slice(1).join(" ") || "",
-        email: data.guest_email,
-      },
-      payment: {
-        amountNGN: data.total_amount_ngn,
-        paystackReference: data.paystack_reference,
-        paymentStatus: data.payment_status,
-      },
-    };
+    // Return all booking data as-is (confirmation page expects these fields)
+    return data;
   } catch (error) {
     console.error("Error fetching booking details:", error);
     return null;
@@ -215,5 +195,52 @@ export async function getAvailableRooms(checkInDate: Date, checkOutDate: Date) {
   } catch (error) {
     console.error("Error fetching available rooms:", error);
     return [];
+  }
+}
+
+/**
+ * Get booking by reference code and email (for guest lookups)
+ */
+export async function getBookingByReference(
+  referenceCode: string,
+  email: string,
+) {
+  try {
+    const { data: booking, error } = await supabase
+      .from("bookings")
+      .select(
+        `
+        id,
+        booking_reference_code,
+        guest_email,
+        guest_name,
+        guest_phone,
+        room_id,
+        check_in_date,
+        check_out_date,
+        number_of_guests,
+        special_requests,
+        room_price_ngn,
+        number_of_nights,
+        total_amount_ngn,
+        payment_status,
+        paystack_reference,
+        created_at,
+        paid_at
+      `,
+      )
+      .eq("booking_reference_code", referenceCode)
+      .eq("guest_email", email)
+      .single();
+
+    if (error) {
+      console.error("Error fetching booking by reference:", error);
+      return null;
+    }
+
+    return booking;
+  } catch (error) {
+    console.error("Error in getBookingByReference:", error);
+    return null;
   }
 }

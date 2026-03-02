@@ -509,28 +509,33 @@ function PaymentContent() {
       console.log("💳 Real Paystack mode - initializing payment");
       if (typeof window !== "undefined" && window.PaystackPop) {
         console.log("✅ PaystackPop loaded");
+        const redirectUrl = `/booking-confirmation?bookingId=${booking.id}&ref=${paystackReference}`;
         const handler = window.PaystackPop.setup({
           key: paystackKey,
           email: guestEmail,
           amount: totalPrice * 100, // Paystack expects amount in kobo
           ref: paystackReference,
-          redirect: `${typeof window !== "undefined" ? window.location.origin : ""}/booking-confirmation?bookingId=${booking.id}`,
+          cust_id_start: booking.id,
           onClose: () => {
             console.log(
-              "🚫 Paystack modal closed - may have succeeded or been cancelled",
+              "🚫 Paystack modal closed - redirecting to confirmation",
             );
-            // Show redirecting state immediately
-            setIsRedirecting(true);
             setProcessing(false);
-          },
-          onSuccess: (response: any) => {
-            console.log("💰 Payment successful - redirecting to confirmation");
-            setIsRedirecting(true);
-            setProcessing(false);
+            // Use window.location for more reliable redirect
+            window.location.href = redirectUrl;
           },
         });
         console.log("🎬 Opening Paystack iframe");
         handler.openIframe();
+
+        // Fallback: If modal doesn't close after 5 seconds, force redirect
+        // This handles cases where Paystack modal closes silently
+        setTimeout(() => {
+          console.warn(
+            "⏱️ Timeout reached, forcing redirect to confirmation page",
+          );
+          window.location.href = redirectUrl;
+        }, 5000);
       } else {
         // Load Paystack script if not loaded
         console.log("📥 Loading Paystack script...");
@@ -541,29 +546,32 @@ function PaymentContent() {
           console.log("✅ Paystack script loaded");
           if (window.PaystackPop) {
             console.log("✅ PaystackPop available");
+            const redirectUrl = `/booking-confirmation?bookingId=${booking.id}&ref=${paystackReference}`;
             const handler = window.PaystackPop.setup({
               key: paystackKey,
               email: guestEmail,
               amount: totalPrice * 100,
               ref: paystackReference,
-              redirect: `${typeof window !== "undefined" ? window.location.origin : ""}/booking-confirmation?bookingId=${booking.id}`,
+              cust_id_start: booking.id,
               onClose: () => {
                 console.log(
-                  "🚫 Paystack modal closed - may have succeeded or been cancelled",
+                  "🚫 Paystack modal closed - redirecting to confirmation",
                 );
-                setIsRedirecting(true);
                 setProcessing(false);
-              },
-              onSuccess: (response: any) => {
-                console.log(
-                  "💰 Payment successful - redirecting to confirmation",
-                );
-                setIsRedirecting(true);
-                setProcessing(false);
+                // Use window.location for more reliable redirect
+                window.location.href = redirectUrl;
               },
             });
             console.log("🎬 Opening Paystack iframe from script load");
             handler.openIframe();
+
+            // Fallback: If modal doesn't close after 5 seconds, force redirect
+            setTimeout(() => {
+              console.warn(
+                "⏱️ Timeout reached, forcing redirect to confirmation page",
+              );
+              window.location.href = redirectUrl;
+            }, 5000);
           } else {
             console.error("❌ PaystackPop not available after script load");
             setError("Payment system failed to load");

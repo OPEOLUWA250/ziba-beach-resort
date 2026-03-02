@@ -2,387 +2,330 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { format } from "date-fns";
-import Link from "next/link";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
+import { Check, Loader2, AlertCircle } from "lucide-react";
 
-interface BookingDetails {
+interface BookingData {
   id: string;
-  checkInDate: string;
-  checkOutDate: string;
-  numberOfGuests: number;
-  specialRequests?: string;
-  room: {
-    title: string;
-    priceNGN: number;
-  };
-  user: {
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-  payment?: {
-    amountNGN: number;
-    paystackReference: string;
-  };
+  booking_reference_code: string;
+  guest_name: string;
+  guest_email: string;
+  guest_phone: string;
+  check_in_date: string;
+  check_out_date: string;
+  number_of_guests: number;
+  total_amount_ngn: number;
+  payment_status: string;
+  paystack_reference: string;
+  room_id: string;
 }
 
 export default function BookingConfirmationContent() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId");
+  const paystackReference = searchParams.get("ref");
 
-  const [booking, setBooking] = useState<BookingDetails | null>(null);
+  const [booking, setBooking] = useState<BookingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [paymentVerified, setPaymentVerified] = useState(false);
 
   useEffect(() => {
-    if (!bookingId) {
-      setError("No booking ID provided");
-      setLoading(false);
-      return;
-    }
+    const verifyPayment = async () => {
+      if (!bookingId) {
+        setError("No booking ID provided");
+        setLoading(false);
+        return;
+      }
 
-    const fetchBooking = async () => {
       try {
-        // First, verify payment from server-side
-        console.log("[Confirmation] Verifying payment for booking:", bookingId);
-        try {
-          const verifyRes = await fetch("/api/bookings/verify-and-confirm", {
+        console.log("🔍 Verifying payment with reference:", paystackReference);
+
+        // Step 1: Verify payment with Paystack
+        if (paystackReference) {
+          const verifyRes = await fetch(
+            `/api/payments/verify/${paystackReference}`,
+          );
+          const verifyData = await verifyRes.json();
+          console.log("✅ Verification response:", verifyData);
+          console.log(
+            `   Status: ${verifyData.status}, Success: ${verifyData.success}`,
+          );
+
+          if (verifyData.success || verifyData.status === "success") {
+            console.log(
+              "✅ Payment verified - database status updated to CONFIRMED",
+            );
+            setPaymentVerified(true);
+          } else {
+            console.warn(
+              `⚠️  Payment verification returned status: ${verifyData.status}`,
+            );
+          }
+        } else {
+          console.warn("⚠️  No Paystack reference in URL");
+        }
+
+        // Step 2: Fetch booking details
+        console.log("📋 Fetching booking details...");
+        const bookingRes = await fetch(`/api/bookings/${bookingId}`);
+        if (!bookingRes.ok) {
+          throw new Error("Failed to fetch booking");
+        }
+        const bookingData = await bookingRes.json();
+        console.log("✅ Booking data:", bookingData);
+
+        const fetchedBooking = bookingData.booking;
+        setBooking(fetchedBooking);
+
+        // Step 3: Send confirmation email (now that we have the booking data)
+        if (fetchedBooking?.guest_email) {
+          console.log("📧 Sending confirmation email...");
+          await fetch("/api/emails/send-confirmation", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ bookingId }),
-          });
-
-          const verifyData = await verifyRes.json();
-          console.log("[Confirmation] Server verification result:", verifyData);
-          console.error(
-            "[Confirmation] FULL response from verify-and-confirm:",
-            JSON.stringify(verifyData, null, 2),
-          );
-
-          if (verifyData.success && verifyData.booking) {
-            // Payment was verified and confirmed
-            console.log("[Confirmation] ✅ Payment verified successfully!");
-            setBooking(verifyData.booking);
-            setLoading(false);
-            return;
-          } else if (verifyData.paystackResponse) {
-            console.error(
-              "[Confirmation] Paystack said payment status is:",
-              verifyData.paystackStatus,
-            );
-            console.error(
-              "[Confirmation] Full Paystack response:",
-              verifyData.paystackResponse,
-            );
-          }
-        } catch (verifyErr) {
-          console.error(
-            "[Confirmation] Verification error (non-critical):",
-            verifyErr,
-          );
-          // Continue anyway - we'll try sessionStorage/API fallback
+            body: JSON.stringify({
+              bookingId: bookingId,
+              email: fetchedBooking.guest_email,
+            }),
+          }).catch((err) => console.error("Email error:", err));
         }
 
-        // Fall back to sessionStorage for recent bookings
-        if (typeof window !== "undefined") {
-          const cachedBooking = sessionStorage.getItem("lastBooking");
-          if (cachedBooking) {
-            const booking = JSON.parse(cachedBooking);
-            if (booking.id === bookingId) {
-              console.log("[Confirmation] Loaded from sessionStorage");
-              setBooking(booking);
-              setLoading(false);
-              return;
-            }
-          }
-        }
-
-        // Fall back to API for database bookings
-        console.log("[Confirmation] Fetching from API");
-        const res = await fetch(`/api/bookings/${bookingId}`);
-
-        if (!res.ok) {
-          throw new Error("Booking not found");
-        }
-
-        const data = await res.json();
-        setBooking(data);
+        setLoading(false);
       } catch (err: any) {
-        setError(err.message || "Failed to load booking details");
-      } finally {
+        console.error("❌ Error during verification:", err);
+        setError(err.message || "Failed to verify booking");
         setLoading(false);
       }
     };
 
-    fetchBooking();
-  }, [bookingId]);
+    verifyPayment();
+  }, [bookingId, paystackReference]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-900 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Confirming your booking...</p>
-        </div>
-      </div>
+      <>
+        <Header />
+        <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center px-4 py-12">
+          <div className="text-center">
+            <Loader2 className="w-12 h-12 text-blue-900 animate-spin mx-auto mb-4" />
+            <p className="text-gray-600">Processing your booking...</p>
+          </div>
+        </main>
+        <Footer />
+      </>
     );
   }
 
   if (error || !booking) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-red-50 to-blue-50 flex items-center justify-center p-4">
-        <div className="max-w-md bg-white rounded-2xl shadow-lg p-8 text-center">
-          <div className="mb-4 text-5xl">❌</div>
-          <h1 className="text-2xl font-bold text-red-600 mb-2">
-            Booking Error
-          </h1>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <Link
-            href="/bookings"
-            className="inline-block bg-blue-900 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-800 transition"
-          >
-            Browse Rooms
-          </Link>
-        </div>
-      </div>
+      <>
+        <Header />
+        <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center px-4 py-12">
+          <div className="text-center max-w-md">
+            <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              {error ? "Something went wrong" : "Booking not found"}
+            </h1>
+            <p className="text-gray-600 mb-6">
+              {error || "We couldn't find your booking details"}
+            </p>
+            <a
+              href="/"
+              className="inline-block bg-blue-900 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition-colors"
+            >
+              Return Home
+            </a>
+          </div>
+        </main>
+        <Footer />
+      </>
     );
   }
 
-  const nights = Math.ceil(
-    (new Date(booking.checkOutDate).getTime() -
-      new Date(booking.checkInDate).getTime()) /
-      (1000 * 60 * 60 * 24),
-  );
+  const checkInDate = booking?.check_in_date
+    ? new Date(booking.check_in_date)
+    : null;
+  const checkOutDate = booking?.check_out_date
+    ? new Date(booking.check_out_date)
+    : null;
+  const nights =
+    checkInDate && checkOutDate
+      ? Math.ceil(
+          (checkOutDate.getTime() - checkInDate.getTime()) /
+            (1000 * 60 * 60 * 24),
+        )
+      : 0;
 
-  const checkInDate = format(
-    new Date(booking.checkInDate),
-    "EEEE, MMMM d, yyyy",
-  );
-  const checkOutDate = format(
-    new Date(booking.checkOutDate),
-    "EEEE, MMMM d, yyyy",
-  );
+  const dateFormatter = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Success Header */}
-        <div className="text-center mb-8">
-          <div className="mb-4 flex justify-center">
-            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-5xl">✅</span>
+    <>
+      <Header />
+      <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12 px-4">
+        <div className="max-w-2xl mx-auto">
+          {/* Success Header */}
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Check className="w-8 h-8 text-green-600" />
             </div>
-          </div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-blue-900 mb-2 cormorant">
-            Booking Confirmed!
-          </h1>
-          <p className="text-lg text-gray-600">
-            Thank you for your reservation. We're excited to host you!
-          </p>
-        </div>
-
-        {/* Main Confirmation Card */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
-          {/* Booking Reference */}
-          <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white p-6 sm:p-8">
-            <p className="text-sm text-blue-100 mb-2">Booking Reference</p>
-            <p className="text-2xl sm:text-3xl font-bold font-mono">
-              {booking.id}
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              Booking Confirmed!
+            </h1>
+            <p className="text-gray-600">
+              Thank you for booking with Ziba Beach Resort
             </p>
-            <p className="text-xs text-blue-200 mt-2">
-              Save this reference for check-in
+          </div>
+
+          {/* Booking Reference */}
+          <div className="bg-gradient-to-r from-blue-900 to-blue-800 rounded-lg p-6 text-center mb-8 text-white">
+            <p className="text-blue-100 text-sm mb-2">Booking Reference</p>
+            <p className="text-3xl font-bold font-mono">
+              {booking.booking_reference_code || "Generating..."}
             </p>
           </div>
 
           {/* Booking Details */}
-          <div className="p-6 sm:p-8 space-y-6">
-            {/* Guest Info */}
-            <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-4">
-                Guest Information
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 rounded-lg p-4">
-                <div>
-                  <p className="text-xs text-gray-600 font-semibold mb-1">
-                    NAME
-                  </p>
-                  <p className="text-gray-900 font-semibold">
-                    {booking.user.firstName} {booking.user.lastName}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-600 font-semibold mb-1">
-                    EMAIL
-                  </p>
-                  <p className="text-gray-900 font-semibold">
-                    {booking.user.email}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-600 font-semibold mb-1">
-                    GUESTS
-                  </p>
-                  <p className="text-gray-900 font-semibold">
-                    {booking.numberOfGuests}{" "}
-                    {booking.numberOfGuests === 1 ? "Guest" : "Guests"}
-                  </p>
-                </div>
-              </div>
-            </div>
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              Booking Details
+            </h2>
 
-            {/* Stay Details */}
-            <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-4">
-                Your Stay
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 rounded-lg p-4">
-                <div>
-                  <p className="text-xs text-gray-600 font-semibold mb-1">
-                    CHECK-IN
-                  </p>
-                  <p className="text-gray-900 font-semibold">{checkInDate}</p>
-                  <p className="text-xs text-gray-600 mt-1">From 2:00 PM</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-600 font-semibold mb-1">
-                    CHECK-OUT
-                  </p>
-                  <p className="text-gray-900 font-semibold">{checkOutDate}</p>
-                  <p className="text-xs text-gray-600 mt-1">By 11:00 AM</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-600 font-semibold mb-1">
-                    ROOM
-                  </p>
-                  <p className="text-gray-900 font-semibold">
-                    {booking.room.title}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-600 font-semibold mb-1">
-                    DURATION
-                  </p>
-                  <p className="text-gray-900 font-semibold">
-                    {nights} {nights === 1 ? "Night" : "Nights"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Special Requests */}
-            {booking.specialRequests && (
+            <div className="grid grid-cols-2 gap-6">
               <div>
-                <h2 className="text-lg font-bold text-gray-900 mb-4">
-                  Special Requests
-                </h2>
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <p className="text-gray-900 text-sm">
-                    {booking.specialRequests}
-                  </p>
-                </div>
+                <p className="text-gray-600 text-sm">Guest Name</p>
+                <p className="text-gray-900 font-semibold">
+                  {booking.guest_name}
+                </p>
               </div>
-            )}
-
-            {/* Payment Summary */}
-            <div className="border-t-2 border-gray-200 pt-6">
-              <h2 className="text-lg font-bold text-gray-900 mb-4">
-                Payment Summary
-              </h2>
-              {booking.payment ? (
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">
-                      ₦{booking.room.priceNGN.toLocaleString()} × {nights}{" "}
-                      {nights === 1 ? "night" : "nights"}
-                    </span>
-                    <span className="font-semibold text-gray-900">
-                      ₦{booking.payment.amountNGN.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between font-bold text-lg bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-3">
-                    <span>Total Paid</span>
-                    <span className="text-green-600">
-                      ₦{booking.payment.amountNGN.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">
-                      ₦{booking.room.priceNGN.toLocaleString()} × {nights}{" "}
-                      {nights === 1 ? "night" : "nights"}
-                    </span>
-                    <span className="font-semibold text-gray-900">
-                      ₦{(booking.room.priceNGN * nights).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between font-bold text-lg bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-3">
-                    <span>Total Amount</span>
-                    <span className="text-green-600">
-                      ₦{(booking.room.priceNGN * nights).toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              )}
+              <div>
+                <p className="text-gray-600 text-sm">Email</p>
+                <p className="text-gray-900 font-semibold">
+                  {booking.guest_email}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-600 text-sm">Phone</p>
+                <p className="text-gray-900 font-semibold">
+                  {booking.guest_phone}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-600 text-sm">Guests</p>
+                <p className="text-gray-900 font-semibold">
+                  {booking.number_of_guests}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* What to Expect */}
-        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 sm:p-8 mb-6">
-          <h2 className="text-lg font-bold text-blue-900 mb-4">
-            📧 What to Expect
-          </h2>
-          <ul className="space-y-3 text-blue-900">
-            <li className="flex gap-3">
-              <span>✓</span>
-              <span>
-                Confirmation email has been sent to{" "}
-                <strong>{booking.user.email}</strong>
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <span>✓</span>
-              <span>
-                Check-in instructions will be sent 24 hours before your arrival
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <span>✓</span>
-              <span>Our team is available 24/7 for any questions</span>
-            </li>
-            <li className="flex gap-3">
-              <span>✓</span>
-              <span>Your room is reserved and ready for your arrival</span>
-            </li>
-          </ul>
-        </div>
+          {/* Dates & Room */}
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              Stay Information
+            </h2>
 
-        {/* Action Buttons */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Link
-            href="/bookings"
-            className="block text-center bg-white border-2 border-blue-900 text-blue-900 font-bold py-3 px-6 rounded-lg hover:bg-blue-50 transition"
-          >
-            Explore More Rooms
-          </Link>
-          <Link
-            href="/"
-            className="block text-center bg-gradient-to-r from-blue-900 to-blue-800 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-800 hover:to-blue-700 transition shadow-lg"
-          >
-            Return to Homepage
-          </Link>
-        </div>
+            <div className="space-y-4">
+              <div>
+                <p className="text-gray-600 text-sm">Check-In</p>
+                <p className="text-gray-900 font-semibold">
+                  {checkInDate
+                    ? dateFormatter.format(checkInDate)
+                    : "Date not available"}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-600 text-sm">Check-Out</p>
+                <p className="text-gray-900 font-semibold">
+                  {checkOutDate
+                    ? dateFormatter.format(checkOutDate)
+                    : "Date not available"}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-600 text-sm">Duration</p>
+                <p className="text-gray-900 font-semibold">
+                  {nights > 0
+                    ? `${nights} night${nights > 1 ? "s" : ""}`
+                    : "Duration not available"}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-600 text-sm">Room</p>
+                <p className="text-gray-900 font-semibold">
+                  {booking.room_id || "Room not specified"}
+                </p>
+              </div>
+            </div>
+          </div>
 
-        {/* Support */}
-        <div className="text-center mt-8 text-gray-600">
-          <p className="text-sm mb-2">Questions or need help?</p>
-          <p className="text-sm font-semibold text-gray-900">
-            Contact us: +234-XXX-XXXX or bookings@zibabeachresort.com
-          </p>
+          {/* Payment Summary */}
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              Payment Summary
+            </h2>
+
+            <div className="space-y-3 pb-4 border-b border-gray-200">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Total Amount</span>
+                <span className="font-semibold text-gray-900">
+                  ₦{booking.total_amount_ngn?.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Status</span>
+                <span
+                  className={`font-semibold ${
+                    booking.payment_status === "CONFIRMED"
+                      ? "text-green-600"
+                      : "text-yellow-600"
+                  }`}
+                >
+                  {booking.payment_status}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Check-in Instructions */}
+          <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg mb-6">
+            <h2 className="text-lg font-bold text-blue-900 mb-3">
+              Check-In Instructions
+            </h2>
+            <ul className="space-y-2 text-gray-700">
+              <li>✓ Check-in time: 2:00 PM</li>
+              <li>✓ Check-out time: 11:00 AM</li>
+              <li>✓ Please bring a valid government-issued ID</li>
+              <li>✓ Early check-in available subject to room availability</li>
+            </ul>
+          </div>
+
+          {/* Contact Support */}
+          <div className="text-center">
+            <p className="text-gray-600 mb-4">
+              Need help? Contact us at{" "}
+              <a
+                href="tel:+2347047300013"
+                className="text-blue-900 font-semibold hover:underline"
+              >
+                +234 704 730 0013
+              </a>
+            </p>
+            <a
+              href="/"
+              className="inline-block bg-blue-900 text-white px-8 py-3 rounded-lg hover:bg-blue-800 transition-colors"
+            >
+              Return to Home
+            </a>
+          </div>
         </div>
-      </div>
-    </div>
+      </main>
+      <Footer />
+    </>
   );
 }
