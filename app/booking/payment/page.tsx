@@ -36,6 +36,12 @@ function PaymentContent() {
   const [currentBookingId, setCurrentBookingId] = useState("");
   const [currentAmount, setCurrentAmount] = useState(0);
 
+  // Popup state for receipt generation
+  const [showReceiptPopup, setShowReceiptPopup] = useState(false);
+  const [receipBookingId, setReceiptBookingId] = useState("");
+  const [receiptPaystackRef, setReceiptPaystackRef] = useState("");
+  const [showReceiptButton, setShowReceiptButton] = useState(false);
+
   // Guest info
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
@@ -509,33 +515,29 @@ function PaymentContent() {
       console.log("💳 Real Paystack mode - initializing payment");
       if (typeof window !== "undefined" && window.PaystackPop) {
         console.log("✅ PaystackPop loaded");
-        const redirectUrl = `/booking-confirmation?bookingId=${booking.id}&ref=${paystackReference}`;
         const handler = window.PaystackPop.setup({
           key: paystackKey,
           email: guestEmail,
           amount: totalPrice * 100, // Paystack expects amount in kobo
           ref: paystackReference,
           cust_id_start: booking.id,
+          onSuccess: (response: any) => {
+            console.log("✅ Payment successful:", response);
+            setShowReceiptButton(true);
+          },
           onClose: () => {
-            console.log(
-              "🚫 Paystack modal closed - redirecting to confirmation",
-            );
+            console.log("🚫 Paystack modal closed by user");
+            setShowReceiptPopup(false);
             setProcessing(false);
-            // Use window.location for more reliable redirect
-            window.location.href = redirectUrl;
           },
         });
         console.log("🎬 Opening Paystack iframe");
         handler.openIframe();
-
-        // Fallback: If modal doesn't close after 5 seconds, force redirect
-        // This handles cases where Paystack modal closes silently
-        setTimeout(() => {
-          console.warn(
-            "⏱️ Timeout reached, forcing redirect to confirmation page",
-          );
-          window.location.href = redirectUrl;
-        }, 5000);
+        
+        // Show receipt popup when Paystack opens
+        setShowReceiptPopup(true);
+        setReceiptBookingId(booking.id);
+        setReceiptPaystackRef(paystackReference);
       } else {
         // Load Paystack script if not loaded
         console.log("📥 Loading Paystack script...");
@@ -546,32 +548,29 @@ function PaymentContent() {
           console.log("✅ Paystack script loaded");
           if (window.PaystackPop) {
             console.log("✅ PaystackPop available");
-            const redirectUrl = `/booking-confirmation?bookingId=${booking.id}&ref=${paystackReference}`;
             const handler = window.PaystackPop.setup({
               key: paystackKey,
               email: guestEmail,
               amount: totalPrice * 100,
               ref: paystackReference,
               cust_id_start: booking.id,
+              onSuccess: (response: any) => {
+                console.log("✅ Payment successful:", response);
+                setShowReceiptButton(true);
+              },
               onClose: () => {
-                console.log(
-                  "🚫 Paystack modal closed - redirecting to confirmation",
-                );
+                console.log("🚫 Paystack modal closed by user");
+                setShowReceiptPopup(false);
                 setProcessing(false);
-                // Use window.location for more reliable redirect
-                window.location.href = redirectUrl;
               },
             });
             console.log("🎬 Opening Paystack iframe from script load");
             handler.openIframe();
-
-            // Fallback: If modal doesn't close after 5 seconds, force redirect
-            setTimeout(() => {
-              console.warn(
-                "⏱️ Timeout reached, forcing redirect to confirmation page",
-              );
-              window.location.href = redirectUrl;
-            }, 5000);
+            
+            // Show receipt popup when Paystack opens
+            setShowReceiptPopup(true);
+            setReceiptBookingId(booking.id);
+            setReceiptPaystackRef(paystackReference);
           } else {
             console.error("❌ PaystackPop not available after script load");
             setError("Payment system failed to load");
@@ -750,6 +749,58 @@ function PaymentContent() {
             </p>
           </div>
         </div>
+
+        {/* Generate Receipt Popup */}
+        {showReceiptPopup && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-in fade-in zoom-in">
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                {showReceiptButton ? "✅ Payment Successful" : "Processing Payment..."}
+              </h2>
+              <p className="text-gray-600 text-sm mb-6">
+                {showReceiptButton
+                  ? "Your payment has been completed. Click below to view your receipt and booking details."
+                  : "Please complete your payment in the Paystack window. Once done, click the button below to generate your receipt."}
+              </p>
+
+              {showReceiptButton && (
+                <button
+                  onClick={() => {
+                    router.push(
+                      `/booking-confirmation?bookingId=${receipBookingId}&ref=${receiptPaystackRef}`,
+                    );
+                  }}
+                  className="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition font-bold text-base shadow-lg"
+                >
+                  Generate Receipt
+                </button>
+              )}
+
+              {!showReceiptButton && (
+                <div className="space-y-3">
+                  <button
+                    onClick={() => {
+                      router.push(
+                        `/booking-confirmation?bookingId=${receipBookingId}&ref=${receiptPaystackRef}`,
+                      );
+                    }}
+                    className="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition font-bold text-base shadow-lg"
+                  >
+                    Generate Receipt
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowReceiptPopup(false);
+                    }}
+                    className="w-full bg-gray-200 text-gray-900 py-3 rounded-lg hover:bg-gray-300 transition font-semibold text-base"
+                  >
+                    Close
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Payment Success Modal */}
         <PaymentSuccessModal
