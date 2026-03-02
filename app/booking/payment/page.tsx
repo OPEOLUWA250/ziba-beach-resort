@@ -516,12 +516,16 @@ function PaymentContent() {
           ref: paystackReference,
           redirect: `${typeof window !== "undefined" ? window.location.origin : ""}/booking-confirmation?bookingId=${booking.id}`,
           onClose: () => {
-            console.log("🚫 Paystack modal closed");
+            console.log(
+              "🚫 Paystack modal closed - may have succeeded or been cancelled",
+            );
+            // Show redirecting state immediately
+            setIsRedirecting(true);
             setProcessing(false);
           },
           onSuccess: (response: any) => {
-            console.log("💰 Payment successful - Paystack will redirect");
-            // Paystack redirect will happen automatically
+            console.log("💰 Payment successful - redirecting to confirmation");
+            setIsRedirecting(true);
             setProcessing(false);
           },
         });
@@ -544,11 +548,17 @@ function PaymentContent() {
               ref: paystackReference,
               redirect: `${typeof window !== "undefined" ? window.location.origin : ""}/booking-confirmation?bookingId=${booking.id}`,
               onClose: () => {
-                console.log("🚫 Paystack modal closed");
+                console.log(
+                  "🚫 Paystack modal closed - may have succeeded or been cancelled",
+                );
+                setIsRedirecting(true);
                 setProcessing(false);
               },
               onSuccess: (response: any) => {
-                console.log("💰 Payment successful - Paystack will redirect");
+                console.log(
+                  "💰 Payment successful - redirecting to confirmation",
+                );
+                setIsRedirecting(true);
                 setProcessing(false);
               },
             });
