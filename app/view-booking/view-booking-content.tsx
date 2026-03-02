@@ -211,7 +211,7 @@ export function ViewBookingContent() {
                 <p className="text-lg font-bold text-gray-900">
                   {format(checkInDate, "MMM d, yyyy")}
                 </p>
-                <p className="text-sm text-gray-500">2:00 PM arrival</p>
+                <p className="text-sm text-gray-500">3:00 PM arrival</p>
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
@@ -223,7 +223,7 @@ export function ViewBookingContent() {
                 <p className="text-lg font-bold text-gray-900">
                   {format(checkOutDate, "MMM d, yyyy")}
                 </p>
-                <p className="text-sm text-gray-500">11:00 AM departure</p>
+                <p className="text-sm text-gray-500">12:00 PM departure</p>
               </div>
             </div>
 
@@ -300,7 +300,7 @@ export function ViewBookingContent() {
                     Check-In Time
                   </h3>
                   <p className="text-gray-600">
-                    Check-in is at 2:00 PM. Early check-in may be available upon
+                    Check-in is at 3:00 PM. Early check-in may be available upon
                     request.
                   </p>
                 </div>
@@ -315,7 +315,7 @@ export function ViewBookingContent() {
                     Check-Out Time
                   </h3>
                   <p className="text-gray-600">
-                    Check-out is at 11:00 AM. Late checkout available for a fee.
+                    Check-out is at 12:00 PM. Late checkout available for a fee.
                   </p>
                 </div>
               </div>

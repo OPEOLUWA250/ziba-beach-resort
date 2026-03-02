@@ -2,9 +2,9 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { Check, Loader2, AlertCircle } from "lucide-react";
+import { getRoomName } from "@/lib/utils";
 
 interface BookingData {
   id: string;
@@ -106,7 +106,6 @@ export default function BookingConfirmationContent() {
   if (loading) {
     return (
       <>
-        <Header />
         <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center px-4 py-12">
           <div className="text-center">
             <Loader2 className="w-12 h-12 text-blue-900 animate-spin mx-auto mb-4" />
@@ -121,7 +120,6 @@ export default function BookingConfirmationContent() {
   if (error || !booking) {
     return (
       <>
-        <Header />
         <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center px-4 py-12">
           <div className="text-center max-w-md">
             <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
@@ -166,163 +164,163 @@ export default function BookingConfirmationContent() {
 
   return (
     <>
-      <Header />
-      <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12 px-4">
-        <div className="max-w-2xl mx-auto">
-          {/* Success Header */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Check className="w-8 h-8 text-green-600" />
+      <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-6 sm:py-8 px-4 flex items-center justify-center">
+        <div className="w-full max-w-md">
+          {/* Receipt Card - No Scrolling */}
+          <div className="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-100">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white p-4 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Check className="w-5 h-5" />
+                <h1 className="text-xl sm:text-2xl font-bold">Confirmed!</h1>
+              </div>
+              <p className="text-blue-100 text-xs">Ziba Beach Resort</p>
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              Booking Confirmed!
-            </h1>
-            <p className="text-gray-600">
-              Thank you for booking with Ziba Beach Resort
-            </p>
-          </div>
 
-          {/* Booking Reference */}
-          <div className="bg-gradient-to-r from-blue-900 to-blue-800 rounded-lg p-6 text-center mb-8 text-white">
-            <p className="text-blue-100 text-sm mb-2">Booking Reference</p>
-            <p className="text-3xl font-bold font-mono">
-              {booking.booking_reference_code || "Generating..."}
-            </p>
-          </div>
-
-          {/* Booking Details */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
-              Booking Details
-            </h2>
-
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <p className="text-gray-600 text-sm">Guest Name</p>
-                <p className="text-gray-900 font-semibold">
-                  {booking.guest_name}
+            {/* Content - Compact Layout */}
+            <div className="p-4 sm:p-5 text-xs sm:text-sm space-y-3 sm:space-y-4">
+              {/* Booking Ref Box */}
+              <div className="bg-gradient-to-r from-emerald-50 to-blue-50 p-3 rounded border border-emerald-200 text-center">
+                <p className="text-gray-600 text-xs font-medium mb-1">
+                  Reference Code
+                </p>
+                <p className="font-mono font-bold text-blue-900 text-sm break-all">
+                  {booking.booking_reference_code || "Generating..."}
                 </p>
               </div>
-              <div>
-                <p className="text-gray-600 text-sm">Email</p>
-                <p className="text-gray-900 font-semibold">
-                  {booking.guest_email}
+
+              {/* Guest Info - Compact */}
+              <div className="space-y-2">
+                <div className="flex justify-between border-b border-gray-200 pb-1.5">
+                  <span className="text-gray-600 font-medium">Name:</span>
+                  <span className="font-semibold text-gray-900 text-right">
+                    {booking.guest_name}
+                  </span>
+                </div>
+                <div className="flex justify-between border-b border-gray-200 pb-1.5">
+                  <span className="text-gray-600 font-medium">Email:</span>
+                  <span className="font-semibold text-gray-900 text-right text-xs">
+                    {booking.guest_email}
+                  </span>
+                </div>
+                <div className="flex justify-between border-b border-gray-200 pb-1.5">
+                  <span className="text-gray-600 font-medium">Phone:</span>
+                  <span className="font-semibold text-gray-900">
+                    {booking.guest_phone}
+                  </span>
+                </div>
+              </div>
+
+              {/* Stay Details - Compact Grid */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-gray-50 p-2 rounded text-center">
+                  <p className="text-gray-500 text-xs mb-0.5">Check In</p>
+                  <p className="font-bold text-gray-900 text-xs">
+                    {checkInDate
+                      ? new Date(checkInDate).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        })
+                      : "N/A"}
+                  </p>
+                </div>
+                <div className="bg-gray-50 p-2 rounded text-center">
+                  <p className="text-gray-500 text-xs mb-0.5">Check Out</p>
+                  <p className="font-bold text-gray-900 text-xs">
+                    {checkOutDate
+                      ? new Date(checkOutDate).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        })
+                      : "N/A"}
+                  </p>
+                </div>
+                <div className="bg-gray-50 p-2 rounded text-center">
+                  <p className="text-gray-500 text-xs mb-0.5">Duration</p>
+                  <p className="font-bold text-gray-900 text-xs">
+                    {nights > 0 ? `${nights}N` : "N/A"}
+                  </p>
+                </div>
+                <div className="bg-blue-50 p-2 rounded text-center border border-blue-200">
+                  <p className="text-gray-500 text-xs mb-0.5">Guests</p>
+                  <p className="font-bold text-gray-900 text-xs">
+                    {booking.number_of_guests}
+                  </p>
+                </div>
+              </div>
+
+              {/* Room */}
+              <div className="bg-blue-50 p-2.5 rounded border border-blue-200">
+                <p className="text-gray-600 text-xs font-medium mb-1">
+                  Room Type
+                </p>
+                <p className="font-bold text-blue-900 text-xs">
+                  {getRoomName(booking.room_id) || "N/A"}
                 </p>
               </div>
-              <div>
-                <p className="text-gray-600 text-sm">Phone</p>
-                <p className="text-gray-900 font-semibold">
-                  {booking.guest_phone}
-                </p>
+
+              {/* Payment - Highlighted */}
+              <div className="bg-gradient-to-r from-emerald-50 to-green-50 border-2 border-emerald-300 p-3 rounded">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="font-bold text-gray-900">Total</span>
+                  <span className="text-lg sm:text-xl font-bold text-emerald-700">
+                    ₦{booking.total_amount_ngn?.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 font-medium">Status</span>
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-bold ${
+                      booking.payment_status === "CONFIRMED"
+                        ? "bg-emerald-600 text-white"
+                        : "bg-yellow-600 text-white"
+                    }`}
+                  >
+                    {booking.payment_status}
+                  </span>
+                </div>
               </div>
-              <div>
-                <p className="text-gray-600 text-sm">Guests</p>
-                <p className="text-gray-900 font-semibold">
-                  {booking.number_of_guests}
+
+              {/* Important Notes - Compact */}
+              <div className="bg-amber-50 border border-amber-200 p-2.5 rounded">
+                <p className="font-bold text-amber-900 text-xs mb-1.5">
+                  ⚡ Important
                 </p>
+                <ul className="text-gray-700 space-y-0.5 text-xs">
+                  <li>• Check-in: 3:00 PM, Check-out: 12:00 PM</li>
+                  <li>• Bring valid ID for check-in</li>
+                  <li>• Confirmation sent to email</li>
+                </ul>
               </div>
             </div>
-          </div>
 
-          {/* Dates & Room */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
-              Stay Information
-            </h2>
+            {/* Divider */}
+            <div className="border-t border-gray-200"></div>
 
-            <div className="space-y-4">
-              <div>
-                <p className="text-gray-600 text-sm">Check-In</p>
-                <p className="text-gray-900 font-semibold">
-                  {checkInDate
-                    ? dateFormatter.format(checkInDate)
-                    : "Date not available"}
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-600 text-sm">Check-Out</p>
-                <p className="text-gray-900 font-semibold">
-                  {checkOutDate
-                    ? dateFormatter.format(checkOutDate)
-                    : "Date not available"}
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-600 text-sm">Duration</p>
-                <p className="text-gray-900 font-semibold">
-                  {nights > 0
-                    ? `${nights} night${nights > 1 ? "s" : ""}`
-                    : "Duration not available"}
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-600 text-sm">Room</p>
-                <p className="text-gray-900 font-semibold">
-                  {booking.room_id || "Room not specified"}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Payment Summary */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
-              Payment Summary
-            </h2>
-
-            <div className="space-y-3 pb-4 border-b border-gray-200">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Total Amount</span>
-                <span className="font-semibold text-gray-900">
-                  ₦{booking.total_amount_ngn?.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Status</span>
-                <span
-                  className={`font-semibold ${
-                    booking.payment_status === "CONFIRMED"
-                      ? "text-green-600"
-                      : "text-yellow-600"
-                  }`}
+            {/* Footer */}
+            <div className="bg-gray-50 p-4 space-y-2">
+              <p className="text-center text-gray-600 text-xs">
+                Questions?{" "}
+                <a
+                  href="tel:+2347047300013"
+                  className="text-blue-900 font-bold hover:underline"
                 >
-                  {booking.payment_status}
-                </span>
-              </div>
+                  +234 704 730 0013
+                </a>
+              </p>
+              <a
+                href="/"
+                className="block w-full bg-blue-900 text-white py-2 rounded font-semibold hover:bg-blue-800 transition-colors text-center text-sm"
+              >
+                Home
+              </a>
             </div>
           </div>
 
-          {/* Check-in Instructions */}
-          <div className="bg-blue-50 border-l-4 border-blue-900 p-6 rounded-r-lg mb-6">
-            <h2 className="text-lg font-bold text-blue-900 mb-3">
-              Check-In Instructions
-            </h2>
-            <ul className="space-y-2 text-gray-700">
-              <li>✓ Check-in time: 2:00 PM</li>
-              <li>✓ Check-out time: 11:00 AM</li>
-              <li>✓ Please bring a valid government-issued ID</li>
-              <li>✓ Early check-in available subject to room availability</li>
-            </ul>
-          </div>
-
-          {/* Contact Support */}
-          <div className="text-center">
-            <p className="text-gray-600 mb-4">
-              Need help? Contact us at{" "}
-              <a
-                href="tel:+2347047300013"
-                className="text-blue-900 font-semibold hover:underline"
-              >
-                +234 704 730 0013
-              </a>
-            </p>
-            <a
-              href="/"
-              className="inline-block bg-blue-900 text-white px-8 py-3 rounded-lg hover:bg-blue-800 transition-colors"
-            >
-              Return to Home
-            </a>
-          </div>
+          {/* Print Hint */}
+          <p className="text-center text-gray-500 text-xs mt-4">
+            💡 Screenshot or print this receipt for your records
+          </p>
         </div>
       </main>
       <Footer />

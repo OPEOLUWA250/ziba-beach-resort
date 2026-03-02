@@ -12,7 +12,7 @@ const faqItems: FAQItem[] = [
   {
     question: "What are your check-in and check-out times?",
     answer:
-      "Check-in is at 2:00 PM and check-out is at 11:00 AM. Early check-in and late check-out may be available upon request, subject to room availability.",
+      "Check-in is at 3:00 PM and check-out is at 12:00 PM. Early check-in and late check-out may be available upon request, subject to room availability.",
   },
   {
     question: "Do you offer airport transfers?",

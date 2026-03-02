@@ -146,8 +146,8 @@ export async function POST(request: NextRequest) {
             <div class="section">
               <strong>Important Check-In Information:</strong>
               <ul>
-                <li>Check-in time: 2:00 PM</li>
-                <li>Check-out time: 11:00 AM</li>
+                <li>Check-in time: 3:00 PM</li>
+                <li>Check-out time: 12:00 PM</li>
                 <li>Please bring a valid government-issued ID</li>
                 <li>Early check-in and late check-out subject to availability</li>
               </ul>

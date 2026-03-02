@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import Header from "@/components/header";
 import Footer from "@/components/footer";
 import PaymentSuccessModal from "@/components/payment-success-modal";
 import { format, parse, differenceInDays } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ChevronLeft } from "lucide-react";
 
 interface RoomData {
   id: string;
@@ -320,8 +319,14 @@ function PaymentContent() {
   if (!checkInDate || !checkOutDate || !roomIdParam) {
     return (
       <>
-        <Header />
-        <div className="min-h-screen bg-white px-4 py-8 flex items-center justify-center">
+        <div className="min-h-screen bg-white px-4 py-8 flex items-center justify-center relative">
+          <button
+            onClick={() => router.back()}
+            className="absolute top-6 left-6 flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            <span className="font-light">Back</span>
+          </button>
           <div className="text-center">
             <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
             <p className="text-gray-900 font-semibold">
@@ -340,8 +345,14 @@ function PaymentContent() {
   if (loading) {
     return (
       <>
-        <Header />
-        <div className="min-h-screen bg-white px-4 py-8 flex items-center justify-center">
+        <div className="min-h-screen bg-white px-4 py-8 flex items-center justify-center relative">
+          <button
+            onClick={() => router.back()}
+            className="absolute top-6 left-6 flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            <span className="font-light">Back</span>
+          </button>
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-900 rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-gray-600">Loading room details...</p>
@@ -355,8 +366,14 @@ function PaymentContent() {
   if (error || !room) {
     return (
       <>
-        <Header />
-        <div className="min-h-screen bg-white px-4 py-8 flex items-center justify-center">
+        <div className="min-h-screen bg-white px-4 py-8 flex items-center justify-center relative">
+          <button
+            onClick={() => router.back()}
+            className="absolute top-6 left-6 flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            <span className="font-light">Back</span>
+          </button>
           <div className="text-center">
             <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
             <p className="text-gray-900 font-semibold">
@@ -533,7 +550,7 @@ function PaymentContent() {
         });
         console.log("🎬 Opening Paystack iframe");
         handler.openIframe();
-        
+
         // Show receipt popup when Paystack opens
         setShowReceiptPopup(true);
         setReceiptBookingId(booking.id);
@@ -566,7 +583,7 @@ function PaymentContent() {
             });
             console.log("🎬 Opening Paystack iframe from script load");
             handler.openIframe();
-            
+
             // Show receipt popup when Paystack opens
             setShowReceiptPopup(true);
             setReceiptBookingId(booking.id);
@@ -593,8 +610,15 @@ function PaymentContent() {
 
   return (
     <>
-      <Header />
-      <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-8 px-4">
+      <main className="min-h-screen bg-linear-to-b from-blue-50 to-white py-8 px-4 relative">
+        {/* Back Button */}
+        <button
+          onClick={() => router.back()}
+          className="fixed top-6 left-6 z-50 flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition-colors sm:absolute sm:relative sm:top-0 sm:left-0 sm:mb-4 sm:mb-0"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          <span className="font-light">Back</span>
+        </button>
         <div className="max-w-md mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
@@ -755,7 +779,9 @@ function PaymentContent() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-in fade-in zoom-in">
               <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                {showReceiptButton ? "✅ Payment Successful" : "Processing Payment..."}
+                {showReceiptButton
+                  ? "✅ Payment Successful"
+                  : "Processing Payment..."}
               </h2>
               <p className="text-gray-600 text-sm mb-6">
                 {showReceiptButton
@@ -819,7 +845,7 @@ export default function PaymentPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white">
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-blue-50 to-white">
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-900 rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-gray-600">Loading...</p>

@@ -111,7 +111,7 @@ export async function sendBookingConfirmation(
             <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; margin: 30px 0; border-radius: 8px;">
               <h3 style="color: #92400e; margin: 0 0 15px 0; font-size: 16px; font-weight: 600;">📋 What's Next?</h3>
               <ul style="color: #92400e; margin: 0; padding-left: 20px; line-height: 1.8;">
-                <li>Check-in is at 2:00 PM and check-out at 11:00 AM</li>
+                <li>Check-in is at 3:00 PM and check-out at 12:00 PM</li>
                 <li>We'll send you check-in instructions 24 hours before your arrival</li>
                 <li>Our team is available 24/7 at +234-XXX-XXXX for any queries</li>
               </ul>

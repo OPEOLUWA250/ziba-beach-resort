@@ -232,7 +232,7 @@ export default function BookingForm({
       {/* Info Text */}
       <p className="text-xs sm:text-sm text-gray-600">
         ✓ Booking is reserved only after successful payment. Check-in is at 2:00
-        PM and check-out at 11:00 AM.
+        PM and check-out at 12:00 PM.
       </p>
     </div>
   );
