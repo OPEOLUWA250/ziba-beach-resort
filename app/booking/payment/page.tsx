@@ -546,62 +546,11 @@ function PaymentContent() {
             const bookingId = booking.id;
             const confirmUrl = `/booking-confirmation?bookingId=${bookingId}`;
 
-            // Do background work
-            (async () => {
-              try {
-                // CRITICAL: Confirm payment and update booking status immediately
-                console.log("🔄 Confirming payment in database...");
-                const confirmRes = await fetch(
-                  "/api/bookings/confirm-payment",
-                  {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      bookingId: bookingId,
-                      reference: paystackReference,
-                    }),
-                  },
-                );
-
-                const confirmData = await confirmRes.json();
-
-                if (confirmRes.ok) {
-                  console.log("✅ Payment confirmed in database:", confirmData);
-                } else {
-                  console.error(
-                    "❌ Failed to confirm payment:",
-                    confirmRes.status,
-                    confirmData,
-                  );
-                }
-
-                // Send email
-                await fetch("/api/emails/send-confirmation", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    bookingId: bookingId,
-                    email: guestEmail,
-                    bookingDetails: {
-                      id: bookingId,
-                      checkInDate: checkInDate.toISOString(),
-                      checkOutDate: checkOutDate.toISOString(),
-                      roomTitle: room.title,
-                      totalAmount: totalPrice,
-                      numberOfGuests: 1,
-                    },
-                  }),
-                }).catch(() => {});
-              } catch (err) {
-                console.error("Background task error:", err);
-              }
-
-              // Always redirect after 2 seconds
-              setTimeout(() => {
-                console.log("🔄 Redirecting to confirmation:", confirmUrl);
-                router.push(confirmUrl);
-              }, 2000);
-            })();
+            // Redirect to confirmation page after showing modal briefly
+            setTimeout(() => {
+              console.log("🔄 Redirecting to confirmation:", confirmUrl);
+              router.push(confirmUrl);
+            }, 3000); // 3 seconds to show modal and let webhook process
           },
         });
         console.log("🎬 Opening Paystack iframe");
@@ -653,66 +602,15 @@ function PaymentContent() {
                 const bookingId = booking.id;
                 const confirmUrl = `/booking-confirmation?bookingId=${bookingId}`;
 
-                (async () => {
-                  try {
-                    // CRITICAL: Confirm payment and update booking status immediately
-                    console.log("🔄 Confirming payment in database...");
-                    const confirmRes = await fetch(
-                      "/api/bookings/confirm-payment",
-                      {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          bookingId: bookingId,
-                          reference: paystackReference,
-                        }),
-                      },
-                    );
+                // Start background tasks
+                const bookingId = booking.id;
+                const confirmUrl = `/booking-confirmation?bookingId=${bookingId}`;
 
-                    const confirmData = await confirmRes.json();
-
-                    if (confirmRes.ok) {
-                      console.error(
-                        "✅ ✅ ✅ PAYMENT CONFIRMED IN DATABASE:",
-                        confirmData,
-                      );
-                      alert("✅ DATABASE UPDATED! Redirecting...");
-                    } else {
-                      console.error(
-                        "❌ FAILED TO CONFIRM PAYMENT:",
-                        confirmRes.status,
-                        confirmData,
-                      );
-                      alert(`❌ ERROR: ${confirmData.error}`);
-                    }
-
-                    // Send email
-                    await fetch("/api/emails/send-confirmation", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        bookingId: bookingId,
-                        email: guestEmail,
-                        bookingDetails: {
-                          id: bookingId,
-                          checkInDate: checkInDate.toISOString(),
-                          checkOutDate: checkOutDate.toISOString(),
-                          roomTitle: room.title,
-                          totalAmount: totalPrice,
-                          numberOfGuests: 1,
-                        },
-                      }),
-                    }).catch(() => {});
-                  } catch (err) {
-                    console.error("Background task error:", err);
-                  }
-
-                  // Always redirect after 2 seconds
-                  setTimeout(() => {
-                    console.log("🔄 Redirecting to confirmation:", confirmUrl);
-                    router.push(confirmUrl);
-                  }, 2000);
-                })();
+                // Redirect to confirmation page after showing modal briefly
+                setTimeout(() => {
+                  console.log("🔄 Redirecting to confirmation:", confirmUrl);
+                  router.push(confirmUrl);
+                }, 3000); // 3 seconds to show modal and let webhook process
               },
             });
             console.log("🎬 Opening Paystack iframe from script load");

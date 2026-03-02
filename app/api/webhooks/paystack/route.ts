@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
  * Paystack Webhook Handler
  * Receives payment confirmation events from Paystack
  * Verifies HMAC signature and updates booking status
- * 
+ *
  * Webhook URL to configure in Paystack Dashboard:
  * https://ziba-beach-resort.vercel.app/api/webhooks/paystack
  */
@@ -22,10 +22,7 @@ export async function POST(request: NextRequest) {
 
     if (!signature) {
       console.error("[Paystack Webhook] ❌ Missing signature header");
-      return NextResponse.json(
-        { error: "Missing signature" },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: "Missing signature" }, { status: 401 });
     }
 
     const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;
@@ -48,13 +45,12 @@ export async function POST(request: NextRequest) {
       console.error(
         "[Paystack Webhook] ❌ Invalid signature - NOT from Paystack!",
       );
-      return NextResponse.json(
-        { error: "Invalid signature" },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
-    console.log("[Paystack Webhook] ✅ Signature verified - genuine Paystack event");
+    console.log(
+      "[Paystack Webhook] ✅ Signature verified - genuine Paystack event",
+    );
 
     // Parse event
     const event = JSON.parse(body);
@@ -94,9 +90,7 @@ async function handleChargeSuccess(data: any) {
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !serviceRoleKey) {
-      console.error(
-        "[Paystack Webhook] ❌ Missing Supabase configuration",
-      );
+      console.error("[Paystack Webhook] ❌ Missing Supabase configuration");
       return NextResponse.json(
         { error: "Server configuration error" },
         { status: 500 },
@@ -106,7 +100,9 @@ async function handleChargeSuccess(data: any) {
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     // Find booking by paystack_reference
-    console.log(`[Paystack Webhook] Searching for booking with reference: ${reference}`);
+    console.log(
+      `[Paystack Webhook] Searching for booking with reference: ${reference}`,
+    );
     const { data: bookings, error: searchError } = await supabase
       .from("bookings")
       .select("*")
@@ -144,7 +140,9 @@ async function handleChargeSuccess(data: any) {
     }
 
     // Update booking status
-    console.log(`[Paystack Webhook] Updating booking ${booking.id} to COMPLETED`);
+    console.log(
+      `[Paystack Webhook] Updating booking ${booking.id} to COMPLETED`,
+    );
     const { data: updated, error: updateError } = await supabase
       .from("bookings")
       .update({
@@ -156,7 +154,10 @@ async function handleChargeSuccess(data: any) {
       .single();
 
     if (updateError) {
-      console.error("[Paystack Webhook] ❌ Database update error:", updateError);
+      console.error(
+        "[Paystack Webhook] ❌ Database update error:",
+        updateError,
+      );
       return NextResponse.json(
         { error: `Database error: ${updateError.message}` },
         { status: 500 },
@@ -174,9 +175,6 @@ async function handleChargeSuccess(data: any) {
     });
   } catch (error: any) {
     console.error("[Paystack Webhook] Error handling charge success:", error);
-    return NextResponse.json(
-      { error: error.message },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
