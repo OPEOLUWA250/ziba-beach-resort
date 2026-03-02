@@ -597,12 +597,7 @@ function PaymentContent() {
                     JSON.stringify(transformedBooking),
                   );
                 }
-
                 // Background tasks and redirect
-                const bookingId = booking.id;
-                const confirmUrl = `/booking-confirmation?bookingId=${bookingId}`;
-
-                // Start background tasks
                 const bookingId = booking.id;
                 const confirmUrl = `/booking-confirmation?bookingId=${bookingId}`;
 
