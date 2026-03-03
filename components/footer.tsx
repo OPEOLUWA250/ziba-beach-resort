@@ -233,14 +233,6 @@ export default function Footer() {
                   Blog
                 </a>
               </li>
-              <li>
-                <a
-                  href="/experience"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Experience
-                </a>
-              </li>
             </ul>
           </div>
 
