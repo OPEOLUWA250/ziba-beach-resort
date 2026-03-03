@@ -4,8 +4,9 @@ import { createClient } from "@supabase/supabase-js";
 export const dynamic = "force-dynamic";
 
 /**
- * Confirm payment and update day-pass booking status to COMPLETED
+ * Confirm payment and update day-pass booking status to PENDING
  * Called immediately after successful Paystack payment
+ * Status: PENDING means payment confirmed, awaiting admin activation
  */
 export async function POST(request: NextRequest) {
   try {
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(
-      `[Day-Pass Confirm Payment] Updating booking ${bookingId} to COMPLETED`,
+      `[Day-Pass Confirm Payment] Updating booking ${bookingId} to PENDING (payment confirmed, awaiting activation)`,
     );
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -48,11 +49,11 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    // Update day-pass booking status to COMPLETED
+    // Update day-pass booking status to PENDING (payment confirmed, awaiting admin activation)
     const { data, error } = await supabase
       .from("day_pass_bookings")
       .update({
-        payment_status: "COMPLETED",
+        payment_status: "PENDING",
         updated_at: new Date().toISOString(),
       })
       .eq("id", bookingId)

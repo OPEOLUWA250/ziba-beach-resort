@@ -236,17 +236,18 @@ export default function DayPassConfirmationContent() {
           </div>
 
           {/* Payment */}
-          <div className="bg-linear-to-r from-blue-50 to-blue-100 border-2 border-blue-300 p-3 rounded">
+          <div className="bg-linear-to-r from-green-50 to-green-100 border-2 border-green-300 p-3 rounded">
             <div className="flex justify-between items-start mb-2">
               <span className="font-bold text-gray-900">Total</span>
-              <span className="text-lg sm:text-xl font-bold text-blue-700">
+              <span className="text-lg sm:text-xl font-bold text-green-700">
                 ₦{booking.totalAmount.toLocaleString()}
               </span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 font-medium">Status</span>
-              <span className="px-2 py-1 rounded text-xs font-bold bg-blue-600 text-white">
-                {booking.paymentStatus}
+            <div className="flex justify-between items-center gap-2">
+              <span className="text-gray-600 font-medium">Payment Status</span>
+              <span className="px-3 py-1.5 rounded text-xs font-bold bg-green-600 text-white flex items-center gap-1.5">
+                <Check size={14} />
+                Confirmed
               </span>
             </div>
           </div>

@@ -244,3 +244,133 @@ export async function getBookingByReference(
     return null;
   }
 }
+
+/**
+ * Get all bookings for admin dashboard
+ */
+export async function getAllBookings() {
+  try {
+    const { data, error } = await supabase
+      .from("bookings")
+      .select(
+        `
+        id,
+        booking_reference_code,
+        guest_name,
+        guest_email,
+        guest_phone,
+        room_id,
+        check_in_date,
+        check_out_date,
+        number_of_guests,
+        special_requests,
+        room_price_ngn,
+        number_of_nights,
+        total_amount_ngn,
+        payment_status,
+        created_at
+      `,
+      )
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching all bookings:", error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error("Error in getAllBookings:", error);
+    return [];
+  }
+}
+
+export async function getAllDayPassBookings() {
+  try {
+    const { data, error } = await supabase
+      .from("day_pass_bookings")
+      .select(
+        `
+        id,
+        reference_code,
+        full_name,
+        email,
+        phone,
+        visit_date,
+        items,
+        total_amount,
+        payment_status,
+        created_at
+      `,
+      )
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching all day-pass bookings:", error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error("Error in getAllDayPassBookings:", error);
+    return [];
+  }
+}
+
+export async function updateBookingStatus(
+  bookingId: string,
+  status:
+    | "PENDING"
+    | "CONFIRMED"
+    | "PAID"
+    | "CHECKED_IN"
+    | "COMPLETED"
+    | "CANCELLED",
+) {
+  try {
+    const { data, error } = await supabase
+      .from("bookings")
+      .update({
+        payment_status: status,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", bookingId)
+      .select();
+
+    if (error) {
+      console.error("Error updating booking status:", error);
+      return null;
+    }
+
+    return data?.[0] || null;
+  } catch (error) {
+    console.error("Error in updateBookingStatus:", error);
+    return null;
+  }
+}
+
+export async function updateDayPassBookingStatus(
+  bookingId: string,
+  status: "PENDING" | "COMPLETED" | "CANCELLED",
+) {
+  try {
+    const { data, error } = await supabase
+      .from("day_pass_bookings")
+      .update({
+        payment_status: status,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", bookingId)
+      .select();
+
+    if (error) {
+      console.error("Error updating day-pass booking status:", error);
+      return null;
+    }
+
+    return data?.[0] || null;
+  } catch (error) {
+    console.error("Error in updateDayPassBookingStatus:", error);
+    return null;
+  }
+}

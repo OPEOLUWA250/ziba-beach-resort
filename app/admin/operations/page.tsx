@@ -1,143 +1,187 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   LogIn,
   LogOut,
-  Wrench,
-  ClipboardList,
-  Calendar,
-  AlertCircle,
   CheckCircle2,
   Clock,
-  Trash2,
-  Plus,
-  Edit2,
+  AlertCircle,
+  X,
 } from "lucide-react";
+import { getAllBookings, updateBookingStatus } from "@/lib/services/booking";
 
-const mockCheckInOuts = [
-  {
-    id: 1,
-    guest: "Chisom Patricia",
-    room: "Ocean View Suite",
-    type: "check-in",
-    time: "3:30 PM",
-    status: "completed",
-    date: "Feb 26, 2026",
-  },
-  {
-    id: 2,
-    guest: "Tunde Musa",
-    room: "Garden Escape Deluxe",
-    type: "check-out",
-    time: "11:00 AM",
-    status: "completed",
-    date: "Feb 26, 2026",
-  },
-  {
-    id: 3,
-    guest: "Oluwatoyin Babawale",
-    room: "Beachfront Presidential",
-    type: "check-in",
-    time: "4:15 PM",
-    status: "pending",
-    date: "Feb 26, 2026",
-  },
-];
+interface Booking {
+  id: string;
+  booking_reference_code: string;
+  guest_name: string;
+  guest_email: string;
+  guest_phone: string;
+  room_id: string;
+  check_in_date: string;
+  check_out_date: string;
+  number_of_guests: number;
+  room_price_ngn: number;
+  number_of_nights: number;
+  total_amount_ngn: number;
+  payment_status: string;
+  created_at: string;
+}
 
-const mockMaintenance = [
-  {
-    id: 1,
-    room: "Room 101 - Ocean View Suite",
-    issue: "Air conditioning not cooling",
-    priority: "high",
-    status: "in-progress",
-    assignee: "John Maintenance",
-    date: "Feb 25, 2026",
-  },
-  {
-    id: 2,
-    room: "Room 207 - Garden Escape",
-    issue: "Water heater issue",
-    priority: "medium",
-    status: "completed",
-    assignee: "Ify Maintenance",
-    date: "Feb 24, 2026",
-  },
-  {
-    id: 3,
-    room: "Room 305 - Beach Suite",
-    issue: "Bathroom mirror crack",
-    priority: "low",
-    status: "pending",
-    assignee: "Unassigned",
-    date: "Feb 26, 2026",
-  },
-];
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
 
-const mockHousekeeping = [
-  {
-    id: 1,
-    room: "Room 101",
-    type: "standard-clean",
-    status: "completed",
-    time: "45 mins",
-    staff: "Maria",
-  },
-  {
-    id: 2,
-    room: "Room 102",
-    type: "deep-clean",
-    status: "in-progress",
-    time: "In progress",
-    staff: "Chioma",
-  },
-  {
-    id: 3,
-    room: "Room 103",
-    type: "standard-clean",
-    status: "pending",
-    time: "Scheduled",
-    staff: "Unassigned",
-  },
-  {
-    id: 4,
-    room: "Room 104",
-    type: "post-checkout",
-    status: "completed",
-    time: "30 mins",
-    staff: "Blessing",
-  },
-];
+const StatusBadge = ({ status }: { status: string }) => {
+  const colors: Record<string, string> = {
+    PENDING: "bg-yellow-900/30 text-yellow-400 border-yellow-900/50",
+    CONFIRMED: "bg-blue-900/30 text-blue-400 border-blue-900/50",
+    CHECKED_IN: "bg-green-900/30 text-green-400 border-green-900/50",
+    COMPLETED: "bg-gray-900/30 text-gray-400 border-gray-900/50",
+    CANCELLED: "bg-red-900/30 text-red-400 border-red-900/50",
+  };
+  return (
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-semibold border ${colors[status] || colors.PENDING}`}
+    >
+      {status}
+    </span>
+  );
+};
 
-export default function OperationsTools() {
-  const [activeTab, setActiveTab] = useState("checkin");
+export default function OperationsCheckInOut() {
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [checkInForm, setCheckInForm] = useState({
+    bookingId: "",
+    notes: "",
+  });
+  const [checkOutForm, setCheckOutForm] = useState({
+    bookingId: "",
+    roomCondition: "",
+    notes: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "bg-green-900/30 text-green-400";
-      case "in-progress":
-        return "bg-blue-900/30 text-blue-400";
-      case "pending":
-        return "bg-yellow-900/30 text-yellow-400";
-      case "high":
-        return "bg-red-900/30 text-red-400";
-      default:
-        return "bg-gray-700/30 text-gray-400";
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        setLoading(true);
+        const data = await getAllBookings();
+        setBookings(data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching bookings:", err);
+        setError("Failed to load bookings");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, []);
+
+  // Bookings ready for check-in (CONFIRMED status)
+  const checkInReady = bookings.filter((b) => b.payment_status === "CONFIRMED");
+
+  // Bookings ready for check-out (CHECKED_IN status)
+  const checkOutReady = bookings.filter(
+    (b) => b.payment_status === "CHECKED_IN",
+  );
+
+  const handleCheckIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!checkInForm.bookingId) {
+      alert("Please select a booking");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const booking = bookings.find(
+        (b) => String(b.id) === String(checkInForm.bookingId),
+      );
+      if (!booking) {
+        console.error(
+          "Booking not found. Looking for:",
+          checkInForm.bookingId,
+          "in",
+          bookings.map((b) => b.id),
+        );
+        alert("Booking not found. Please refresh and try again.");
+        return;
+      }
+
+      const updated = await updateBookingStatus(booking.id, "CHECKED_IN");
+
+      if (updated) {
+        setBookings((prev) =>
+          prev.map((b) =>
+            b.id === booking.id ? { ...b, payment_status: "CHECKED_IN" } : b,
+          ),
+        );
+        setCheckInForm({ bookingId: "", notes: "" });
+        setSuccessMessage(
+          `Guest ${booking.guest_name} checked in successfully!`,
+        );
+        setTimeout(() => setSuccessMessage(null), 3000);
+      }
+    } catch (err) {
+      console.error("Error checking in:", err);
+      alert("Failed to check in guest");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "completed":
-        return <CheckCircle2 size={16} />;
-      case "in-progress":
-        return <Clock size={16} />;
-      case "pending":
-        return <AlertCircle size={16} />;
-      default:
-        return <Clock size={16} />;
+  const handleCheckOut = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!checkOutForm.bookingId) {
+      alert("Please select a booking");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const booking = bookings.find(
+        (b) => String(b.id) === String(checkOutForm.bookingId),
+      );
+      if (!booking) {
+        console.error(
+          "Booking not found. Looking for:",
+          checkOutForm.bookingId,
+          "in",
+          bookings.map((b) => b.id),
+        );
+        alert("Booking not found. Please refresh and try again.");
+        return;
+      }
+
+      const updated = await updateBookingStatus(booking.id, "COMPLETED");
+
+      if (updated) {
+        setBookings((prev) =>
+          prev.map((b) =>
+            b.id === booking.id ? { ...b, payment_status: "COMPLETED" } : b,
+          ),
+        );
+        setCheckOutForm({ bookingId: "", roomCondition: "", notes: "" });
+        setSuccessMessage(
+          `Guest ${booking.guest_name} checked out successfully!`,
+        );
+        setTimeout(() => setSuccessMessage(null), 3000);
+      }
+    } catch (err) {
+      console.error("Error checking out:", err);
+      alert("Failed to check out guest");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -146,47 +190,33 @@ export default function OperationsTools() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-light text-white cormorant">
-          Operations Tools
+          Check-In / Check-Out
         </h1>
-        <p className="text-gray-400">Manage daily operations and maintenance</p>
+        <p className="text-gray-400">Manage guest arrivals and departures</p>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-4 border-b border-gray-700 overflow-x-auto">
-        <button
-          onClick={() => setActiveTab("checkin")}
-          className={`px-6 py-4 font-semibold transition-colors whitespace-nowrap ${
-            activeTab === "checkin"
-              ? "text-white border-b-2 border-green-500"
-              : "text-gray-400 hover:text-white"
-          }`}
-        >
-          Check-In/Out
-        </button>
-        <button
-          onClick={() => setActiveTab("maintenance")}
-          className={`px-6 py-4 font-semibold transition-colors whitespace-nowrap ${
-            activeTab === "maintenance"
-              ? "text-white border-b-2 border-yellow-500"
-              : "text-gray-400 hover:text-white"
-          }`}
-        >
-          Maintenance Log
-        </button>
-        <button
-          onClick={() => setActiveTab("housekeeping")}
-          className={`px-6 py-4 font-semibold transition-colors whitespace-nowrap ${
-            activeTab === "housekeeping"
-              ? "text-white border-b-2 border-blue-500"
-              : "text-gray-400 hover:text-white"
-          }`}
-        >
-          Housekeeping Tasks
-        </button>
-      </div>
+      {/* Success Message */}
+      {successMessage && (
+        <div className="bg-green-900/30 border border-green-900/50 rounded-lg p-4 flex items-center gap-3">
+          <CheckCircle2 size={20} className="text-green-400" />
+          <p className="text-green-400">{successMessage}</p>
+        </div>
+      )}
 
-      {/* Check-In/Out Tab */}
-      {activeTab === "checkin" && (
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-900/30 border border-red-900/50 rounded-lg p-4 flex items-center gap-3">
+          <AlertCircle size={20} className="text-red-400" />
+          <p className="text-red-400">{error}</p>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <Clock size={24} className="text-gray-400 animate-spin" />
+          <p className="text-gray-400 ml-2">Loading bookings...</p>
+        </div>
+      ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Check-In Form */}
           <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700 shadow-lg">
@@ -195,53 +225,62 @@ export default function OperationsTools() {
               Check-In Guest
             </h3>
 
-            <div className="space-y-4">
+            <form onSubmit={handleCheckIn} className="space-y-4">
               <div>
                 <label className="text-gray-400 text-sm font-light block mb-2">
-                  Booking ID
+                  Select Guest (Confirmed)
                 </label>
-                <input
-                  type="text"
-                  placeholder="#2024-001"
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500"
-                />
-              </div>
-              <div>
-                <label className="text-gray-400 text-sm font-light block mb-2">
-                  Guest Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter guest name"
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500"
-                />
-              </div>
-              <div>
-                <label className="text-gray-400 text-sm font-light block mb-2">
-                  Room Number
-                </label>
-                <select className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500">
-                  <option>-- Select Room --</option>
-                  <option>101</option>
-                  <option>102</option>
-                  <option>103</option>
+                <select
+                  value={checkInForm.bookingId}
+                  onChange={(e) =>
+                    setCheckInForm((prev) => ({
+                      ...prev,
+                      bookingId: e.target.value,
+                    }))
+                  }
+                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500"
+                >
+                  <option value="">-- Select Guest --</option>
+                  {checkInReady.map((booking) => (
+                    <option key={booking.id} value={booking.id}>
+                      {booking.guest_name} ({booking.booking_reference_code})
+                    </option>
+                  ))}
                 </select>
+                {checkInReady.length === 0 && (
+                  <p className="text-gray-500 text-xs mt-2">
+                    No guests ready for check-in
+                  </p>
+                )}
               </div>
+
               <div>
                 <label className="text-gray-400 text-sm font-light block mb-2">
-                  Notes
+                  Notes (Optional)
                 </label>
                 <textarea
-                  placeholder="Any special requirements or notes..."
+                  placeholder="Any special requirements..."
+                  value={checkInForm.notes}
+                  onChange={(e) =>
+                    setCheckInForm((prev) => ({
+                      ...prev,
+                      notes: e.target.value,
+                    }))
+                  }
                   rows={3}
                   className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500 resize-none"
                 />
               </div>
-              <button className="w-full bg-linear-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg flex items-center justify-center gap-2">
+
+              <button
+                type="submit"
+                disabled={isSubmitting || !checkInForm.bookingId}
+                className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
                 <LogIn size={20} />
-                Complete Check-In
+                {isSubmitting ? "Checking In..." : "Complete Check-In"}
               </button>
-            </div>
+            </form>
           </div>
 
           {/* Check-Out Form */}
@@ -251,198 +290,152 @@ export default function OperationsTools() {
               Check-Out Guest
             </h3>
 
-            <div className="space-y-4">
+            <form onSubmit={handleCheckOut} className="space-y-4">
               <div>
                 <label className="text-gray-400 text-sm font-light block mb-2">
-                  Booking ID
+                  Select Guest (Checked In)
                 </label>
-                <input
-                  type="text"
-                  placeholder="#2024-002"
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-                />
+                <select
+                  value={checkOutForm.bookingId}
+                  onChange={(e) =>
+                    setCheckOutForm((prev) => ({
+                      ...prev,
+                      bookingId: e.target.value,
+                    }))
+                  }
+                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                >
+                  <option value="">-- Select Guest --</option>
+                  {checkOutReady.map((booking) => (
+                    <option key={booking.id} value={booking.id}>
+                      {booking.guest_name} ({booking.booking_reference_code})
+                    </option>
+                  ))}
+                </select>
+                {checkOutReady.length === 0 && (
+                  <p className="text-gray-500 text-xs mt-2">
+                    No guests ready for check-out
+                  </p>
+                )}
               </div>
-              <div>
-                <label className="text-gray-400 text-sm font-light block mb-2">
-                  Guest Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter guest name"
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-                />
-              </div>
+
               <div>
                 <label className="text-gray-400 text-sm font-light block mb-2">
                   Room Condition
                 </label>
-                <select className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500">
-                  <option>-- Select --</option>
-                  <option>Good Condition</option>
-                  <option>Minor Damage</option>
-                  <option>Requires Cleaning</option>
-                  <option>Requires Repairs</option>
+                <select
+                  value={checkOutForm.roomCondition}
+                  onChange={(e) =>
+                    setCheckOutForm((prev) => ({
+                      ...prev,
+                      roomCondition: e.target.value,
+                    }))
+                  }
+                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                >
+                  <option value="">-- Select --</option>
+                  <option value="Good Condition">Good Condition</option>
+                  <option value="Minor Damage">Minor Damage</option>
                 </select>
               </div>
+
               <div>
                 <label className="text-gray-400 text-sm font-light block mb-2">
-                  Notes
+                  Notes (Optional)
                 </label>
                 <textarea
                   placeholder="Any damage or issues to report..."
+                  value={checkOutForm.notes}
+                  onChange={(e) =>
+                    setCheckOutForm((prev) => ({
+                      ...prev,
+                      notes: e.target.value,
+                    }))
+                  }
                   rows={3}
                   className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none"
                 />
               </div>
-              <button className="w-full bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg flex items-center justify-center gap-2">
+
+              <button
+                type="submit"
+                disabled={isSubmitting || !checkOutForm.bookingId}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
                 <LogOut size={20} />
-                Complete Check-Out
+                {isSubmitting ? "Checking Out..." : "Complete Check-Out"}
               </button>
-            </div>
+            </form>
           </div>
 
-          {/* Check-In/Out History */}
+          {/* Activity Summary */}
           <div className="bg-gray-800 rounded-2xl border border-gray-700 shadow-lg overflow-hidden">
             <div className="bg-gray-950 p-4 border-b border-gray-700">
-              <h3 className="text-white font-bold">Today's Activity</h3>
+              <h3 className="text-white font-bold">Summary</h3>
             </div>
-            <div className="divide-y divide-gray-700 max-h-96 overflow-y-auto">
-              {mockCheckInOuts.map((item) => (
-                <div
-                  key={item.id}
-                  className="p-4 hover:bg-gray-700/30 transition"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex gap-3 flex-1">
-                      {item.type === "check-in" ? (
-                        <LogIn size={18} className="text-green-400 mt-0.5" />
-                      ) : (
-                        <LogOut size={18} className="text-blue-400 mt-0.5" />
-                      )}
-                      <div className="flex-1">
-                        <p className="text-white font-semibold">{item.guest}</p>
-                        <p className="text-gray-400 text-xs">{item.room}</p>
-                        <p className="text-gray-500 text-xs mt-1">
-                          {item.time}
+            <div className="p-6 space-y-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-gray-400 flex items-center gap-2">
+                    <LogIn size={16} className="text-green-400" />
+                    Ready for Check-In
+                  </p>
+                  <p className="text-white font-bold text-lg">
+                    {checkInReady.length}
+                  </p>
+                </div>
+                <div className="flex items-center justify-between">
+                  <p className="text-gray-400 flex items-center gap-2">
+                    <LogOut size={16} className="text-blue-400" />
+                    Ready for Check-Out
+                  </p>
+                  <p className="text-white font-bold text-lg">
+                    {checkOutReady.length}
+                  </p>
+                </div>
+                <div className="flex items-center justify-between">
+                  <p className="text-gray-400 flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-green-500" />
+                    Completed
+                  </p>
+                  <p className="text-white font-bold text-lg">
+                    {
+                      bookings.filter((b) => b.payment_status === "COMPLETED")
+                        .length
+                    }
+                  </p>
+                </div>
+              </div>
+
+              <div className="border-t border-gray-700 pt-4">
+                <h4 className="text-white font-semibold mb-3">
+                  Recent Activity
+                </h4>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {bookings
+                    .filter((b) =>
+                      ["CHECKED_IN", "COMPLETED"].includes(b.payment_status),
+                    )
+                    .slice(0, 5)
+                    .map((booking) => (
+                      <div
+                        key={booking.id}
+                        className="bg-gray-700/30 p-3 rounded-lg"
+                      >
+                        <p className="text-white text-sm font-medium">
+                          {booking.guest_name}
                         </p>
+                        <div className="flex justify-between items-center mt-1">
+                          <p className="text-gray-400 text-xs">
+                            {booking.booking_reference_code}
+                          </p>
+                          <StatusBadge status={booking.payment_status} />
+                        </div>
                       </div>
-                    </div>
-                    <span
-                      className={`inline-block px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 whitespace-nowrap ${getStatusColor(
-                        item.status,
-                      )}`}
-                    >
-                      {getStatusIcon(item.status)}
-                      {item.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Maintenance Log Tab */}
-      {activeTab === "maintenance" && (
-        <div className="space-y-4">
-          <div className="flex justify-end">
-            <button className="bg-linear-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2">
-              <Plus size={18} />
-              Report Maintenance Issue
-            </button>
-          </div>
-
-          {mockMaintenance.map((issue) => (
-            <div
-              key={issue.id}
-              className="bg-gray-800 rounded-xl p-4 border border-gray-700 hover:border-gray-600 transition"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Wrench size={18} className="text-yellow-400" />
-                    <h4 className="text-white font-semibold">{issue.room}</h4>
-                    <span
-                      className={`text-xs px-2 py-1 rounded-full font-semibold ${getStatusColor(
-                        issue.priority,
-                      )}`}
-                    >
-                      {issue.priority}
-                    </span>
-                  </div>
-                  <p className="text-gray-400 text-sm mb-2">{issue.issue}</p>
-                  <div className="flex gap-4 text-xs text-gray-500">
-                    <span>Assignee: {issue.assignee}</span>
-                    <span>Status: {issue.status}</span>
-                    <span>{issue.date}</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <button className="p-2 hover:bg-gray-700 rounded-lg transition text-gray-400">
-                    <Edit2 size={18} />
-                  </button>
-                  <button className="p-2 hover:bg-gray-700 rounded-lg transition text-gray-400">
-                    <Trash2 size={18} />
-                  </button>
+                    ))}
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      )}
-
-      {/* Housekeeping Tasks Tab */}
-      {activeTab === "housekeeping" && (
-        <div>
-          <div className="mb-6 flex justify-end">
-            <button className="bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2">
-              <Plus size={18} />
-              Assign New Task
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-            {mockHousekeeping.map((task) => (
-              <div
-                key={task.id}
-                className="bg-gray-800 rounded-xl p-4 border border-gray-700 hover:border-gray-600 transition"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h4 className="text-white font-semibold">{task.room}</h4>
-                    <p className="text-gray-400 text-sm capitalize">
-                      {task.type.replace("-", " ")}
-                    </p>
-                  </div>
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full font-semibold flex items-center gap-1 whitespace-nowrap ${getStatusColor(
-                      task.status,
-                    )}`}
-                  >
-                    {getStatusIcon(task.status)}
-                    {task.status}
-                  </span>
-                </div>
-
-                <div className="border-t border-gray-700 pt-3">
-                  <div className="flex justify-between text-sm text-gray-400 mb-2">
-                    <span>Duration: {task.time}</span>
-                    <span>Staff: {task.staff}</span>
-                  </div>
-                  {task.status === "pending" && (
-                    <button className="w-full bg-blue-900/30 hover:bg-blue-900/50 text-blue-400 px-3 py-2 rounded-lg text-sm font-semibold transition">
-                      Assign Staff
-                    </button>
-                  )}
-                  {task.status === "in-progress" && (
-                    <button className="w-full bg-green-900/30 hover:bg-green-900/50 text-green-400 px-3 py-2 rounded-lg text-sm font-semibold transition">
-                      Mark Complete
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       )}

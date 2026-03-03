@@ -14,7 +14,6 @@ import MenuTeaser from "@/components/menu-teaser";
 import InstagramFeed from "@/components/instagram-feed";
 import ExperiencesCarousel from "@/components/experiences-carousel";
 import Reviews from "@/components/reviews";
-import ContactSection from "@/components/contact-section";
 import Footer from "@/components/footer";
 
 export default function Home() {
@@ -33,7 +32,6 @@ export default function Home() {
       <ExperienceHighlights />
       <InstagramFeed />
       <Reviews />
-      <ContactSection />
       <Footer />
     </main>
   );

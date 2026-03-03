@@ -18,6 +18,7 @@ const nextConfig = {
     pagesBufferLength: 5,
   },
   turbopack: {
+    root: ".",
     resolveAlias: {
       resend: "resend",
     },

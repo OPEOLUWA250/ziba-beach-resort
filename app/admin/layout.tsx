@@ -7,12 +7,7 @@ import {
   LayoutDashboard,
   Calendar,
   DoorOpen,
-  TrendingUp,
-  Users,
-  Star,
-  Mail,
   Wrench,
-  Settings,
   LogOut,
   Menu,
   X,
@@ -30,13 +25,8 @@ const adminNavItems = [
   { label: "Menus", href: "/admin/menus", icon: UtensilsCrossed },
   { label: "Blog", href: "/admin/blog", icon: BookOpen },
   { label: "Popups", href: "/admin/popups", icon: Zap },
-  { label: "Revenue", href: "/admin/revenue", icon: TrendingUp },
-  { label: "Guests", href: "/admin/guests", icon: Users },
-  { label: "Reviews", href: "/admin/reviews", icon: Star },
-  { label: "Communications", href: "/admin/communications", icon: Mail },
   { label: "Operations", href: "/admin/operations", icon: Wrench },
   { label: "Admin System", href: "/admin/users", icon: ShieldCheck },
-  { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export default function AdminLayout({
