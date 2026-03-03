@@ -106,6 +106,32 @@ export default function DayPassCart() {
       return;
     }
 
+    // Check if only infant tickets in cart
+    const hasOnlyInfant = cart.items.every(
+      (item) => item.id === "infant-ticket",
+    );
+    if (hasOnlyInfant) {
+      alert(
+        "Infant tickets cannot be booked alone. Please add at least one ticketed guest (Kids, Teens, or Adult).",
+      );
+      return;
+    }
+
+    // Check if cart has infant tickets but no paying tickets
+    const hasInfant = cart.items.some((item) => item.id === "infant-ticket");
+    const hasPayingTickets = cart.items.some(
+      (item) =>
+        item.id !== "infant-ticket" &&
+        (item.id.includes("ticket") || item.id.includes("plus")),
+    );
+
+    if (hasInfant && !hasPayingTickets) {
+      alert(
+        "Infant tickets must be accompanied by at least one ticketed guest (Kids, Teens, or Adult).",
+      );
+      return;
+    }
+
     // Redirect to checkout page
     router.push("/day-pass/checkout");
   };
@@ -226,8 +252,8 @@ export default function DayPassCart() {
             </div>
 
             {/* Price Summary */}
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-lg p-6">
-              <div className="flex justify-between items-center mb-4 pb-4 border-b border-green-200">
+            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-300 rounded-lg p-6">
+              <div className="flex justify-between items-center mb-4 pb-4 border-b border-blue-200">
                 <span className="text-gray-600">
                   Subtotal (
                   {cart.items.reduce((sum, item) => sum + item.quantity, 0)}{" "}
@@ -241,9 +267,9 @@ export default function DayPassCart() {
                 <span className="text-gray-600">Service Fee</span>
                 <span className="font-semibold text-gray-900">₦0</span>
               </div>
-              <div className="flex justify-between items-center pt-4 border-t border-green-200">
+              <div className="flex justify-between items-center pt-4 border-t border-blue-200">
                 <span className="text-lg font-bold text-gray-900">Total</span>
-                <span className="text-3xl font-bold text-green-700">
+                <span className="text-3xl font-bold text-blue-700">
                   ₦{cart.totalAmount.toLocaleString()}
                 </span>
               </div>
@@ -253,7 +279,7 @@ export default function DayPassCart() {
             <button
               onClick={handleProceedToCheckout}
               disabled={cart.items.length === 0 || !cart.visitDate}
-              className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg transition-colors text-lg"
+              className="w-full bg-blue-900 hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg transition-colors text-lg"
             >
               Proceed to Checkout
             </button>

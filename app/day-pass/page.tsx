@@ -225,6 +225,8 @@ export default function DayPass() {
   };
 
   const ticketProducts = products.filter((p) => p.category === "tickets");
+  const regularTickets = ticketProducts.filter((p) => !p.name.includes("Plus"));
+  const plusTickets = ticketProducts.filter((p) => p.name.includes("Plus"));
   const experienceProducts = products.filter(
     (p) => p.category === "experiences",
   );
@@ -286,12 +288,12 @@ export default function DayPass() {
         {/* PRODUCTS SECTION */}
         <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
           <div className="max-w-7xl mx-auto">
-            {/* TICKETS SECTION */}
-            <div className="mb-20">
+            {/* REGULAR TICKETS SECTION */}
+            <div className="mb-20" id="regular-tickets">
               <h2 className="h2 text-blue-900 mb-12">Day Pass Tickets</h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12">
-                {ticketProducts.map((product) => (
+                {regularTickets.map((product) => (
                   <ProductCard
                     key={product.id}
                     product={product}
@@ -302,6 +304,42 @@ export default function DayPass() {
                 ))}
               </div>
             </div>
+
+            {/* PREMIUM PLUS TICKETS SECTION */}
+            {plusTickets.length > 0 && (
+              <div className="mb-20" id="premium-tickets">
+                <div className="mb-12">
+                  <div className="flex items-center gap-3 mb-4">
+                    <h2 className="h2 text-blue-900">Premium Tickets</h2>
+                    <span className="inline-block px-3 py-1 bg-blue-100 text-blue-900 text-xs font-semibold rounded-full">
+                      PLUS BENEFITS
+                    </span>
+                  </div>
+                  <p className="text-gray-600 font-light mb-6">
+                    Upgrade your day pass with complimentary meals and premium
+                    experiences
+                  </p>
+                  <a
+                    href="/menu#ticket-plus-meals"
+                    className="inline-block bg-blue-900 hover:bg-blue-800 text-white text-sm font-medium py-2.5 px-6 rounded-lg transition-colors"
+                  >
+                    View Meal Options
+                  </a>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {plusTickets.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      quantity={getQuantity(product.id)}
+                      onIncrease={() => updateQuantity(product.id, 1)}
+                      onDecrease={() => updateQuantity(product.id, -1)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* EXPERIENCES SECTION */}
             <div className="mb-20">
@@ -349,7 +387,7 @@ function ProductCard({
   onDecrease,
 }: ProductCardProps) {
   return (
-    <div className="bg-white border-2 border-gray-300 rounded-2xl p-6 hover:shadow-lg transition-all duration-300">
+    <div className="bg-white border-2 border-gray-300 rounded-2xl p-6 hover:shadow-lg transition-all duration-300 flex flex-col h-full">
       <h4 className="font-light text-gray-900 mb-3 min-h-12 flex items-center">
         {product.name}
       </h4>
@@ -358,7 +396,7 @@ function ProductCard({
         ₦{product.price.toLocaleString()}
       </p>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 mt-auto">
         <span className="text-sm text-gray-600 font-light">Quantity</span>
         <div className="flex items-center gap-3 border-2 border-gray-300 rounded-lg">
           <button

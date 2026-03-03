@@ -29,7 +29,7 @@ export default function BookingCards() {
   return (
     <section
       ref={sectionRef}
-      id="booking-section"
+      id="experience-cards"
       className="pt-28 pb-32 px-4 sm:px-6 lg:px-8 bg-white scroll-mt-20 overflow-hidden"
     >
       <div className="max-w-6xl mx-auto">

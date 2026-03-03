@@ -786,7 +786,7 @@ function PaymentContent() {
             <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-in fade-in zoom-in">
               <h2 className="text-2xl font-bold text-gray-900 mb-3">
                 {showReceiptButton
-                  ? "✅ Payment Successful"
+                  ? "Payment Successful"
                   : "Processing Payment..."}
               </h2>
               <p className="text-gray-600 text-sm mb-6">

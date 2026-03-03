@@ -368,7 +368,12 @@ export default function Stay() {
                     </div>
                   </div>
 
-                  <button className="w-full bg-gradient-to-br from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light">
+                  <button
+                    className="w-full bg-gradient-to-br from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light"
+                    onClick={() =>
+                      (window.location.href = "/day-pass#regular-tickets")
+                    }
+                  >
                     Purchase Ticket Only
                   </button>
                 </div>
@@ -424,7 +429,12 @@ export default function Stay() {
                     </p>
                   </div>
 
-                  <button className="w-full bg-gradient-to-br from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light">
+                  <button
+                    className="w-full bg-gradient-to-br from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light"
+                    onClick={() =>
+                      (window.location.href = "/day-pass#premium-tickets")
+                    }
+                  >
                     Purchase Ticket Plus+
                   </button>
                 </div>

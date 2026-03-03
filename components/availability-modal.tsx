@@ -172,14 +172,14 @@ export default function AvailabilityModal({
           {availabilityStatus === "available" &&
             checkInDate &&
             checkOutDate && (
-              <div className="bg-green-50 border-2 border-green-300 rounded-xl p-6 space-y-4">
+              <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-6 space-y-4">
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="w-7 h-7 text-green-600 shrink-0 mt-0.5" />
+                  <CheckCircle className="w-7 h-7 text-blue-600 shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-bold text-lg text-green-900">
+                    <h3 className="font-bold text-lg text-blue-900">
                       Perfect! Room is Available
                     </h3>
-                    <p className="text-sm text-green-800 font-light mt-1">
+                    <p className="text-sm text-blue-800 font-light mt-1">
                       This {roomName} is available for your selected dates.
                       Proceed with your booking!
                     </p>
@@ -187,7 +187,7 @@ export default function AvailabilityModal({
                 </div>
 
                 {/* Booking Summary */}
-                <div className="bg-white rounded-lg p-5 space-y-3 border-2 border-green-200 shadow-sm">
+                <div className="bg-white rounded-lg p-5 space-y-3 border-2 border-blue-200 shadow-sm">
                   <h4 className="font-semibold text-gray-900 text-sm uppercase tracking-wide">
                     📋 Booking Summary
                   </h4>
@@ -235,7 +235,7 @@ export default function AvailabilityModal({
                     </div>
                   </div>
 
-                  <div className="bg-linear-to-r from-blue-50 to-green-50 rounded-lg p-3 border-2 border-blue-200 flex justify-between items-center">
+                  <div className="bg-linear-to-r from-blue-50 to-blue-100 rounded-lg p-3 border-2 border-blue-200 flex justify-between items-center">
                     <span className="font-bold text-gray-900">
                       Total Price:
                     </span>
@@ -286,7 +286,7 @@ export default function AvailabilityModal({
           <button
             onClick={handleProceed}
             disabled={availabilityStatus !== "available"}
-            className="w-full sm:w-auto px-8 py-3 bg-linear-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg order-1 sm:order-2"
+            className="w-full sm:w-auto px-8 py-3 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg order-1 sm:order-2"
           >
             Proceed to Booking
           </button>

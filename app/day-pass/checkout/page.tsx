@@ -218,8 +218,6 @@ export default function DayPassCheckout() {
             <span className="font-medium">Back</span>
           </button>
 
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
-
           <div className="grid md:grid-cols-3 gap-6">
             {/* Checkout Form */}
             <div className="md:col-span-2 space-y-6">
@@ -318,7 +316,7 @@ export default function DayPassCheckout() {
                   </div>
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total:</span>
-                    <span className="text-green-700">
+                    <span className="text-blue-700">
                       ₦{cart.totalAmount.toLocaleString()}
                     </span>
                   </div>

@@ -68,10 +68,16 @@ export default function Header() {
     };
   }, []);
 
-  const scrollToBooking = () => {
-    const bookingSection = document.getElementById("booking-section");
-    if (bookingSection) {
-      bookingSection.scrollIntoView({ behavior: "smooth" });
+  const handleBookNow = () => {
+    // On home page, scroll to experience cards
+    if (pathname === "/") {
+      const experienceSection = document.getElementById("experience-cards");
+      if (experienceSection) {
+        experienceSection.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      // On other pages, navigate to home with anchor
+      window.location.href = "/#experience-cards";
     }
     setMobileMenuOpen(false);
   };
@@ -169,26 +175,48 @@ export default function Header() {
             )}
           </Link>
           <button
-            onClick={scrollToBooking}
+            onClick={handleBookNow}
             className="px-7 py-2.5 bg-linear-to-r from-blue-900 to-blue-800 text-white text-sm font-medium tracking-normal rounded-lg hover:from-blue-800 hover:to-blue-700 transition-all duration-200 hover:shadow-md"
           >
             Book Now
           </button>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className={`md:hidden transition-colors duration-300 ${
-            isNearFooter
-              ? "text-white"
-              : isScrolled
-                ? "text-gray-900 hover:text-blue-900"
-                : "text-white"
-          }`}
-        >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {/* Mobile Cart Icon and Menu Button */}
+        <div className="md:hidden flex items-center gap-2">
+          <Link
+            href="/day-pass/cart"
+            className="relative p-2.5 rounded-lg hover:bg-white/10 transition-colors"
+          >
+            <ShoppingCart
+              size={20}
+              className={`transition-colors ${
+                isNearFooter
+                  ? "text-white"
+                  : isScrolled
+                    ? "text-gray-900 hover:text-blue-900"
+                    : "text-white"
+              }`}
+            />
+            {cartCount > 0 && (
+              <span className="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className={`transition-colors duration-300 ${
+              isNearFooter
+                ? "text-white"
+                : isScrolled
+                  ? "text-gray-900 hover:text-blue-900"
+                  : "text-white"
+            }`}
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
@@ -215,21 +243,11 @@ export default function Header() {
 
             {/* Mobile Book Now Button */}
             <button
-              onClick={scrollToBooking}
+              onClick={handleBookNow}
               className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-6 py-3 font-light tracking-wide hover:from-blue-800 hover:to-blue-700 transition mt-4 rounded-lg"
             >
               Book Now
             </button>
-
-            {/* Mobile Day Pass Cart Button */}
-            <Link
-              href="/day-pass/cart"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full bg-linear-to-r from-green-600 to-green-700 text-white px-6 py-3 font-light tracking-wide hover:from-green-700 hover:to-green-800 transition mt-2 rounded-lg flex items-center justify-center gap-2"
-            >
-              <ShoppingCart size={18} />
-              Cart {cartCount > 0 && `(${cartCount})`}
-            </Link>
           </div>
         </div>
       )}

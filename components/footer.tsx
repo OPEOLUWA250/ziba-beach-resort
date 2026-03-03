@@ -40,13 +40,15 @@ export default function Footer() {
             }`}
           >
             <div className="mb-6 flex justify-center md:justify-start">
-              <Image
-                src="/ZIBA-LOGO-WHITE.png"
-                alt="Ziba Beach Resort"
-                width={80}
-                height={80}
-                className="h-auto w-auto hover:scale-110 transition-transform duration-500"
-              />
+              <a href="/" className="hover:opacity-80 transition-opacity">
+                <Image
+                  src="/ZIBA-LOGO-WHITE.png"
+                  alt="Ziba Beach Resort"
+                  width={80}
+                  height={80}
+                  className="h-auto w-auto hover:scale-110 transition-transform duration-500"
+                />
+              </a>
             </div>
             <p className="text-sm font-light text-blue-100 leading-relaxed">
               Experience luxury redefined at Nigeria's premier beachfront
@@ -201,7 +203,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/stay"
+                  href="/booking"
                   className="hover:text-blue-200 transition-colors duration-300"
                 >
                   Rooms
@@ -209,7 +211,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/experiences"
+                  href="/menu"
                   className="hover:text-blue-200 transition-colors duration-300"
                 >
                   Menu
@@ -233,7 +235,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/celebrate"
+                  href="/experience"
                   className="hover:text-blue-200 transition-colors duration-300"
                 >
                   Experience

@@ -1,9 +1,10 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Check, AlertCircle, Loader2 } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { Check, AlertCircle, Loader2, Download } from "lucide-react";
 import { format } from "date-fns";
+import { downloadReceiptPDF } from "@/lib/pdf-utils";
 
 interface DayPassBooking {
   id: string;
@@ -21,6 +22,7 @@ export default function DayPassConfirmationContent() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId");
   const paystackReference = searchParams.get("ref");
+  const [downloading, setDownloading] = useState(false);
 
   const [booking, setBooking] = useState<DayPassBooking | null>(null);
   const [loading, setLoading] = useState(true);
@@ -109,6 +111,31 @@ export default function DayPassConfirmationContent() {
     }
   }, [bookingId]);
 
+  const downloadReceipt = async () => {
+    if (!booking) {
+      alert("Booking data not available");
+      return;
+    }
+    setDownloading(true);
+
+    try {
+      const success = await downloadReceiptPDF(
+        "daypass-receipt-container",
+        `Day-Pass-Receipt-${booking.referenceCode}.pdf`,
+      );
+      if (!success) {
+        alert(
+          "Failed to download receipt. Please try again or use screenshot.",
+        );
+      }
+    } catch (err) {
+      console.error("Error downloading receipt:", err);
+      alert("Failed to download receipt. Please try again or use screenshot.");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -137,7 +164,10 @@ export default function DayPassConfirmationContent() {
   return (
     <div className="w-full max-w-md">
       {/* Receipt Card */}
-      <div className="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-100">
+      <div
+        id="daypass-receipt-container"
+        className="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-100"
+      >
         {/* Header */}
         <div className="bg-linear-to-r from-blue-600 to-blue-700 text-white p-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
@@ -246,6 +276,14 @@ export default function DayPassConfirmationContent() {
               +234 704 730 0013
             </a>
           </p>
+          <button
+            onClick={downloadReceipt}
+            disabled={downloading}
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-2 rounded font-semibold hover:from-blue-700 hover:to-blue-600 transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
+          >
+            <Download size={16} />
+            {downloading ? "Downloading..." : "Download Receipt"}
+          </button>
           <a
             href="/"
             className="block w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition-colors text-center text-sm"
@@ -255,9 +293,9 @@ export default function DayPassConfirmationContent() {
         </div>
       </div>
 
-      {/* Print Hint */}
+      {/* Actions Hint */}
       <p className="text-center text-gray-500 text-xs mt-4">
-        💡 Screenshot or print this receipt for your records
+        💡 Download, screenshot, or print this receipt for your records
       </p>
     </div>
   );

@@ -1,10 +1,11 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Footer from "@/components/footer";
-import { Check, Loader2, AlertCircle } from "lucide-react";
+import { Check, Loader2, AlertCircle, Download } from "lucide-react";
 import { getRoomName } from "@/lib/utils";
+import { downloadReceiptPDF } from "@/lib/pdf-utils";
 
 interface BookingData {
   id: string;
@@ -25,11 +26,37 @@ export default function BookingConfirmationContent() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId");
   const paystackReference = searchParams.get("ref");
+  const [downloading, setDownloading] = useState(false);
 
   const [booking, setBooking] = useState<BookingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [paymentVerified, setPaymentVerified] = useState(false);
+
+  const downloadReceipt = async () => {
+    if (!booking) {
+      alert("Booking data not available");
+      return;
+    }
+    setDownloading(true);
+
+    try {
+      const success = await downloadReceiptPDF(
+        "booking-receipt-container",
+        `Ziba-Booking-${booking.booking_reference_code}.pdf`,
+      );
+      if (!success) {
+        alert(
+          "Failed to download receipt. Please try again or use screenshot.",
+        );
+      }
+    } catch (err) {
+      console.error("Error downloading receipt:", err);
+      alert("Failed to download receipt. Please try again or use screenshot.");
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   useEffect(() => {
     const verifyPayment = async () => {
@@ -109,7 +136,7 @@ export default function BookingConfirmationContent() {
         <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center px-4 py-12 pt-20">
           <div className="text-center">
             <Loader2 className="w-12 h-12 text-blue-900 animate-spin mx-auto mb-4" />
-            <p className="text-gray-600">Processing your booking...</p>
+            <p className="text-gray-600">Processing your payment...</p>
           </div>
         </main>
         <Footer />
@@ -167,12 +194,17 @@ export default function BookingConfirmationContent() {
       <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-6 sm:py-8 px-4 flex items-center justify-center">
         <div className="w-full max-w-md">
           {/* Receipt Card - No Scrolling */}
-          <div className="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-100">
+          <div
+            id="booking-receipt-container"
+            className="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-100"
+          >
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white p-4 text-center">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Check className="w-5 h-5" />
-                <h1 className="text-xl sm:text-2xl font-bold">Confirmed!</h1>
+                <h1 className="text-xl sm:text-2xl font-bold">
+                  Payment Successful
+                </h1>
               </div>
               <p className="text-blue-100 text-xs">Ziba Beach Resort</p>
             </div>
@@ -238,7 +270,9 @@ export default function BookingConfirmationContent() {
                 <div className="bg-gray-50 p-2 rounded text-center">
                   <p className="text-gray-500 text-xs mb-0.5">Duration</p>
                   <p className="font-bold text-gray-900 text-xs">
-                    {nights > 0 ? `${nights}N` : "N/A"}
+                    {nights > 0
+                      ? `${nights} Night${nights > 1 ? "s" : ""}`
+                      : "N/A"}
                   </p>
                 </div>
                 <div className="bg-blue-50 p-2 rounded text-center border border-blue-200">
@@ -276,7 +310,9 @@ export default function BookingConfirmationContent() {
                         : "bg-yellow-600 text-white"
                     }`}
                   >
-                    {booking.payment_status}
+                    {booking.payment_status === "CONFIRMED"
+                      ? "Payment Received"
+                      : booking.payment_status}
                   </span>
                 </div>
               </div>
@@ -308,18 +344,26 @@ export default function BookingConfirmationContent() {
                   +234 704 730 0013
                 </a>
               </p>
+              <button
+                onClick={downloadReceipt}
+                disabled={downloading}
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-2 rounded font-semibold hover:from-blue-700 hover:to-blue-600 transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
+              >
+                <Download size={16} />
+                {downloading ? "Downloading..." : "Download Receipt"}
+              </button>
               <a
                 href="/"
-                className="block w-full bg-blue-900 text-white py-2 rounded font-semibold hover:bg-blue-800 transition-colors text-center text-sm"
+                className="block w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition-colors text-center text-sm"
               >
                 Home
               </a>
             </div>
           </div>
 
-          {/* Print Hint */}
+          {/* Actions Hint */}
           <p className="text-center text-gray-500 text-xs mt-4">
-            💡 Screenshot or print this receipt for your records
+            💡 Download, screenshot, or print this receipt for your records
           </p>
         </div>
       </main>
