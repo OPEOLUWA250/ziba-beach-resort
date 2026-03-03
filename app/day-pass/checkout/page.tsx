@@ -1,0 +1,372 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
+import { ChevronLeft, AlertCircle, Loader2 } from "lucide-react";
+import { format } from "date-fns";
+
+// Declare PaystackPop globally
+declare global {
+  interface Window {
+    PaystackPop: any;
+  }
+}
+
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+interface SavedCart {
+  items: CartItem[];
+  visitDate: string | null;
+  totalAmount: number;
+}
+
+export default function DayPassCheckout() {
+  const router = useRouter();
+  const [cart, setCart] = useState<SavedCart>({
+    items: [],
+    visitDate: null,
+    totalAmount: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [error, setError] = useState("");
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [bookingId, setBookingId] = useState("");
+  const [paystackReference, setPaystackReference] = useState("");
+
+  // Load cart from localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedCart = localStorage.getItem("dayPassCart");
+      if (savedCart) {
+        try {
+          const parsedCart = JSON.parse(savedCart);
+          setCart(parsedCart);
+        } catch (err) {
+          console.error("Failed to load cart:", err);
+          setError("Failed to load cart");
+        }
+      }
+      setLoading(false);
+    }
+  }, []);
+
+  // Check if cart is empty
+  useEffect(() => {
+    if (!loading && cart.items.length === 0) {
+      router.push("/day-pass/cart");
+    }
+  }, [loading, cart.items.length, router]);
+
+  const handlePayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!fullName || !email || !phone) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    if (!cart.visitDate) {
+      setError("Please select a visit date");
+      return;
+    }
+
+    setProcessing(true);
+    setError("");
+
+    try {
+      // Create day-pass booking
+      const bookingRes = await fetch("/api/day-pass/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName,
+          email,
+          phone,
+          visitDate: cart.visitDate,
+          items: cart.items,
+          totalAmount: cart.totalAmount,
+        }),
+      });
+
+      if (!bookingRes.ok) {
+        const errorData = await bookingRes.json();
+        throw new Error(errorData.error || "Failed to create booking");
+      }
+
+      const bookingData = await bookingRes.json();
+      const newBookingId = bookingData.id;
+      const paystackRef = bookingData.paystackReference;
+
+      setBookingId(newBookingId);
+      setPaystackReference(paystackRef);
+
+      // Initialize Paystack payment
+      const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+
+      if (!paystackKey || paystackKey.includes("placeholder")) {
+        // Demo mode - clear cart and show receipt
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("dayPassCart");
+          localStorage.setItem("lastOrderCompleted", Date.now().toString());
+          window.dispatchEvent(new Event("cart-updated"));
+        }
+        setShowReceiptModal(true);
+        setProcessing(false);
+        return;
+      }
+
+      // Load Paystack script
+      const script = document.createElement("script");
+      script.src = "https://js.paystack.co/v1/inline.js";
+      script.async = true;
+      script.onload = () => {
+        if (window.PaystackPop) {
+          const handler = window.PaystackPop.setup({
+            key: paystackKey,
+            email: email,
+            amount: cart.totalAmount * 100,
+            ref: paystackRef,
+            onSuccess: async (response: any) => {
+              // Mark payment as confirmed
+              try {
+                await fetch("/api/day-pass/confirm-payment", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ bookingId }),
+                });
+              } catch (err) {
+                console.error("Failed to confirm payment:", err);
+              }
+
+              // Clear the cart immediately after successful payment
+              if (typeof window !== "undefined") {
+                localStorage.removeItem("dayPassCart");
+                localStorage.setItem(
+                  "lastOrderCompleted",
+                  Date.now().toString(),
+                );
+                // Dispatch event synchronously to ensure it's processed
+                window.dispatchEvent(new Event("cart-updated"));
+              }
+
+              setShowReceiptModal(true);
+              setProcessing(false);
+            },
+            onClose: () => {
+              setError("Payment cancelled");
+              setProcessing(false);
+            },
+          });
+          handler.openIframe();
+
+          // Show receipt modal after 10 seconds (fallback if payment modal doesn't close)
+          setTimeout(() => {
+            setShowReceiptModal(true);
+            // Also clear cart on fallback
+            if (typeof window !== "undefined") {
+              localStorage.removeItem("dayPassCart");
+              localStorage.setItem("lastOrderCompleted", Date.now().toString());
+              window.dispatchEvent(new Event("cart-updated"));
+            }
+          }, 10000);
+        }
+      };
+      document.head.appendChild(script);
+    } catch (err: any) {
+      setError(err.message || "Payment failed");
+      setProcessing(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen bg-linear-to-b from-blue-50 to-white flex items-center justify-center px-4">
+          <div className="text-center">
+            <Loader2 className="w-12 h-12 text-blue-900 animate-spin mx-auto mb-4" />
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Header />
+      <main className="min-h-screen bg-linear-to-b from-blue-50 to-white py-8 px-4">
+        <div className="max-w-2xl mx-auto">
+          {/* Back Button */}
+          <button
+            onClick={() => router.back()}
+            className="mb-6 flex items-center gap-2 text-blue-900 hover:text-blue-800 transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            <span className="font-medium">Back</span>
+          </button>
+
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Checkout Form */}
+            <div className="md:col-span-2 space-y-6">
+              {/* Guest Information */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">
+                  Your Information
+                </h2>
+
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handlePayment} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="John Doe"
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-900 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="john@example.com"
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-900 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone *
+                    </label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+234 700 000 0000"
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-900 focus:outline-none"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={processing}
+                    className="w-full bg-blue-900 hover:bg-blue-800 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-colors"
+                  >
+                    {processing ? "Processing..." : "Pay with Paystack"}
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            {/* Order Summary */}
+            <div className="md:col-span-1">
+              <div className="bg-white rounded-lg shadow-md p-6 sticky top-8">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">
+                  Order Summary
+                </h2>
+
+                <div className="space-y-3 mb-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Visit Date:</span>
+                    <span className="font-semibold">
+                      {format(new Date(cart.visitDate!), "MMM d, yyyy")}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Items:</span>
+                    <span className="font-semibold">
+                      {cart.items.reduce((sum, item) => sum + item.quantity, 0)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="border-t border-gray-200 pt-4 mb-4">
+                  <div className="flex justify-between mb-2">
+                    <span className="text-gray-600">Subtotal:</span>
+                    <span className="font-semibold">
+                      ₦{cart.totalAmount.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-lg font-bold">
+                    <span>Total:</span>
+                    <span className="text-green-700">
+                      ₦{cart.totalAmount.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 rounded-lg p-3 text-xs text-blue-900">
+                  <p className="font-semibold mb-2">Items:</p>
+                  <ul className="space-y-1">
+                    {cart.items.map((item) => (
+                      <li key={item.id} className="flex justify-between">
+                        <span>{item.name}</span>
+                        <span>×{item.quantity}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Receipt Modal */}
+      {showReceiptModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-in fade-in zoom-in">
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+              ✅ Payment Successful
+            </h2>
+            <p className="text-gray-600 text-sm mb-6">
+              Your day-pass booking has been confirmed. Click below to view your
+              receipt and booking details.
+            </p>
+            <button
+              onClick={() => {
+                router.push(
+                  `/day-pass/confirmation?bookingId=${bookingId}&ref=${paystackReference}`,
+                );
+              }}
+              className="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition font-bold text-base shadow-lg"
+            >
+              View Receipt
+            </button>
+          </div>
+        </div>
+      )}
+
+      <Footer />
+    </>
+  );
+}

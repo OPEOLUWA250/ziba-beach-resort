@@ -2,8 +2,9 @@
 
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import { useState } from "react";
-import { Plus, Minus, X, ShoppingCart } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Plus, Minus } from "lucide-react";
 
 interface CartItem {
   id: string;
@@ -13,7 +14,52 @@ interface CartItem {
 }
 
 export default function DayPass() {
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const router = useRouter();
+  const [cart, setCart] = useState<Record<string, number>>({});
+
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    const loadCart = () => {
+      if (typeof window !== "undefined") {
+        // Check if an order was just completed
+        const lastOrderCompleted = localStorage.getItem("lastOrderCompleted");
+        if (lastOrderCompleted) {
+          // Clear the flag and ensure cart is empty
+          localStorage.removeItem("lastOrderCompleted");
+          localStorage.removeItem("dayPassCart");
+          setCart({});
+          return;
+        }
+
+        const savedCart = localStorage.getItem("dayPassCart");
+        if (savedCart) {
+          try {
+            const parsed = JSON.parse(savedCart);
+            // Convert items back to the local cart format
+            const localCart: Record<string, number> = {};
+            if (parsed.items && Array.isArray(parsed.items)) {
+              parsed.items.forEach((item: CartItem) => {
+                localCart[item.id] = item.quantity;
+              });
+            }
+            setCart(localCart);
+          } catch (err) {
+            console.error("Failed to load cart:", err);
+          }
+        } else {
+          // Cart cleared (payment completed or emptied)
+          setCart({});
+        }
+      }
+    };
+
+    loadCart();
+
+    // Also listen for cart updates (e.g., when cart is cleared after payment)
+    window.addEventListener("cart-updated", loadCart);
+    return () => window.removeEventListener("cart-updated", loadCart);
+  }, []);
+
   const products = [
     {
       id: "infant-ticket",
@@ -119,17 +165,49 @@ export default function DayPass() {
     },
   ];
 
-  const [cart, setCart] = useState<Record<string, number>>({});
+  const saveCartToLocalStorage = (cartData: Record<string, number>) => {
+    if (typeof window === "undefined") return;
+
+    const items = Object.entries(cartData).map(([productId, qty]) => {
+      const product = products.find((p) => p.id === productId);
+      return {
+        id: productId,
+        name: product?.name || productId,
+        price: product?.price || 0,
+        quantity: qty,
+      };
+    });
+
+    const totalAmount = items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0,
+    );
+
+    const cartToSave = {
+      items,
+      visitDate: null,
+      totalAmount,
+    };
+
+    localStorage.setItem("dayPassCart", JSON.stringify(cartToSave));
+    // Dispatch event asynchronously to avoid React state update in render warning
+    setTimeout(() => {
+      window.dispatchEvent(new Event("cart-updated"));
+    }, 0);
+  };
 
   const updateQuantity = (productId: string, change: number) => {
     setCart((prev) => {
       const newQty = Math.max(0, (prev[productId] || 0) + change);
+      let updated;
       if (newQty === 0) {
-        const updated = { ...prev };
+        updated = { ...prev };
         delete updated[productId];
-        return updated;
+      } else {
+        updated = { ...prev, [productId]: newQty };
       }
-      return { ...prev, [productId]: newQty };
+      saveCartToLocalStorage(updated);
+      return updated;
     });
   };
 
@@ -242,117 +320,9 @@ export default function DayPass() {
               </div>
             </div>
 
-            {/* ORDER SUMMARY - FLOATING BUTTON */}
-            {Object.keys(cart).length > 0 && (
-              <button
-                onClick={() => setIsCartOpen(true)}
-                className="fixed bottom-8 right-8 bg-blue-900 text-white rounded-xl shadow-2xl hover:shadow-lg hover:bg-blue-800 transition-all duration-300 z-40 flex items-center gap-3 px-6 py-4"
-              >
-                <ShoppingCart size={24} />
-                <div className="text-left">
-                  <p className="text-sm font-light">
-                    {Object.keys(cart).length} items
-                  </p>
-                  <p className="font-semibold">
-                    {formatCurrency(calculateTotal())}
-                  </p>
-                </div>
-              </button>
-            )}
+            {/* ORDER SUMMARY - REMOVED - Use header cart icon instead */}
 
-            {/* CART DRAWER */}
-            {isCartOpen && (
-              <>
-                {/* Overlay */}
-                <div
-                  className="fixed inset-0 bg-black/30 z-40 transition-opacity duration-300"
-                  onClick={() => setIsCartOpen(false)}
-                />
-
-                {/* Drawer */}
-                <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-50 overflow-y-auto animate-in slide-in-from-right duration-300">
-                  <div className="p-8">
-                    {/* Header */}
-                    <div className="flex justify-between items-center mb-8">
-                      <h3
-                        className="text-3xl font-light text-gray-900"
-                        style={{ fontFamily: "Cormorant Garamond, serif" }}
-                      >
-                        Order Summary
-                      </h3>
-                      <button
-                        onClick={() => setIsCartOpen(false)}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                      >
-                        <X size={24} className="text-gray-900" />
-                      </button>
-                    </div>
-
-                    {/* Items */}
-                    {Object.keys(cart).length === 0 ? (
-                      <p className="text-gray-600 font-light mb-8">
-                        No items selected
-                      </p>
-                    ) : (
-                      <div className="mb-8 space-y-3 max-h-96 overflow-y-auto">
-                        {Object.entries(cart).map(([productId, qty]) => {
-                          const product = products.find(
-                            (p) => p.id === productId,
-                          );
-                          if (!product) return null;
-                          return (
-                            <div
-                              key={productId}
-                              className="flex justify-between items-center pb-3 border-b border-gray-200"
-                            >
-                              <div className="flex-1">
-                                <p className="font-light text-gray-900 text-sm">
-                                  {product.name}
-                                </p>
-                                <p className="text-xs text-gray-600 font-light">
-                                  {qty} × {formatCurrency(product.price)}
-                                </p>
-                              </div>
-                              <p className="font-light text-gray-900 text-sm">
-                                {formatCurrency(product.price * qty)}
-                              </p>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    {/* Divider */}
-                    <div className="border-t-2 border-gray-900 pt-4 mb-8">
-                      <div className="flex justify-between items-center">
-                        <h4
-                          className="text-2xl font-light text-gray-900"
-                          style={{ fontFamily: "Cormorant Garamond, serif" }}
-                        >
-                          Total
-                        </h4>
-                        <p className="text-3xl font-light text-gray-900">
-                          {formatCurrency(calculateTotal())}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Checkout Button */}
-                    <button className="w-full bg-blue-900 text-white py-4 rounded-lg font-light hover:bg-blue-800 transition-all duration-300 hover:shadow-lg text-lg mb-4">
-                      Proceed to Checkout
-                    </button>
-
-                    {/* Continue Shopping Button */}
-                    <button
-                      onClick={() => setIsCartOpen(false)}
-                      className="w-full border-2 border-blue-900 text-blue-900 py-4 rounded-lg font-light hover:bg-blue-900 hover:text-white transition-all duration-300 text-lg"
-                    >
-                      Continue Shopping
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
+            {/* Next section content */}
           </div>
         </section>
       </main>
