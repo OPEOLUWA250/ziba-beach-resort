@@ -620,7 +620,7 @@ function PaymentContent() {
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="fixed top-6 left-6 z-50 flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition-colors sm:absolute sm:relative sm:top-0 sm:left-0 sm:mb-4 sm:mb-0"
+          className="fixed top-6 left-6 z-50 flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg transition-colors"
         >
           <ChevronLeft className="w-5 h-5" />
           <span className="font-light">Back</span>
@@ -785,14 +785,12 @@ function PaymentContent() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-in fade-in zoom-in">
               <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                {showReceiptButton
-                  ? "Payment Successful"
-                  : "Processing Payment..."}
+                Payment Successful
               </h2>
               <p className="text-gray-600 text-sm mb-6">
                 {showReceiptButton
                   ? "Your payment has been completed. Click below to view your receipt and booking details."
-                  : "Please complete your payment in the Paystack window. Once done, click the button below to generate your receipt."}
+                  : "Loading Your Receipt..."}
               </p>
 
               {showReceiptButton && (

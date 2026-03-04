@@ -40,7 +40,9 @@ export default function AboutUs() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <h2 className="h2 text-blue-900 mb-6" style={headingFont}>Your Gateway to Luxury</h2>
+          <h2 className="h2 text-blue-900 mb-6" style={headingFont}>
+            Your Gateway to Luxury
+          </h2>
           <div className="w-16 h-0.5 mx-auto bg-linear-to-r from-transparent via-blue-400 to-transparent" />
         </div>
 

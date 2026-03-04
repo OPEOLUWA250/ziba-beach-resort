@@ -9,7 +9,9 @@ import Image from "next/image";
 import { useState } from "react";
 
 function PoliciesSection() {
-  const [expandedPolicy, setExpandedPolicy] = useState<string | null>("overview");
+  const [expandedPolicy, setExpandedPolicy] = useState<string | null>(
+    "overview",
+  );
 
   const policies = [
     {
@@ -113,9 +115,7 @@ function PoliciesSection() {
         >
           <button
             onClick={() =>
-              setExpandedPolicy(
-                expandedPolicy === policy.id ? null : policy.id,
-              )
+              setExpandedPolicy(expandedPolicy === policy.id ? null : policy.id)
             }
             className="w-full px-6 py-4 text-left hover:bg-blue-50 transition-colors duration-300 flex justify-between items-center group"
           >
@@ -132,11 +132,9 @@ function PoliciesSection() {
           </button>
           {expandedPolicy === policy.id && (
             <div className="px-6 py-5 border-t border-gray-200 bg-linear-to-br from-blue-50/30 to-white text-gray-700 font-light text-sm leading-relaxed space-y-3">
-              {policy.content
-                .split(/\n(?=[A-Z])/g)
-                .map((paragraph, idx) => (
-                  <p key={idx}>{paragraph.trim()}</p>
-                ))}
+              {policy.content.split(/\n(?=[A-Z])/g).map((paragraph, idx) => (
+                <p key={idx}>{paragraph.trim()}</p>
+              ))}
             </div>
           )}
         </div>
@@ -454,7 +452,7 @@ Thank you!`;
               <div className="flex justify-center mb-8">
                 <Link
                   href="/day-pass"
-                  className="inline-block bg-gradient-to-br from-blue-900 to-blue-800 text-white px-10 py-3 rounded-lg font-light hover:from-blue-800 hover:to-blue-700 transition-all duration-300 hover:shadow-lg"
+                  className="inline-block bg-linear-to-br from-blue-900 to-blue-800 text-white px-10 py-3 rounded-lg font-light hover:from-blue-800 hover:to-blue-700 transition-all duration-300 hover:shadow-lg"
                 >
                   View Full Day Pass Rates →
                 </Link>
@@ -519,7 +517,7 @@ Thank you!`;
                   </div>
 
                   <button
-                    className="w-full bg-gradient-to-br from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light"
+                    className="w-full bg-linear-to-br from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light"
                     onClick={() =>
                       (window.location.href = "/day-pass#regular-tickets")
                     }
@@ -580,7 +578,7 @@ Thank you!`;
                   </div>
 
                   <button
-                    className="w-full bg-gradient-to-br from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light"
+                    className="w-full bg-linear-to-br from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light"
                     onClick={() =>
                       (window.location.href = "/day-pass#premium-tickets")
                     }
@@ -717,7 +715,9 @@ Thank you!`;
 
             <div className="text-center">
               <p className="text-lg text-gray-700 font-light mb-6 max-w-2xl mx-auto">
-                Interested in any of these packages? Contact us on WhatsApp to customize your perfect getaway and discuss pricing, dates, and special requirements.
+                Interested in any of these packages? Contact us on WhatsApp to
+                customize your perfect getaway and discuss pricing, dates, and
+                special requirements.
               </p>
               <a
                 href={`https://wa.me/+2347047300013?text=${encodeURIComponent(specialPackagesMessage)}`}

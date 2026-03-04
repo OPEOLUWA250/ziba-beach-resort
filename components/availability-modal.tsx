@@ -136,7 +136,7 @@ export default function AvailabilityModal({
         {/* Content */}
         <div className="flex-1 px-6 sm:px-8 py-8 space-y-8">
           {/* Date Range Picker */}
-          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
+          <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
             <DateRangePicker
               startDate={checkInDate}
               endDate={checkOutDate}

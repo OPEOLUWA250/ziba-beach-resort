@@ -47,12 +47,14 @@ export default function BookingConfirmationContent() {
       );
       if (!success) {
         alert(
-          "Failed to download receipt. Please try again or use screenshot.",
+          "Receipt export failed. Please allow popups and try again, or use Print/Save as PDF.",
         );
       }
     } catch (err) {
       console.error("Error downloading receipt:", err);
-      alert("Failed to download receipt. Please try again or use screenshot.");
+      alert(
+        "Receipt export failed. Please allow popups and try again, or use Print/Save as PDF.",
+      );
     } finally {
       setDownloading(false);
     }
@@ -133,7 +135,7 @@ export default function BookingConfirmationContent() {
   if (loading) {
     return (
       <>
-        <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center px-4 py-12 pt-20">
+        <main className="min-h-screen bg-linear-to-b from-blue-50 to-white flex items-center justify-center px-4 py-12 pt-20">
           <div className="text-center">
             <Loader2 className="w-12 h-12 text-blue-900 animate-spin mx-auto mb-4" />
             <p className="text-gray-600">Processing your payment...</p>
@@ -147,7 +149,7 @@ export default function BookingConfirmationContent() {
   if (error || !booking) {
     return (
       <>
-        <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center px-4 py-12 pt-20">
+        <main className="min-h-screen bg-linear-to-b from-blue-50 to-white flex items-center justify-center px-4 py-12 pt-20">
           <div className="text-center max-w-md">
             <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
@@ -191,7 +193,7 @@ export default function BookingConfirmationContent() {
 
   return (
     <>
-      <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-6 sm:py-8 px-4 flex items-center justify-center">
+      <main className="min-h-screen bg-linear-to-b from-blue-50 to-white py-6 sm:py-8 px-4 flex items-center justify-center">
         <div className="w-full max-w-md">
           {/* Receipt Card - No Scrolling */}
           <div
@@ -199,7 +201,7 @@ export default function BookingConfirmationContent() {
             className="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-100"
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white p-4 text-center">
+            <div className="bg-linear-to-r from-blue-900 to-blue-800 text-white p-4 text-center">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Check className="w-5 h-5" />
                 <h1 className="text-xl sm:text-2xl font-bold">
@@ -212,7 +214,7 @@ export default function BookingConfirmationContent() {
             {/* Content - Compact Layout */}
             <div className="p-4 sm:p-5 text-xs sm:text-sm space-y-3 sm:space-y-4">
               {/* Booking Ref Box */}
-              <div className="bg-gradient-to-r from-emerald-50 to-blue-50 p-3 rounded border border-emerald-200 text-center">
+              <div className="bg-linear-to-r from-emerald-50 to-blue-50 p-3 rounded border border-emerald-200 text-center\">
                 <p className="text-gray-600 text-xs font-medium mb-1">
                   Reference Code
                 </p>
@@ -294,7 +296,7 @@ export default function BookingConfirmationContent() {
               </div>
 
               {/* Payment - Highlighted */}
-              <div className="bg-gradient-to-r from-emerald-50 to-green-50 border-2 border-emerald-300 p-3 rounded">
+              <div className="bg-linear-to-r from-emerald-50 to-green-50 border-2 border-emerald-300 p-3 rounded\">
                 <div className="flex justify-between items-start mb-2">
                   <span className="font-bold text-gray-900">Total</span>
                   <span className="text-lg sm:text-xl font-bold text-emerald-700">
@@ -347,7 +349,7 @@ export default function BookingConfirmationContent() {
               <button
                 onClick={downloadReceipt}
                 disabled={downloading}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-2 rounded font-semibold hover:from-blue-700 hover:to-blue-600 transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
+                className="w-full bg-linear-to-r from-blue-600 to-blue-500 text-white py-2 rounded font-semibold hover:from-blue-700 hover:to-blue-600 transition-all duration-200 disabled:opacity-50lex items-center justify-center gap-2 text-sm"
               >
                 <Download size={16} />
                 {downloading ? "Downloading..." : "Download Receipt"}

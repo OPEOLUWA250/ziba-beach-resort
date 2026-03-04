@@ -131,7 +131,7 @@ export default function BookingCards() {
 
               <Link href="/product/day-pass/">
                 <button
-                  className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-4 sm:px-6 py-5 sm:py-6 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn -translate-y-0 hover:-translate-y-1"
+                  className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-4 sm:px-6 py-5 sm:py-6 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn translate-y-0 hover:-translate-y-1"
                   style={{ boxShadow: "0 4px 15px rgba(15, 23, 42, 0.3)" }}
                 >
                   <span className="relative flex items-center justify-center gap-2 whitespace-nowrap">
@@ -234,7 +234,7 @@ export default function BookingCards() {
 
               <Link href="/bookings">
                 <button
-                  className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-4 sm:px-6 py-5 sm:py-6 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn -translate-y-0 hover:-translate-y-1"
+                  className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-4 sm:px-6 py-5 sm:py-6 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn translate-y-0 hover:-translate-y-1"
                   style={{ boxShadow: "0 4px 15px rgba(15, 23, 42, 0.3)" }}
                 >
                   <span className="relative flex items-center justify-center gap-2 whitespace-nowrap">

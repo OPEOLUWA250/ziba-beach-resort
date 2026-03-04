@@ -3,8 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { Menu, X, ShoppingCart } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Menu, X, ShoppingCart, MoonStar, Sun } from "lucide-react";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -21,7 +21,9 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isNearFooter, setIsNearFooter] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [showBookingChoiceModal, setShowBookingChoiceModal] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -69,17 +71,17 @@ export default function Header() {
   }, []);
 
   const handleBookNow = () => {
-    // On home page, scroll to experience cards
-    if (pathname === "/") {
-      const experienceSection = document.getElementById("experience-cards");
-      if (experienceSection) {
-        experienceSection.scrollIntoView({ behavior: "smooth" });
-      }
-    } else {
-      // On other pages, navigate to home with anchor
-      window.location.href = "/#experience-cards";
-    }
+    setShowBookingChoiceModal(true);
     setMobileMenuOpen(false);
+  };
+
+  const handleBookingChoice = (type: "night" | "day") => {
+    setShowBookingChoiceModal(false);
+    if (type === "night") {
+      router.push("/bookings");
+      return;
+    }
+    router.push("/day-pass");
   };
 
   return (
@@ -248,6 +250,60 @@ export default function Header() {
             >
               Book Now
             </button>
+          </div>
+        </div>
+      )}
+
+      {showBookingChoiceModal && (
+        <div className="fixed inset-0 z-70 bg-black/55 backdrop-blur-sm grid place-items-center p-4">
+          <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in duration-200 mx-auto">
+            <div className="px-6 py-5 bg-linear-to-r from-blue-900 to-blue-800 text-white">
+              <h3 className="text-2xl font-light">Choose Your Experience</h3>
+              <p className="text-blue-100 text-sm mt-1">
+                Select the booking type you want to continue with.
+              </p>
+            </div>
+
+            <div className="p-6 grid sm:grid-cols-2 gap-4">
+              <button
+                onClick={() => handleBookingChoice("night")}
+                className="group border-2 border-blue-200 rounded-xl p-5 text-center flex flex-col items-center hover:border-blue-900 hover:shadow-lg transition-all duration-300"
+              >
+                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-900 flex items-center justify-center mb-3 group-hover:bg-blue-900 group-hover:text-white transition-colors duration-300">
+                  <MoonStar size={18} />
+                </div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-1">
+                  Night Experience
+                </h4>
+                <p className="text-sm text-gray-600 font-light">
+                  Rooms and overnight stays
+                </p>
+              </button>
+
+              <button
+                onClick={() => handleBookingChoice("day")}
+                className="group border-2 border-blue-200 rounded-xl p-5 text-center flex flex-col items-center hover:border-blue-900 hover:shadow-lg transition-all duration-300"
+              >
+                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-900 flex items-center justify-center mb-3 group-hover:bg-blue-900 group-hover:text-white transition-colors duration-300">
+                  <Sun size={18} />
+                </div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-1">
+                  Day Experience
+                </h4>
+                <p className="text-sm text-gray-600 font-light">
+                  Day pass and activities
+                </p>
+              </button>
+            </div>
+
+            <div className="px-6 pb-6">
+              <button
+                onClick={() => setShowBookingChoiceModal(false)}
+                className="w-full py-3 rounded-lg bg-gray-100 text-gray-800 font-medium hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -78,7 +78,9 @@ export default function ExperienceHighlights() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <h2 className="h2 text-blue-900 mb-6" style={headingFont}>Celebrate Life's Moments</h2>
+          <h2 className="h2 text-blue-900 mb-6" style={headingFont}>
+            Celebrate Life's Moments
+          </h2>
           <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
           <p className="text-lg text-gray-600 font-light max-w-2xl mx-auto">
             From romantic getaways to corporate events, Ziba offers tailored
@@ -127,7 +129,7 @@ export default function ExperienceHighlights() {
                     </h3>
 
                     {/* Description */}
-                    <p className="text-sm text-gray-600 font-light leading-relaxed flex-grow">
+                    <p className="text-sm text-gray-600 font-light leading-relaxed grow">
                       {item.description}
                     </p>
 

@@ -58,7 +58,9 @@ export default function MenuTeaser() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <h2 className="h2 text-blue-900 mb-6" style={headingFont}>Culinary Delights</h2>
+          <h2 className="h2 text-blue-900 mb-6" style={headingFont}>
+            Culinary Delights
+          </h2>
           <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
           <p className="text-lg text-gray-600 font-light max-w-2xl mx-auto">
             Discover our exceptional menu featuring fresh seafood, international
@@ -117,7 +119,7 @@ export default function MenuTeaser() {
                         : "0ms",
                     }}
                   >
-                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-linear-to-br from-blue-900 to-blue-800 flex items-center justify-center">
+                    <div className="shrink-0 w-12 h-12 rounded-full bg-linear-to-br from-blue-900 to-blue-800 flex items-center justify-center">
                       <IconComponent
                         size={24}
                         className="text-white"

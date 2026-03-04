@@ -377,22 +377,58 @@ export default function DayPass() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
               {[
-                { icon: "🚪", title: "Entrance", description: "Full resort access" },
-                { icon: "🎬", title: "3pm Movie in Cinema", description: "Daily screening" },
-                { icon: "🏊", title: "Swimming Pool", description: "General pool access" },
-                { icon: "🎪", title: "Children's Playground", description: "Fun for kids" },
-                { icon: "🔥", title: "Fire Pit", description: "Evening relaxation" },
-                { icon: "🎮", title: "Games Room", description: "Indoor entertainment" },
-                { icon: "☀️", title: "Pool Cabanas", description: "Shaded comfort" },
-                { icon: "🏖️", title: "Beachfront Access", description: "Direct beach entry" },
+                {
+                  icon: "🚪",
+                  title: "Entrance",
+                  description: "Full resort access",
+                },
+                {
+                  icon: "🎬",
+                  title: "3pm Movie in Cinema",
+                  description: "Daily screening",
+                },
+                {
+                  icon: "🏊",
+                  title: "Swimming Pool",
+                  description: "General pool access",
+                },
+                {
+                  icon: "🎪",
+                  title: "Children's Playground",
+                  description: "Fun for kids",
+                },
+                {
+                  icon: "🔥",
+                  title: "Fire Pit",
+                  description: "Evening relaxation",
+                },
+                {
+                  icon: "🎮",
+                  title: "Games Room",
+                  description: "Indoor entertainment",
+                },
+                {
+                  icon: "☀️",
+                  title: "Pool Cabanas",
+                  description: "Shaded comfort",
+                },
+                {
+                  icon: "🏖️",
+                  title: "Beachfront Access",
+                  description: "Direct beach entry",
+                },
               ].map((item, idx) => (
                 <div
                   key={idx}
                   className="bg-white border-2 border-gray-200 rounded-2xl p-6 text-center hover:border-blue-300 hover:shadow-lg transition-all duration-300"
                 >
                   <div className="text-5xl mb-4">{item.icon}</div>
-                  <h3 className="font-semibold text-gray-900 mb-2">{item.title}</h3>
-                  <p className="text-sm text-gray-600 font-light">{item.description}</p>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 font-light">
+                    {item.description}
+                  </p>
                 </div>
               ))}
             </div>

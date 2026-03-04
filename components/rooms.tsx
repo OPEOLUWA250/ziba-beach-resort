@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { Cormorant_Garamond } from "next/font/google";
 import { getRoomHeroImage } from "@/lib/room-images";
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
 
 const rooms = [
   {
@@ -124,8 +130,10 @@ export default function Rooms() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <h2 className="h2 text-blue-900 mb-4 text-center">
-            Our Rooms & Suites
+          <h2
+            className={`${cormorant.className} h2 text-blue-900 mb-4 text-center`}
+          >
+            Our Rooms And Suites
           </h2>
           <div className="w-16 h-0.5 mx-auto mb-8 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
           <p className="text-gray-600 font-light text-lg max-w-2xl mx-auto text-center">
@@ -159,7 +167,7 @@ export default function Rooms() {
                   quality={85}
                 />
                 {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
 
                 {/* Room Type Badge */}
                 <div className="absolute top-4 right-4 z-10 transform group-hover:scale-110 transition-transform duration-500">
@@ -175,15 +183,12 @@ export default function Rooms() {
               </div>
 
               {/* Content Container */}
-              <div className="p-6 flex flex-col flex-grow">
-                <h3
-                  className="text-2xl font-light text-gray-900 mb-2"
-                  style={{ fontFamily: "Cormorant Garamond, serif" }}
-                >
+              <div className="p-6 flex flex-col grow">
+                <h5 className={`${cormorant.className} h5 text-gray-900 mb-2`}>
                   {room.name}
-                </h3>
+                </h5>
 
-                <p className="text-gray-600 font-light text-sm mb-4 flex-grow">
+                <p className="text-gray-600 font-light text-sm mb-4 grow">
                   {room.description}
                 </p>
 

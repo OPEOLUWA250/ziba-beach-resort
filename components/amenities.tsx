@@ -168,7 +168,7 @@ export default function Amenities() {
             {scrollAmenities.map((amenity, index) => (
               <div
                 key={`${amenity.name}-${index}`}
-                className={`flex-shrink-0 w-full sm:w-1/2 lg:w-1/3 transition-all duration-700 ${
+                className={`shrink-0 w-full sm:w-1/2 lg:w-1/3 transition-all duration-700 ${
                   isVisible
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-10"

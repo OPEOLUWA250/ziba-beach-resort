@@ -189,7 +189,7 @@ export default function BookingForm({
       </div>
 
       {/* Availability Status */}
-      <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 rounded-lg p-4">
+      <div className="bg-linear-to-r from-blue-50 to-blue-100 border-2 border-blue-200 rounded-lg p-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-gray-700">

@@ -1,16 +1,73 @@
 /**
  * Utility functions for receipt download
- * Downloads receipt as PNG image - more reliable than PDF with complex CSS
+ * Uses html2pdf.js (already installed in the project dependencies)
  */
 
 export async function downloadReceiptPDF(
   elementId: string,
   filename: string,
 ): Promise<boolean> {
+  let element: HTMLElement | null = null;
+
+  const printFallback = (
+    target: HTMLElement,
+    safeFilename: string,
+  ): boolean => {
+    try {
+      const printWindow = window.open("", "_blank", "width=900,height=1200");
+      if (!printWindow) {
+        console.error("❌ Print fallback blocked by browser popup settings");
+        return false;
+      }
+
+      const styles = Array.from(
+        document.querySelectorAll("style, link[rel='stylesheet']"),
+      )
+        .map((node) => node.outerHTML)
+        .join("\n");
+
+      printWindow.document.open();
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>${safeFilename.replace(".pdf", "")}</title>
+            ${styles}
+            <style>
+              body { margin: 0; padding: 24px; background: #ffffff; }
+              #print-root { max-width: 800px; margin: 0 auto; }
+              @media print {
+                body { padding: 0; }
+                #print-root { max-width: 100%; }
+              }
+            </style>
+          </head>
+          <body>
+            <div id="print-root">${target.outerHTML}</div>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+
+      setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+      }, 400);
+
+      console.log("✅ Print fallback opened (Save as PDF available)");
+      return true;
+    } catch (error) {
+      console.error("❌ Print fallback failed:", error);
+      return false;
+    }
+  };
+
   try {
     console.log(`📥 Starting receipt download for: ${filename}`);
 
-    const element = document.getElementById(elementId);
+    element = document.getElementById(elementId);
     if (!element) {
       console.error(`❌ Element with ID "${elementId}" not found`);
       return false;
@@ -18,60 +75,57 @@ export async function downloadReceiptPDF(
 
     console.log(`✅ Found element: ${elementId}`);
 
-    // Import html2canvas for reliable rendering
-    console.log("📦 Loading html2canvas library...");
-    const html2canvas = (await import("html2canvas")).default;
+    console.log("📦 Loading html2pdf.js library...");
+    const html2pdfModule = await import("html2pdf.js");
+    const html2pdf = html2pdfModule.default || html2pdfModule;
 
-    if (!html2canvas) {
-      throw new Error("html2canvas failed to load");
+    if (!html2pdf) {
+      throw new Error("html2pdf.js failed to load");
     }
 
-    console.log("✅ html2canvas loaded");
+    const safeFilename = filename.endsWith(".pdf")
+      ? filename
+      : `${filename}.pdf`;
 
-    // Render element to canvas
-    console.log("🎨 Rendering receipt to image...");
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: false,
-      allowTaint: true,
-      logging: false,
-      backgroundColor: "#ffffff",
-      windowHeight: 1200,
-      windowWidth: 600,
-      imageTimeout: 0,
-      removeContainer: true,
-    });
+    console.log("🎨 Rendering and downloading PDF...");
+    await html2pdf()
+      .set({
+        margin: [8, 8, 8, 8],
+        filename: safeFilename,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: {
+          scale: Math.min(2, window.devicePixelRatio || 1.5),
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: "#ffffff",
+          logging: false,
+          scrollY: 0,
+        },
+        jsPDF: {
+          unit: "mm",
+          format: "a4",
+          orientation: "portrait",
+        },
+      })
+      .from(element)
+      .save();
 
-    console.log("✅ Receipt rendered to canvas");
-
-    // Convert canvas to blob and download as PNG
-    console.log("💾 Converting to PNG...");
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        console.error("❌ Failed to create blob");
-        return;
-      }
-
-      // Create download link
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename.replace(".pdf", ".png"); // Download as PNG
-      link.style.display = "none";
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Cleanup
-      URL.revokeObjectURL(url);
-
-      console.log("✅ Receipt downloaded successfully as PNG");
-    }, "image/png");
+    console.log("✅ Receipt downloaded successfully as PDF");
 
     return true;
   } catch (error) {
     console.error("❌ Error downloading receipt:", error);
+
+    if (element) {
+      const fallbackFilename = filename.endsWith(".pdf")
+        ? filename
+        : `${filename}.pdf`;
+      const fallbackWorked = printFallback(element, fallbackFilename);
+      if (fallbackWorked) {
+        return true;
+      }
+    }
+
     return false;
   }
 }
