@@ -126,7 +126,24 @@ export async function getBookingDetails(bookingId: string) {
   try {
     const { data, error } = await supabase
       .from("bookings")
-      .select("*")
+      .select(`
+        id,
+        booking_reference_code,
+        guest_name,
+        guest_email,
+        guest_phone,
+        room_id,
+        check_in_date,
+        check_out_date,
+        number_of_guests,
+        special_requests,
+        room_price_ngn,
+        number_of_nights,
+        total_amount_ngn,
+        payment_status,
+        paystack_reference,
+        created_at
+      `)
       .eq("id", bookingId)
       .single();
 
@@ -268,6 +285,7 @@ export async function getAllBookings() {
         number_of_nights,
         total_amount_ngn,
         payment_status,
+        paystack_reference,
         created_at
       `,
       )
@@ -300,6 +318,7 @@ export async function getAllDayPassBookings() {
         items,
         total_amount,
         payment_status,
+        paystack_reference,
         created_at
       `,
       )

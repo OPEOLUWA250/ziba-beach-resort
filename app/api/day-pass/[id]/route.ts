@@ -59,6 +59,7 @@ export async function GET(
     // Transform database snake_case to camelCase for frontend
     const transformedData = {
       id: data.id,
+      referenceCode: data.reference_code,
       fullName: data.full_name,
       email: data.email,
       phone: data.phone,
@@ -66,7 +67,7 @@ export async function GET(
       items: data.items,
       totalAmount: data.total_amount,
       paymentStatus: data.payment_status,
-      referenceCode: data.reference_code,
+      paystackReference: data.paystack_reference,
     };
 
     console.log("[Day-Pass GET] Returning booking data");
