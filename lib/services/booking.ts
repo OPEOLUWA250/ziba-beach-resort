@@ -16,7 +16,9 @@ export async function isRoomAvailable(
 ): Promise<boolean> {
   try {
     const reservationHoldMinutes = 10;
-    const reservedUntil = new Date(Date.now() - reservationHoldMinutes * 60 * 1000);
+    const reservedUntil = new Date(
+      Date.now() - reservationHoldMinutes * 60 * 1000,
+    );
 
     // Check for CONFIRMED bookings (always blocking)
     const { data: confirmedBookings, error: confirmedError } = await supabase
@@ -29,7 +31,9 @@ export async function isRoomAvailable(
 
     if (confirmedError) throw confirmedError;
     if (confirmedBookings && confirmedBookings.length > 0) {
-      console.log(`[Availability] Room ${roomId} has CONFIRMED booking blocking dates`);
+      console.log(
+        `[Availability] Room ${roomId} has CONFIRMED booking blocking dates`,
+      );
       return false;
     }
 
@@ -45,11 +49,15 @@ export async function isRoomAvailable(
 
     if (reservedError) throw reservedError;
     if (reservedBookings && reservedBookings.length > 0) {
-      console.log(`[Availability] Room ${roomId} has active RESERVED booking(s) blocking dates`);
+      console.log(
+        `[Availability] Room ${roomId} has active RESERVED booking(s) blocking dates`,
+      );
       return false;
     }
 
-    console.log(`[Availability] Room ${roomId} is available for ${checkInDate.toDateString()} - ${checkOutDate.toDateString()}`);
+    console.log(
+      `[Availability] Room ${roomId} is available for ${checkInDate.toDateString()} - ${checkOutDate.toDateString()}`,
+    );
     return true;
   } catch (error) {
     console.error("Error checking room availability:", error);
@@ -64,7 +72,9 @@ export async function getRoomBookings(
 ) {
   try {
     const reservationHoldMinutes = 10;
-    const reservedUntil = new Date(Date.now() - reservationHoldMinutes * 60 * 1000);
+    const reservedUntil = new Date(
+      Date.now() - reservationHoldMinutes * 60 * 1000,
+    );
 
     // Get all CONFIRMED bookings
     const { data: confirmedBookings, error: confirmedError } = await supabase
@@ -90,7 +100,10 @@ export async function getRoomBookings(
     if (reservedError) throw reservedError;
 
     // Combine both arrays
-    const allBookings = [...(confirmedBookings || []), ...(reservedBookings || [])];
+    const allBookings = [
+      ...(confirmedBookings || []),
+      ...(reservedBookings || []),
+    ];
     return allBookings;
   } catch (error) {
     console.error("Error fetching room bookings:", error);

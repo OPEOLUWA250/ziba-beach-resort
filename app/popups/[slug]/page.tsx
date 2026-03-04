@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { PopupData } from "@/lib/services/popups";
 import { PopupBackButton } from "@/components/popup-back-button";
 import { PopupCTAButton } from "@/components/popup-cta-button";
+import { supabaseServer } from "@/lib/supabase/server";
 
 interface PopupDetailsPageProps {
   params: Promise<{
@@ -12,14 +13,20 @@ interface PopupDetailsPageProps {
 
 async function getPopupDetails(slug: string): Promise<PopupData | null> {
   try {
-    // Use API endpoint to bypass RLS
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-    const response = await fetch(`${baseUrl}/api/popups/${slug}`);
+    // Query database directly instead of HTTP fetch
+    // This is more reliable in Server Components and production
+    const { data: popup, error } = await supabaseServer
+      .from("popups")
+      .select("*")
+      .eq("slug", slug)
+      .single();
 
-    if (!response.ok) return null;
+    if (error || !popup) {
+      console.error("Failed to load popup from database:", error);
+      return null;
+    }
 
-    const data = await response.json();
-    return data.popup || null;
+    return popup as PopupData;
   } catch (error) {
     console.error("Failed to load popup:", error);
     return null;
