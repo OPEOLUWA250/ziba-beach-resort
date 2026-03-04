@@ -200,7 +200,7 @@ export default function BookingCard({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="your@email.com"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:border-blue-400 focus:scale-105"
             disabled={loading}
           />
         </div>
@@ -215,7 +215,7 @@ export default function BookingCard({
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             placeholder="John"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:border-blue-400 focus:scale-105"
             disabled={loading}
           />
         </div>
@@ -230,7 +230,7 @@ export default function BookingCard({
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             placeholder="Doe"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:border-blue-400 focus:scale-105"
             disabled={loading}
           />
         </div>
@@ -245,7 +245,7 @@ export default function BookingCard({
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="+234 XXX XXX XXXX"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:border-blue-400 focus:scale-105"
             disabled={loading}
           />
         </div>
@@ -260,7 +260,7 @@ export default function BookingCard({
             onChange={(e) => setSpecialRequests(e.target.value)}
             placeholder="High floor, extra bed, etc."
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 resize-none"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 resize-none transition-all duration-300 hover:border-blue-400 focus:scale-105"
             disabled={loading}
           />
         </div>

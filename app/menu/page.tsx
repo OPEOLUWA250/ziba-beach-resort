@@ -59,10 +59,10 @@ export default function Menu() {
     price: number;
     description: string;
   }) => (
-    <div className="border-b border-gray-200 pb-6 mb-6 last:border-b-0">
+    <div className="border-b border-gray-200 pb-6 mb-6 last:border-b-0 transition-all duration-300 hover:translate-x-2">
       <div className="flex justify-between items-start mb-2">
-        <h4 className="font-light text-gray-900 text-lg">{name}</h4>
-        <span className="text-blue-900 font-semibold ml-4 whitespace-nowrap">
+        <h4 className="font-light text-gray-900 text-lg transition-colors duration-300 hover:text-blue-900">{name}</h4>
+        <span className="text-blue-900 font-semibold ml-4 whitespace-nowrap transition-all duration-300 hover:scale-110">
           {formatCurrency(price)}
         </span>
       </div>
@@ -81,17 +81,17 @@ export default function Menu() {
     note?: string;
     children: React.ReactNode;
   }) => (
-    <div className="mb-16" style={{ animation: "fadeInUp 0.6s ease-out" }}>
+    <div className="mb-16 transition-all duration-700 ease-out opacity-0 translate-y-10 animate-fadeInUp hover:scale-[1.02]" style={{ animation: "fadeInUp 0.8s ease-out forwards" }}>
       <div>
-        <h2 className="h2 text-blue-900 mb-2">{title}</h2>
+        <h2 className="h2 text-blue-900 mb-2 transition-all duration-300 hover:text-blue-700">{title}</h2>
         <p className="text-gray-600 font-light text-sm">{timing}</p>
         {note && (
-          <p className="text-amber-700 bg-amber-50 px-4 py-3 rounded-lg mt-3 font-light text-sm border border-amber-200">
+          <p className="text-amber-700 bg-amber-50 px-4 py-3 rounded-lg mt-3 font-light text-sm border border-amber-200 transition-all duration-300 hover:bg-amber-100">
             {note}
           </p>
         )}
       </div>
-      <div className="bg-linear-to-br from-gray-50 to-white border-2 border-gray-200 rounded-2xl p-8 mt-6">
+      <div className="bg-linear-to-br from-gray-50 to-white border-2 border-gray-200 rounded-2xl p-8 mt-6 transition-all duration-500 hover:shadow-xl hover:border-blue-300">
         {children}
       </div>
     </div>

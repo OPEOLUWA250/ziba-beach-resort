@@ -166,6 +166,12 @@ export default function DayPassCheckout() {
           amount: cart.totalAmount * 100,
           ref: paystackRef,
           onSuccess: async (response: any) => {
+            // Clear the cart IMMEDIATELY after successful payment (before any redirects)
+            if (typeof window !== "undefined") {
+              localStorage.removeItem("dayPassCart");
+              window.dispatchEvent(new Event("cart-updated"));
+            }
+
             // Mark payment as confirmed
             try {
               await fetch("/api/day-pass/confirm-payment", {
@@ -175,13 +181,6 @@ export default function DayPassCheckout() {
               });
             } catch (err) {
               console.error("Failed to confirm payment:", err);
-            }
-
-            // Clear the cart immediately after successful payment
-            if (typeof window !== "undefined") {
-              localStorage.removeItem("dayPassCart");
-              localStorage.setItem("lastOrderCompleted", Date.now().toString());
-              window.dispatchEvent(new Event("cart-updated"));
             }
 
             setBookingId(pendingBooking.id);
@@ -216,6 +215,12 @@ export default function DayPassCheckout() {
               amount: cart.totalAmount * 100,
               ref: paystackRef,
               onSuccess: async (response: any) => {
+                // Clear the cart IMMEDIATELY after successful payment (before any redirects)
+                if (typeof window !== "undefined") {
+                  localStorage.removeItem("dayPassCart");
+                  window.dispatchEvent(new Event("cart-updated"));
+                }
+
                 // Mark payment as confirmed
                 try {
                   await fetch("/api/day-pass/confirm-payment", {
@@ -225,16 +230,6 @@ export default function DayPassCheckout() {
                   });
                 } catch (err) {
                   console.error("Failed to confirm payment:", err);
-                }
-
-                // Clear the cart immediately after successful payment
-                if (typeof window !== "undefined") {
-                  localStorage.removeItem("dayPassCart");
-                  localStorage.setItem(
-                    "lastOrderCompleted",
-                    Date.now().toString(),
-                  );
-                  window.dispatchEvent(new Event("cart-updated"));
                 }
 
                 setBookingId(pendingBooking.id);

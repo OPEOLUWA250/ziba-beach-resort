@@ -126,7 +126,8 @@ export async function getBookingDetails(bookingId: string) {
   try {
     const { data, error } = await supabase
       .from("bookings")
-      .select(`
+      .select(
+        `
         id,
         booking_reference_code,
         guest_name,
@@ -143,7 +144,8 @@ export async function getBookingDetails(bookingId: string) {
         payment_status,
         paystack_reference,
         created_at
-      `)
+      `,
+      )
       .eq("id", bookingId)
       .single();
 

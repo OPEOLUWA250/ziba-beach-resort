@@ -289,14 +289,14 @@ const RoomBookingModal = ({
         <div className="sticky bottom-0 border-t border-gray-700 p-6 bg-gray-800 flex gap-3 justify-end">
           <button
             onClick={onClose}
-            className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition"
+            className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-all duration-300 hover:scale-105"
             disabled={isUpdating}
           >
             Close
           </button>
           <button
             onClick={onDecline}
-            className="px-6 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg transition disabled:opacity-50"
+            className="px-6 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg transition-all duration-300 hover:scale-105 disabled:opacity-50"
             disabled={
               isUpdating ||
               booking.payment_status === "CANCELLED" ||
@@ -307,7 +307,7 @@ const RoomBookingModal = ({
           </button>
           <button
             onClick={onApprove}
-            className="px-6 py-2 bg-green-900/30 hover:bg-green-900/50 text-green-400 rounded-lg transition disabled:opacity-50"
+            className="px-6 py-2 bg-green-900/30 hover:bg-green-900/50 text-green-400 rounded-lg transition-all duration-300 hover:scale-105 disabled:opacity-50"
             disabled={
               isUpdating ||
               booking.payment_status === "COMPLETED" ||
@@ -516,7 +516,7 @@ const DayPassBookingModal = ({
           </button>
           <button
             onClick={onApprove}
-            className="px-6 py-2 bg-green-900/30 hover:bg-green-900/50 text-green-400 rounded-lg transition disabled:opacity-50"
+            className="px-6 py-2 bg-green-900/30 hover:bg-green-900/50 text-green-400 rounded-lg transition-all duration-300 hover:scale-105 disabled:opacity-50"
             disabled={
               isUpdating ||
               booking.payment_status === "CANCELLED" ||
@@ -525,10 +525,9 @@ const DayPassBookingModal = ({
           >
             {isUpdating
               ? "Updating..."
-              : booking.payment_status === "PENDING" ||
-                  booking.payment_status === "COMPLETED"
-                ? "Activate Pass"
-                : "Check Out"}
+              : booking.payment_status === "CHECKED_IN"
+                ? "Check Out"
+                : "Activate Pass"}
           </button>
         </div>
       </div>
@@ -1186,7 +1185,7 @@ export default function BookingsManagement() {
                     {filteredRoomBookings.map((booking) => (
                       <tr
                         key={booking.id}
-                        className="border-b border-gray-700 hover:bg-gray-700/30 transition"
+                        className="border-b border-gray-700 hover:bg-gray-700/50 transition-all duration-300 hover:shadow-lg cursor-pointer hover:translate-x-1"
                       >
                         <td className="px-6 py-4">
                           <input
@@ -1387,7 +1386,7 @@ export default function BookingsManagement() {
                     {filteredDayPassBookings.map((booking) => (
                       <tr
                         key={booking.id}
-                        className="border-b border-gray-700 hover:bg-gray-700/30 transition"
+                        className="border-b border-gray-700 hover:bg-gray-700/50 transition-all duration-300 hover:shadow-lg cursor-pointer hover:translate-x-1"
                       >
                         <td className="px-6 py-4">
                           <input

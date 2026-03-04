@@ -451,7 +451,11 @@ export default function OurStory() {
               <p className="text-gray-600 font-light text-lg mb-8">
                 Plan your perfect team experience with us
               </p>
-              <a href="https://wa.me/2347047300013?text=Hello%20Ziba%20Beach%20Resort%2C%20I%20would%20like%20to%20inquire%20about%20team%20bonding%20experiences%20and%20corporate%20retreat%20packages.%20Please%20share%20available%20dates%20and%20pricing." target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://wa.me/2347047300013?text=Hello%20Ziba%20Beach%20Resort%2C%20I%20would%20like%20to%20inquire%20about%20team%20bonding%20experiences%20and%20corporate%20retreat%20packages.%20Please%20share%20available%20dates%20and%20pricing."
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <button className="bg-linear-to-r from-blue-900 to-blue-800 text-white px-8 py-3 rounded-lg font-light hover:shadow-lg hover:scale-105 transition-all duration-300">
                   Inquire About Team Bonding
                 </button>
@@ -475,14 +479,20 @@ export default function OurStory() {
                   />
                 </div>
                 <div className="p-8">
-                  <h3 className="h4 text-blue-900 mb-4">World-Class Events</h3>
+                  <h3 style={headingFont} className="h4 text-blue-900 mb-4">
+                    World-Class Events
+                  </h3>
                   <p className="text-gray-700 font-light leading-relaxed mb-6">
                     Host your next meeting or event at Ziba's versatile hall,
                     comfortably accommodating up to 85 guests. The space is
                     fully equipped with projector, speakers, Wi-Fi, and beverage
                     service.
                   </p>
-                  <a href="https://wa.me/2347047300013?text=Hello%20Ziba%20Beach%20Resort%2C%20I%20would%20like%20to%20book%20your%20event%20space%20for%20a%20meeting%2Fconference.%20Please%20share%20availability%2C%20pricing%2C%20and%20booking%20details." target="_blank" rel="noopener noreferrer">
+                  <a
+                    href="https://wa.me/2347047300013?text=Hello%20Ziba%20Beach%20Resort%2C%20I%20would%20like%20to%20book%20your%20event%20space%20for%20a%20meeting%2Fconference.%20Please%20share%20availability%2C%20pricing%2C%20and%20booking%20details."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <button className="bg-linear-to-r from-blue-900 to-blue-800 text-white px-6 py-2 rounded-lg font-light hover:shadow-lg transition-all duration-300">
                       Book Event Space
                     </button>
@@ -501,7 +511,9 @@ export default function OurStory() {
                   />
                 </div>
                 <div className="p-8">
-                  <h3 className="h4 text-blue-900 mb-4">Culinary Delight</h3>
+                  <h3 style={headingFont} className="h4 text-blue-900 mb-4">
+                    Culinary Delight
+                  </h3>
                   <p className="text-gray-700 font-light leading-relaxed mb-6">
                     With convenient breakfast downstairs, we offer a wide
                     variety of coffees, teas, and breakfast treats. From bagels
@@ -601,7 +613,11 @@ export default function OurStory() {
               <p className="text-gray-600 font-light text-lg mb-8">
                 Interested in partnering with Ziba Beach Resort?
               </p>
-              <a href="https://wa.me/2347047300013?text=Hello%20Ziba%20Beach%20Resort%2C%20I%20am%20interested%20in%20exploring%20partnership%20opportunities%20with%20your%20resort.%20Please%20share%20more%20information%20about%20collaboration%20options." target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://wa.me/2347047300013?text=Hello%20Ziba%20Beach%20Resort%2C%20I%20am%20interested%20in%20exploring%20partnership%20opportunities%20with%20your%20resort.%20Please%20share%20more%20information%20about%20collaboration%20options."
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <button className="bg-linear-to-r from-blue-900 to-blue-800 text-white px-8 py-3 rounded-lg font-light hover:shadow-lg hover:scale-105 transition-all duration-300">
                   Explore Partnership Opportunities
                 </button>

@@ -208,7 +208,10 @@ export default function InstagramFeed() {
 
               {/* Profile Info */}
               <div>
-                <h3 className="h3 text-blue-900 mb-2">@zibabeachresorts</h3>
+                <h3 className={`${cormorant.className} h3 text-blue-900 mb-2`}>
+                  @zibabeachresorts
+                </h3>
+
                 <p className="text-gray-600 font-light text-lg">
                   Nigeria's First Overwater Resort
                 </p>

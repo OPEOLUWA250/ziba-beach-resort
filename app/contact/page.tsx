@@ -217,25 +217,27 @@ export default function Contact() {
                         onClick={() =>
                           setExpandedFAQ(expandedFAQ === index ? null : index)
                         }
-                        className="w-full px-6 py-4 flex items-center justify-between bg-white hover:bg-linear-to-r hover:from-blue-50 hover:to-white transition-all duration-200"
+                        className="w-full px-6 py-4 flex items-center justify-between bg-white hover:bg-linear-to-r hover:from-blue-50 hover:to-white transition-all duration-200 group"
                       >
-                        <h3 className="text-lg font-light text-gray-900 text-left">
+                        <h3 className="text-lg font-light text-gray-900 text-left group-hover:text-blue-900 transition-colors duration-300">
                           {item.question}
                         </h3>
                         <ChevronDown
-                          className={`w-5 h-5 text-blue-900 transition-transform duration-300 shrink-0 ml-4 ${
+                          className={`w-5 h-5 text-blue-900 transition-all duration-500 shrink-0 ml-4 group-hover:scale-110 ${
                             expandedFAQ === index ? "rotate-180" : ""
                           }`}
                         />
                       </button>
 
-                      {expandedFAQ === index && (
+                      <div className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                            expandedFAQ === index ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                          }`}>
                         <div className="px-6 py-4 bg-blue-50 border-t border-gray-200">
                           <p className="text-gray-700 font-light leading-relaxed">
                             {item.answer}
                           </p>
                         </div>
-                      )}
+                      </div>
                     </div>
                   ))}
                 </div>

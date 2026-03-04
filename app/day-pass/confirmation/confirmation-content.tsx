@@ -31,6 +31,14 @@ export default function DayPassConfirmationContent() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Clear cart from localStorage when confirmation page loads (successful order)
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("dayPassCart");
+      window.dispatchEvent(new Event("cart-updated"));
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchBooking = async () => {
       if (!bookingId) {
         setError("No booking ID provided");

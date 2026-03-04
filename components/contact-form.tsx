@@ -78,7 +78,7 @@ export default function ContactForm() {
             onChange={(event) =>
               setFormData((prev) => ({ ...prev, fullName: event.target.value }))
             }
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500 transition-all duration-300 hover:border-blue-400 focus:scale-105 focus:shadow-lg"
             required
           />
         </div>
@@ -94,7 +94,7 @@ export default function ContactForm() {
               onChange={(event) =>
                 setFormData((prev) => ({ ...prev, email: event.target.value }))
               }
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500 transition-all duration-300 hover:border-blue-400 focus:scale-105 focus:shadow-lg"
               required
             />
           </div>
@@ -109,7 +109,7 @@ export default function ContactForm() {
               onChange={(event) =>
                 setFormData((prev) => ({ ...prev, phone: event.target.value }))
               }
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500 transition-all duration-300 hover:border-blue-400 focus:scale-105 focus:shadow-lg"
               required
             />
           </div>
@@ -125,7 +125,7 @@ export default function ContactForm() {
             onChange={(event) =>
               setFormData((prev) => ({ ...prev, subject: event.target.value }))
             }
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500 transition-all duration-300 hover:border-blue-400 focus:scale-105 focus:shadow-lg"
             required
           />
         </div>
@@ -140,7 +140,7 @@ export default function ContactForm() {
               setFormData((prev) => ({ ...prev, message: event.target.value }))
             }
             rows={5}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500 resize-none"
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500 resize-none transition-all duration-300 hover:border-blue-400 focus:scale-105 focus:shadow-lg"
             required
           />
         </div>
@@ -148,14 +148,14 @@ export default function ContactForm() {
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <button
             type="submit"
-            className="bg-blue-900 text-white px-6 py-3 rounded-lg hover:bg-blue-800 transition font-light"
+            className="bg-blue-900 text-white px-6 py-3 rounded-lg hover:bg-blue-800 transition-all duration-300 font-light hover:shadow-lg transform hover:scale-105 active:scale-95"
           >
             Send via WhatsApp
           </button>
           <button
             type="button"
             onClick={handleEmailClick}
-            className="border border-blue-900 text-blue-900 px-6 py-3 rounded-lg hover:bg-blue-50 transition font-light text-center"
+            className="border border-blue-900 text-blue-900 px-6 py-3 rounded-lg hover:bg-blue-50 transition-all duration-300 font-light text-center hover:shadow-lg transform hover:scale-105 active:scale-95"
           >
             Send via Email
           </button>

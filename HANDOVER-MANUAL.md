@@ -1,4 +1,5 @@
 # Ziba Beach Resort Website Handover Manual
+
 ## Non-Technical Operations Guide (For Business Team)
 
 **Version:** 1.0  
@@ -12,6 +13,7 @@
 The website is your **digital front desk, marketing brochure, booking assistant, and guest communication channel** all in one place.
 
 It helps guests:
+
 - Discover the resort and what makes it special.
 - Explore room options and day-pass experiences.
 - Make bookings and pay online.
@@ -19,6 +21,7 @@ It helps guests:
 - Contact the team and ask questions.
 
 It helps your internal team:
+
 - Review and manage room and day-pass bookings.
 - Update booking statuses (approved, declined, completed, etc.).
 - Update visible content (rooms, menu, blog, popups).
@@ -29,9 +32,11 @@ It helps your internal team:
 ## 2) Main Website Areas (Public-Facing)
 
 ### A. Homepage
+
 The homepage is designed to create a premium first impression and guide guests quickly to booking.
 
 What guests see:
+
 - Hero section with strong visuals and call-to-action buttons.
 - Social proof (reviews/ratings).
 - Room previews and experience highlights.
@@ -41,7 +46,9 @@ What guests see:
 **Business goal:** Convert first-time visitors into inquiries or bookings.
 
 ### B. Rooms / Stay Page
+
 Guests can:
+
 - Browse room types, prices, and features.
 - Read resort policies.
 - Go into booking flow.
@@ -49,7 +56,9 @@ Guests can:
 **Business goal:** Help guests compare options and book with confidence.
 
 ### C. Day Pass Page
+
 Guests can:
+
 - Choose day-pass ticket types.
 - Add experiences/services.
 - Build a cart and continue to checkout.
@@ -57,9 +66,11 @@ Guests can:
 **Business goal:** Drive daytime revenue from individuals, families, and groups.
 
 ### D. Booking Confirmation Pages
+
 After successful payment, guests are shown a confirmation page with booking details and receipt info.
 
 Guests can:
+
 - View confirmation details.
 - Copy receipt link for easy sharing/saving.
 - Use details for arrival/check-in reference.
@@ -67,12 +78,15 @@ Guests can:
 **Business goal:** Reduce guest anxiety and support requests after payment.
 
 ### E. View Booking Page
+
 Guests can look up booking details and status when needed.
 
 **Business goal:** Self-service status checks, fewer manual support calls.
 
 ### F. Content Pages
+
 These support trust and conversion:
+
 - Menu page
 - Blog pages
 - Contact page
@@ -87,6 +101,7 @@ These support trust and conversion:
 The admin area is where your team manages operations and content.
 
 Core sections available:
+
 - Bookings
 - Rooms
 - Menus
@@ -96,7 +111,9 @@ Core sections available:
 - Admin System (users)
 
 ### Most Important for Daily Use: Bookings
+
 In Bookings, your team can:
+
 - View room bookings and day-pass bookings.
 - Open booking details (guest info, dates, amount, reference, requests).
 - Approve or decline bookings where needed.
@@ -107,6 +124,7 @@ In Bookings, your team can:
 ## 4) Booking Lifecycle (How to Understand Statuses)
 
 ### Room Booking / Day Pass Typical Flow
+
 1. Guest submits booking details.
 2. Guest completes payment.
 3. System confirms payment and shows confirmation page.
@@ -114,6 +132,7 @@ In Bookings, your team can:
 5. Team updates status as booking progresses.
 
 ### Common Status Meanings (for staff)
+
 - **PENDING**: Booking created but awaiting final confirmation/action.
 - **CONFIRMED / PAID**: Payment successful; reservation should be considered active.
 - **CHECKED_IN**: Guest has arrived and checked in.
@@ -127,6 +146,7 @@ In Bookings, your team can:
 ## 5) Front Desk / Reservations Daily Operating Routine
 
 ## Morning Checklist (Start of Day)
+
 - Open admin Bookings section.
 - Filter or scan for today’s check-ins and day visits.
 - Confirm status and references are clear for each expected guest.
@@ -134,12 +154,14 @@ In Bookings, your team can:
 - Alert relevant teams (front desk, housekeeping, experiences) for the day.
 
 ## Midday Checklist
+
 - Re-check for new bookings.
 - Resolve pending items quickly.
 - Confirm special requests are visible to operations team.
 - Ensure guest-facing info (room availability/menu highlights/popups) is current.
 
 ## End-of-Day Checklist
+
 - Mark completed stays/visits where appropriate.
 - Review unresolved pending/cancelled cases.
 - Record any unusual issues (payment mismatch, duplicate entries, no-show).
@@ -150,7 +172,9 @@ In Bookings, your team can:
 ## 6) Guest Experience Playbook
 
 ### When Guest Says “I Paid But I’m Not Sure It Went Through”
+
 What to do:
+
 1. Ask for booking reference, name, and phone/email.
 2. Check booking in admin.
 3. Confirm payment status and dates.
@@ -158,14 +182,18 @@ What to do:
 5. If pending, escalate for payment verification and keep guest updated.
 
 ### When Guest Asks “Where Is My Receipt?”
+
 What to do:
+
 1. Ask for booking reference.
 2. Guide guest to confirmation/receipt link if available.
 3. If needed, share booking details manually (reference, amount, dates, guest name).
 4. Escalate to support lead if details do not match.
 
 ### When Guest Wants to Reschedule or Cancel
+
 What to do:
+
 1. Check booking date and policy window.
 2. Follow resort cancellation/reschedule policy rules.
 3. Confirm agreed action in writing (WhatsApp/email).
@@ -176,25 +204,33 @@ What to do:
 ## 7) Content Management Guidelines (Non-Technical)
 
 ## Rooms
+
 Update when:
+
 - Pricing changes.
 - Capacity/feature descriptions change.
 - Photos are refreshed.
 
 ## Menus
+
 Update when:
+
 - New items launch.
 - Prices change.
 - Seasonal offerings rotate.
 
 ## Blog
+
 Use for:
+
 - Announcements and events.
 - Travel tips and resort stories.
 - New package launches.
 
 ## Popups
+
 Use for:
+
 - Limited offers.
 - Event promotions.
 - Peak season notices.
@@ -206,18 +242,22 @@ Use for:
 ## 8) Trust, Brand, and Communication Standards
 
 ### Tone of Voice
+
 Always communicate:
+
 - Warm
 - Premium
 - Reassuring
 - Clear and concise
 
 ### Response Standards
+
 - Respond quickly to payment/booking concerns.
 - Never blame the guest for system uncertainty.
 - Confirm actions taken and expected timeline.
 
 ### Branding Standards
+
 - Keep visuals and messaging elegant and premium.
 - Avoid conflicting promotional messages.
 - Ensure policy-related language is consistent everywhere.
@@ -227,25 +267,33 @@ Always communicate:
 ## 9) Escalation Guide (Who Handles What)
 
 ### Tier 1: Front Desk / Reservations
+
 Handles:
+
 - Booking lookups
 - Basic status clarification
 - Routine guest support
 
 ### Tier 2: Operations Lead
+
 Handles:
+
 - Complex booking conflicts
 - Check-in/out exceptions
 - Group booking adjustments
 
 ### Tier 3: Management
+
 Handles:
+
 - High-value guest disputes
 - Policy exceptions
 - Sensitive complaints/reputation risks
 
 ### Tier 4: Technical Support (if needed)
+
 Handles:
+
 - Persistent payment-confirmation mismatch
 - Broken page behavior
 - Admin area access issues
@@ -270,15 +318,19 @@ This keeps service quality consistent across teams.
 ## 11) Frequently Asked Questions (For Internal Team)
 
 ### “A booking is showing but status is pending. What do we do?”
+
 Confirm payment evidence/reference, check booking details in admin, and escalate verification if needed before changing status.
 
 ### “Guest paid, but no email received.”
+
 A booking can still be valid if details are confirmed in admin. Share receipt/booking info manually and reassure guest.
 
 ### “Can we edit guest details?”
+
 Follow internal authorization rules. Sensitive data changes should be handled by approved staff only.
 
 ### “Who updates promotions and popups?”
+
 Assigned marketing/content owner with manager approval for major campaigns.
 
 ---
@@ -286,6 +338,7 @@ Assigned marketing/content owner with manager approval for major campaigns.
 ## 12) Management KPI Snapshot (What to Track Weekly)
 
 To measure website performance operationally:
+
 - Total room bookings
 - Total day-pass bookings
 - Pending-to-confirmed conversion speed
@@ -302,6 +355,7 @@ To measure website performance operationally:
 This website is strongest when your teams treat it as a **live guest service platform**, not just a brochure.
 
 Success comes from:
+
 - Fast booking follow-up
 - Clear status management
 - Consistent guest communication

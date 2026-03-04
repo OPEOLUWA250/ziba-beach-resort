@@ -223,20 +223,23 @@ export default function Header() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-2xl rounded-b-2xl">
+        <div className="md:hidden bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-2xl rounded-b-2xl animate-slideDown">
           <div className="px-4 py-6 space-y-3">
-            {navItems.map((item) => {
+            {navItems.map((item, index) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`block font-medium text-lg transition py-2 ${
+                  className={`block font-medium text-lg transition-all py-2 hover:translate-x-2 duration-300 ${
                     isActive
                       ? "text-blue-900"
                       : "text-gray-900 hover:text-blue-900"
                   }`}
+                  style={{
+                    animation: `fadeInLeft 0.3s ease-out ${index * 50}ms both`,
+                  }}
                 >
                   {item.label}
                 </Link>
