@@ -255,8 +255,8 @@ export default function Header() {
       )}
 
       {showBookingChoiceModal && (
-        <div className="fixed inset-0 z-70 bg-black/55 backdrop-blur-sm grid place-items-center p-4">
-          <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in duration-200 mx-auto">
+        <div className="fixed inset-0 z-50 bg-black/55 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in duration-200 mt-24 sm:mt-20 lg:mt-12">
             <div className="px-6 py-5 bg-linear-to-r from-blue-900 to-blue-800 text-white">
               <h3 className="text-2xl font-light">Choose Your Experience</h3>
               <p className="text-blue-100 text-sm mt-1">

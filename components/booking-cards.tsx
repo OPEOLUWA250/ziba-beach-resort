@@ -31,19 +31,22 @@ export default function BookingCards() {
     <section
       ref={sectionRef}
       id="experience-cards"
-      className="py-6 sm:py-12 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white scroll-mt-20 overflow-hidden"
+      className="py-10 sm:py-12 lg:py-20 px-5 sm:px-6 lg:px-8 bg-white scroll-mt-20 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div
-          className={`text-center mb-8 sm:mb-12 lg:mb-16 transition-all duration-1000 ease-out ${
+          className={`text-center mb-10 sm:mb-12 lg:mb-16 transition-all duration-1000 ease-out ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <h2 className="h2 text-blue-900 mb-4 sm:mb-6 text-center" style={headingFont}>
+          <h2
+            className="h2 text-blue-900 mb-6 sm:mb-6 text-center"
+            style={headingFont}
+          >
             Choose Your Experience
           </h2>
-          <div className="w-16 h-0.5 mx-auto mb-4 sm:mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
+          <div className="w-16 h-0.5 mx-auto mb-6 sm:mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
           <p className="text-base sm:text-lg text-gray-600 font-light max-w-2xl mx-auto px-2">
             Whether you're looking for a luxurious overnight escape or a day of
             exploration, we have the perfect option for you.
@@ -51,7 +54,7 @@ export default function BookingCards() {
         </div>
 
         {/* Booking Options Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 mt-16 sm:mt-12 lg:mt-16">
           {/* Day Experience Card */}
           <div
             className={`group relative overflow-hidden rounded-xl sm:rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:lg:-translate-y-4 min-h-96 sm:min-h-[420px] lg:min-h-[520px] hover-lift ${
@@ -84,34 +87,34 @@ export default function BookingCards() {
               <div className="flex-1" />
 
               {/* Content */}
-              <div className="relative px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6 lg:pb-8">
+              <div className="relative px-5 sm:px-6 lg:px-8 pb-6 sm:pb-6 lg:pb-8">
                 {/* Icon */}
-                <div className="inline-flex items-center justify-center w-11 h-11 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-orange-100/20 mb-2 sm:mb-3 lg:mb-4 backdrop-blur-sm border border-orange-100/30 group-hover:scale-110 transition-transform duration-500">
+                <div className="inline-flex items-center justify-center w-11 h-11 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-orange-100/20 mb-3 sm:mb-3 lg:mb-4 backdrop-blur-sm border border-orange-100/30 group-hover:scale-110 transition-transform duration-500">
                   <span className="text-2xl sm:text-3xl lg:text-4xl">☀️</span>
                 </div>
 
                 {/* Label */}
-                <div className="text-xs font-light text-orange-200 mb-1 sm:mb-2 lg:mb-3 tracking-widest">
+                <div className="text-xs font-light text-orange-200 mb-2 sm:mb-2 lg:mb-3 tracking-widest">
                   DAY PASS
                 </div>
 
                 {/* Title */}
                 <h3
-                  className="text-xl sm:text-2xl lg:text-4xl font-light text-white mb-2 sm:mb-3 lg:mb-4 leading-tight"
+                  className="text-xl sm:text-2xl lg:text-4xl font-light text-white mb-3 sm:mb-3 lg:mb-4 leading-tight"
                   style={{ fontFamily: "Cormorant Garamond" }}
                 >
                   Day Experience
                 </h3>
 
                 {/* Description */}
-                <p className="text-gray-100 font-light mb-2 sm:mb-3 lg:mb-4 leading-relaxed text-xs sm:text-sm">
+                <p className="text-gray-100 font-light mb-3 sm:mb-3 lg:mb-4 leading-relaxed text-xs sm:text-sm">
                   Spend 8 hours (10am - 6pm) enjoying full access to all
                   facilities, dining, activities, and our stunning beach views.
                   Perfect for a luxurious day out.
                 </p>
 
                 {/* Features List */}
-                <ul className="space-y-1 sm:space-y-1.5 lg:space-y-2 mb-3 sm:mb-4 lg:mb-6">
+                <ul className="space-y-1.5 sm:space-y-1.5 lg:space-y-2 mb-4 sm:mb-4 lg:mb-6">
                   {[
                     "Pool & Beach Access",
                     "Restaurant & Bar",
@@ -198,34 +201,34 @@ export default function BookingCards() {
               <div className="flex-1" />
 
               {/* Content */}
-              <div className="relative px-3 sm:px-6 lg:px-8 pb-3 sm:pb-4 lg:pb-8">
+              <div className="relative px-5 sm:px-6 lg:px-8 pb-6 sm:pb-6 lg:pb-8">
                 {/* Icon */}
-                <div className="inline-flex items-center justify-center w-11 h-11 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-blue-100/20 mb-2 sm:mb-3 lg:mb-4 backdrop-blur-sm border border-blue-100/30 group-hover:scale-110 transition-transform duration-500">
+                <div className="inline-flex items-center justify-center w-11 h-11 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-blue-100/20 mb-3 sm:mb-3 lg:mb-4 backdrop-blur-sm border border-blue-100/30 group-hover:scale-110 transition-transform duration-500">
                   <span className="text-2xl sm:text-3xl lg:text-4xl">🌙</span>
                 </div>
 
                 {/* Label */}
-                <div className="text-xs font-light text-blue-200 mb-1 sm:mb-2 lg:mb-3 tracking-widest">
+                <div className="text-xs font-light text-blue-200 mb-2 sm:mb-2 lg:mb-3 tracking-widest">
                   OVERNIGHT STAY
                 </div>
 
                 {/* Title */}
                 <h3
-                  className="text-xl sm:text-2xl lg:text-4xl font-light text-white mb-2 sm:mb-3 lg:mb-4 leading-tight"
+                  className="text-xl sm:text-2xl lg:text-4xl font-light text-white mb-3 sm:mb-3 lg:mb-4 leading-tight"
                   style={{ fontFamily: "Cormorant Garamond" }}
                 >
                   Night Experience
                 </h3>
 
                 {/* Description */}
-                <p className="text-gray-100 font-light mb-2 sm:mb-3 lg:mb-4 leading-relaxed text-xs sm:text-sm">
+                <p className="text-gray-100 font-light mb-3 sm:mb-3 lg:mb-4 leading-relaxed text-xs sm:text-sm">
                   Wake to ocean views, enjoy our world-class amenities, fine
                   dining, spa services, and create lasting memories in your
                   private floating sanctuary.
                 </p>
 
                 {/* Features List */}
-                <ul className="space-y-1 sm:space-y-1.5 lg:space-y-2 mb-3 sm:mb-4 lg:mb-6">
+                <ul className="space-y-1.5 sm:space-y-1.5 lg:space-y-2 mb-4 sm:mb-4 lg:mb-6">
                   {[
                     "Floating Rooms & Suites",
                     "Ocean Views",
