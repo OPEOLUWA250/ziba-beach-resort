@@ -204,14 +204,6 @@ const RoomBookingModal = ({
                   {booking.booking_reference_code}
                 </p>
               </div>
-              {booking.paystack_reference && (
-                <div>
-                  <p className="text-gray-400 text-sm">Paystack Reference</p>
-                  <p className="text-white font-medium font-mono">
-                    {booking.paystack_reference}
-                  </p>
-                </div>
-              )}
               <div>
                 <p className="text-gray-400 text-sm">Check-In Date</p>
                 <p className="text-white font-medium">
@@ -244,6 +236,14 @@ const RoomBookingModal = ({
                 </p>
               </div>
             </div>
+            {booking.paystack_reference && (
+              <div className="bg-blue-950/30 p-3 rounded border border-blue-600/40 mt-4">
+                <p className="text-gray-300 text-sm mb-2">Paystack Reference</p>
+                <p className="text-white font-medium font-mono text-base break-all">
+                  {booking.paystack_reference}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Special Requests */}
@@ -406,15 +406,15 @@ const DayPassBookingModal = ({
                   {booking.reference_code}
                 </p>
               </div>
-              {booking.paystack_reference && (
-                <div>
-                  <p className="text-gray-400 text-sm">Paystack Reference</p>
-                  <p className="text-white font-medium font-mono">
-                    {booking.paystack_reference}
-                  </p>
-                </div>
-              )}
             </div>
+            {booking.paystack_reference && (
+              <div className="bg-gray-700/20 p-3 rounded border border-blue-600/30 mt-2">
+                <p className="text-gray-400 text-sm mb-1">Paystack Reference</p>
+                <p className="text-white font-medium font-mono text-base">
+                  {booking.paystack_reference}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Items Purchased */}

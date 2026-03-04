@@ -202,7 +202,7 @@ export default function DayPassConfirmationContent() {
             {booking.paystackReference && (
               <div className="bg-linear-to-r from-cyan-50 to-blue-50 p-3 rounded border border-cyan-200 text-center">
                 <p className="text-gray-600 text-xs font-medium mb-1">
-                  Payment Reference
+                  Paystack Reference
                 </p>
                 <p className="font-mono font-bold text-blue-900 text-sm break-all">
                   {booking.paystackReference}
