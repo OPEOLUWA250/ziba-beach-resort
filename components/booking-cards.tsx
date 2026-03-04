@@ -31,30 +31,30 @@ export default function BookingCards() {
     <section
       ref={sectionRef}
       id="experience-cards"
-      className="pt-28 pb-32 px-4 sm:px-6 lg:px-8 bg-white scroll-mt-20 overflow-hidden"
+      className="py-6 sm:py-12 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white scroll-mt-20 overflow-hidden"
     >
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div
-          className={`text-center mb-16 transition-all duration-1000 ease-out ${
+          className={`text-center mb-8 sm:mb-12 lg:mb-16 transition-all duration-1000 ease-out ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <h2 className="h2 text-blue-900 mb-6 text-center" style={headingFont}>
+          <h2 className="h2 text-blue-900 mb-4 sm:mb-6 text-center" style={headingFont}>
             Choose Your Experience
           </h2>
-          <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
-          <p className="text-lg text-gray-600 font-light max-w-2xl mx-auto">
+          <div className="w-16 h-0.5 mx-auto mb-4 sm:mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
+          <p className="text-base sm:text-lg text-gray-600 font-light max-w-2xl mx-auto px-2">
             Whether you're looking for a luxurious overnight escape or a day of
             exploration, we have the perfect option for you.
           </p>
         </div>
 
         {/* Booking Options Grid */}
-        <div className="grid md:grid-cols-2 gap-8 md:gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
           {/* Day Experience Card */}
           <div
-            className={`group relative overflow-hidden rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 h-96 hover-lift ${
+            className={`group relative overflow-hidden rounded-xl sm:rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:lg:-translate-y-4 min-h-96 sm:min-h-[420px] lg:min-h-[520px] hover-lift ${
               isVisible
                 ? "opacity-100 translate-x-0 translate-y-0"
                 : "opacity-0 -translate-x-10 translate-y-10"
@@ -75,89 +75,100 @@ export default function BookingCards() {
               priority
             />
 
-            {/* Overlay - Premium stronger gradient for luxury aesthetic & text readability */}
-            <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/85 to-black/70" />
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/80 via-35% to-black/40" />
 
-            {/* Content */}
-            <div className="relative h-full p-6 sm:p-8 lg:p-10 pt-56 sm:pt-64 lg:pt-72 flex flex-col justify-end">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-orange-100/20 mb-6 backdrop-blur-sm border border-orange-100/30 group-hover:scale-110 transition-transform duration-500">
-                <span className="text-2xl">☀️</span>
-              </div>
+            {/* Content Container */}
+            <div className="absolute inset-0 flex flex-col justify-between">
+              {/* Top Spacer */}
+              <div className="flex-1" />
 
-              <div className="text-xs font-light text-orange-100 mb-3 tracking-widest">
-                DAY PASS
-              </div>
+              {/* Content */}
+              <div className="relative px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6 lg:pb-8">
+                {/* Icon */}
+                <div className="inline-flex items-center justify-center w-11 h-11 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-orange-100/20 mb-2 sm:mb-3 lg:mb-4 backdrop-blur-sm border border-orange-100/30 group-hover:scale-110 transition-transform duration-500">
+                  <span className="text-2xl sm:text-3xl lg:text-4xl">☀️</span>
+                </div>
 
-              <h3
-                className="text-3xl font-light text-white mb-4"
-                style={{ fontFamily: "Cormorant Garamond" }}
-              >
-                Day Experience
-              </h3>
+                {/* Label */}
+                <div className="text-xs font-light text-orange-200 mb-1 sm:mb-2 lg:mb-3 tracking-widest">
+                  DAY PASS
+                </div>
 
-              <p className="text-gray-100 font-light mb-8 leading-relaxed text-sm">
-                Spend 8 hours (10am - 6pm) enjoying full access to all
-                facilities, dining, activities, and our stunning beach views.
-                Perfect for a luxurious day out.
-              </p>
-
-              {/* Features List */}
-              <ul className="space-y-2 mb-8">
-                {[
-                  "Pool & Beach Access",
-                  "Restaurant & Bar",
-                  "All Activities",
-                  "Spa Treatments",
-                  "8 Hours • 10am - 6pm",
-                ].map((feature, idx) => (
-                  <li
-                    key={feature}
-                    className={`flex items-center gap-3 text-xs text-gray-100 font-light transition-all duration-500 ${
-                      isVisible
-                        ? "opacity-100 translate-x-0"
-                        : "opacity-0 -translate-x-5"
-                    }`}
-                    style={{
-                      transitionDelay: isVisible
-                        ? `${450 + idx * 50}ms`
-                        : "0ms",
-                    }}
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-orange-300" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <Link href="/product/day-pass/">
-                <button
-                  className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-4 sm:px-6 py-5 sm:py-6 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn translate-y-0 hover:-translate-y-1"
-                  style={{ boxShadow: "0 4px 15px rgba(15, 23, 42, 0.3)" }}
+                {/* Title */}
+                <h3
+                  className="text-xl sm:text-2xl lg:text-4xl font-light text-white mb-2 sm:mb-3 lg:mb-4 leading-tight"
+                  style={{ fontFamily: "Cormorant Garamond" }}
                 >
-                  <span className="relative flex items-center justify-center gap-2 whitespace-nowrap">
-                    Explore Day Experience
-                    <svg
-                      className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                  Day Experience
+                </h3>
+
+                {/* Description */}
+                <p className="text-gray-100 font-light mb-2 sm:mb-3 lg:mb-4 leading-relaxed text-xs sm:text-sm">
+                  Spend 8 hours (10am - 6pm) enjoying full access to all
+                  facilities, dining, activities, and our stunning beach views.
+                  Perfect for a luxurious day out.
+                </p>
+
+                {/* Features List */}
+                <ul className="space-y-1 sm:space-y-1.5 lg:space-y-2 mb-3 sm:mb-4 lg:mb-6">
+                  {[
+                    "Pool & Beach Access",
+                    "Restaurant & Bar",
+                    "All Activities",
+                    "Spa Treatments",
+                    "8 Hours • 10am - 6pm",
+                  ].map((feature, idx) => (
+                    <li
+                      key={feature}
+                      className={`flex items-center gap-2 text-xs text-gray-100 font-light transition-all duration-500 ${
+                        isVisible
+                          ? "opacity-100 translate-x-0"
+                          : "opacity-0 -translate-x-5"
+                      }`}
+                      style={{
+                        transitionDelay: isVisible
+                          ? `${450 + idx * 50}ms`
+                          : "0ms",
+                      }}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 7l5 5m0 0l-5 5m5-5H6"
-                      />
-                    </svg>
-                  </span>
-                </button>
-              </Link>
+                      <span className="w-1.5 h-1.5 rounded-full bg-orange-300 flex-shrink-0 mt-0.5" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Button */}
+                <Link href="/product/day-pass/" className="block">
+                  <button
+                    className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-3 sm:px-6 py-2.5 sm:py-3 lg:py-4 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn text-xs sm:text-sm"
+                    style={{ boxShadow: "0 4px 15px rgba(15, 23, 42, 0.3)" }}
+                  >
+                    <span className="relative flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap">
+                      Explore Now
+                      <svg
+                        className="w-3 h-3 sm:w-4 sm:h-4 transform group-hover/btn:translate-x-1 transition-transform"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7l5 5m0 0l-5 5m5-5H6"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                </Link>
+              </div>
             </div>
           </div>
 
           {/* Night Experience Card */}
           <div
-            className={`group relative overflow-hidden rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 h-96 hover-lift ${
+            className={`group relative overflow-hidden rounded-xl sm:rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:lg:-translate-y-4 min-h-96 sm:min-h-[420px] lg:min-h-[520px] hover-lift ${
               isVisible
                 ? "opacity-100 translate-x-0 translate-y-0"
                 : "opacity-0 translate-x-10 translate-y-10"
@@ -178,83 +189,94 @@ export default function BookingCards() {
               priority
             />
 
-            {/* Overlay - Premium stronger gradient for luxury aesthetic & text readability */}
-            <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/75 to-black/60" />
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/80 via-35% to-black/40" />
 
-            {/* Content */}
-            <div className="relative h-full p-6 sm:p-8 lg:p-10 pt-56 sm:pt-64 lg:pt-72 flex flex-col justify-end">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100/20 mb-6 backdrop-blur-sm border border-blue-100/30 group-hover:scale-110 transition-transform duration-500">
-                <span className="text-2xl">🌙</span>
-              </div>
+            {/* Content Container */}
+            <div className="absolute inset-0 flex flex-col justify-between">
+              {/* Top Spacer */}
+              <div className="flex-1" />
 
-              <div className="text-xs font-light text-blue-100 mb-3 tracking-widest">
-                OVERNIGHT STAY
-              </div>
+              {/* Content */}
+              <div className="relative px-3 sm:px-6 lg:px-8 pb-3 sm:pb-4 lg:pb-8">
+                {/* Icon */}
+                <div className="inline-flex items-center justify-center w-11 h-11 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-blue-100/20 mb-2 sm:mb-3 lg:mb-4 backdrop-blur-sm border border-blue-100/30 group-hover:scale-110 transition-transform duration-500">
+                  <span className="text-2xl sm:text-3xl lg:text-4xl">🌙</span>
+                </div>
 
-              <h3
-                className="text-3xl font-light text-white mb-4"
-                style={{ fontFamily: "Cormorant Garamond" }}
-              >
-                Night Experience
-              </h3>
+                {/* Label */}
+                <div className="text-xs font-light text-blue-200 mb-1 sm:mb-2 lg:mb-3 tracking-widest">
+                  OVERNIGHT STAY
+                </div>
 
-              <p className="text-gray-100 font-light mb-8 leading-relaxed text-sm">
-                Wake to ocean views, enjoy our world-class amenities, fine
-                dining, spa services, and create lasting memories in your
-                private floating sanctuary.
-              </p>
-
-              {/* Features List */}
-              <ul className="space-y-2 mb-8">
-                {[
-                  "Floating Rooms & Suites",
-                  "Ocean Views",
-                  "Fine Dining",
-                  "Spa Access",
-                  "24/7 Concierge",
-                ].map((feature, idx) => (
-                  <li
-                    key={feature}
-                    className={`flex items-center gap-3 text-xs text-gray-100 font-light transition-all duration-500 ${
-                      isVisible
-                        ? "opacity-100 translate-x-0"
-                        : "opacity-0 -translate-x-5"
-                    }`}
-                    style={{
-                      transitionDelay: isVisible
-                        ? `${450 + idx * 50}ms`
-                        : "0ms",
-                    }}
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-300" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <Link href="/bookings">
-                <button
-                  className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-4 sm:px-6 py-5 sm:py-6 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn translate-y-0 hover:-translate-y-1"
-                  style={{ boxShadow: "0 4px 15px rgba(15, 23, 42, 0.3)" }}
+                {/* Title */}
+                <h3
+                  className="text-xl sm:text-2xl lg:text-4xl font-light text-white mb-2 sm:mb-3 lg:mb-4 leading-tight"
+                  style={{ fontFamily: "Cormorant Garamond" }}
                 >
-                  <span className="relative flex items-center justify-center gap-2 whitespace-nowrap">
-                    Explore Night Experience
-                    <svg
-                      className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                  Night Experience
+                </h3>
+
+                {/* Description */}
+                <p className="text-gray-100 font-light mb-2 sm:mb-3 lg:mb-4 leading-relaxed text-xs sm:text-sm">
+                  Wake to ocean views, enjoy our world-class amenities, fine
+                  dining, spa services, and create lasting memories in your
+                  private floating sanctuary.
+                </p>
+
+                {/* Features List */}
+                <ul className="space-y-1 sm:space-y-1.5 lg:space-y-2 mb-3 sm:mb-4 lg:mb-6">
+                  {[
+                    "Floating Rooms & Suites",
+                    "Ocean Views",
+                    "Fine Dining",
+                    "Spa Access",
+                    "24/7 Concierge",
+                  ].map((feature, idx) => (
+                    <li
+                      key={feature}
+                      className={`flex items-center gap-2 text-xs text-gray-100 font-light transition-all duration-500 ${
+                        isVisible
+                          ? "opacity-100 translate-x-0"
+                          : "opacity-0 -translate-x-5"
+                      }`}
+                      style={{
+                        transitionDelay: isVisible
+                          ? `${450 + idx * 50}ms`
+                          : "0ms",
+                      }}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 7l5 5m0 0l-5 5m5-5H6"
-                      />
-                    </svg>
-                  </span>
-                </button>
-              </Link>
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-300 flex-shrink-0 mt-0.5" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Button */}
+                <Link href="/bookings" className="block">
+                  <button
+                    className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-3 sm:px-6 py-2.5 sm:py-3 lg:py-4 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn text-xs sm:text-sm"
+                    style={{ boxShadow: "0 4px 15px rgba(15, 23, 42, 0.3)" }}
+                  >
+                    <span className="relative flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap">
+                      Explore Now
+                      <svg
+                        className="w-3 h-3 sm:w-4 sm:h-4 transform group-hover/btn:translate-x-1 transition-transform"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7l5 5m0 0l-5 5m5-5H6"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
