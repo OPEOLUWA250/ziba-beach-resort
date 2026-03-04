@@ -371,6 +371,7 @@ const GuestTestimonialsCarousel = ({ isVisible }: { isVisible: boolean }) => {
 };
 
 export default function Reviews() {
+  const headingFont = { fontFamily: "Cormorant Garamond, serif" };
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
 
@@ -408,7 +409,7 @@ export default function Reviews() {
           <span className="inline-block text-blue-600 font-semibold text-sm uppercase tracking-widest mb-4">
             ✨ What Our Guests Say
           </span>
-          <h2 className="h2 text-blue-900 mb-4 text-center">
+          <h2 className="h2 text-blue-900 mb-4 text-center" style={headingFont}>
             Unforgettable Moments
           </h2>
           <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />

@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChefHat, Wine, Utensils } from "lucide-react";
 
 export default function MenuTeaser() {
+  const headingFont = { fontFamily: "Cormorant Garamond, serif" };
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
 
@@ -57,7 +58,7 @@ export default function MenuTeaser() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <h2 className="h2 text-blue-900 mb-6">Culinary Delights</h2>
+          <h2 className="h2 text-blue-900 mb-6" style={headingFont}>Culinary Delights</h2>
           <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
           <p className="text-lg text-gray-600 font-light max-w-2xl mx-auto">
             Discover our exceptional menu featuring fresh seafood, international

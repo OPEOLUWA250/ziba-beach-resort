@@ -227,10 +227,26 @@ export default function Footer() {
               </li>
               <li>
                 <a
+                  href="/experience"
+                  className="hover:text-blue-200 transition-colors duration-300"
+                >
+                  Experience
+                </a>
+              </li>
+              <li>
+                <a
                   href="/blog"
                   className="hover:text-blue-200 transition-colors duration-300"
                 >
                   Blog
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/contact"
+                  className="hover:text-blue-200 transition-colors duration-300"
+                >
+                  Contact
                 </a>
               </li>
             </ul>

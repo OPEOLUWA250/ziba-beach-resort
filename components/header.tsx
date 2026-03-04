@@ -10,8 +10,10 @@ const navItems = [
   { label: "Home", href: "/" },
   { label: "Bookings", href: "/bookings" },
   { label: "Our Story", href: "/our-story" },
+  { label: "Experience", href: "/experience" },
   { label: "Menu", href: "/menu" },
   { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function Header() {

@@ -13,7 +13,7 @@ import {
   Sparkles,
   MapPin,
 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const eventSpaces = [
   {
@@ -69,9 +69,260 @@ const shootTypes = [
   },
 ];
 
+const honeymoonPackages = [
+  {
+    id: "01",
+    name: "Honeymoon Package 1",
+    price: "₦900,000",
+    stay: "2-night stay in Beach Facing Room",
+    inclusions: [
+      "Decorated room upon arrival",
+      "3 meals daily",
+      "Horse riding",
+      "1-hr couple massage",
+      "Sunset Picnic",
+      "Romantic Dinner",
+      "Paint and chill",
+      "Floating Breakfast",
+      "Hand casting",
+      "Complimentary minibar",
+    ],
+  },
+  {
+    id: "02",
+    name: "Honeymoon Package 2",
+    price: "₦1,020,000",
+    stay: "2-night stay in Beach Facing Suite Room",
+    inclusions: [
+      "Decorated room upon arrival",
+      "3 meals daily",
+      "Horse riding",
+      "1-hr couple massage",
+      "Sunset Picnic",
+      "Romantic Dinner",
+      "Paint and chill",
+      "Floating Breakfast",
+      "Hand casting",
+      "Complimentary minibar",
+    ],
+  },
+  {
+    id: "03",
+    name: "Honeymoon Package 3",
+    price: "₦940,000",
+    stay: "2-night stay in Overwater Terrace Room",
+    inclusions: [
+      "Decorated room upon arrival",
+      "3 meals daily",
+      "Horse riding",
+      "1-hr couple massage",
+      "Sunset Picnic",
+      "Romantic Dinner",
+      "Paint and chill",
+      "Floating Breakfast",
+      "Hand casting",
+      "Floating Movie",
+      "Complimentary minibar",
+    ],
+  },
+  {
+    id: "04",
+    name: "Honeymoon Package 4",
+    price: "₦1,070,000",
+    stay: "2-night stay in Overwater Terrace Suite",
+    inclusions: [
+      "Decorated room upon arrival",
+      "3 meals daily",
+      "Horse riding",
+      "1-hr couple massage",
+      "Sunset Picnic",
+      "Romantic Dinner",
+      "Paint and chill",
+      "Floating Breakfast",
+      "Hand casting",
+      "Floating Movie",
+      "Complimentary minibar",
+    ],
+  },
+  {
+    id: "05",
+    name: "Honeymoon Package 5",
+    price: "₦1,500,000",
+    stay: "4-night stay in Beach Facing Room",
+    inclusions: [
+      "Decorated room upon arrival",
+      "3 meals daily",
+      "Horse riding",
+      "1-hr couple massage",
+      "Sunset Picnic",
+      "Romantic Dinner",
+      "Paint and chill",
+      "Hand casting",
+      "Floating Movie",
+      "Complimentary minibar",
+      "No Floating Breakfast on this package",
+    ],
+  },
+  {
+    id: "06",
+    name: "Honeymoon Package 6",
+    price: "₦1,720,000",
+    stay: "4-night stay in Beach Facing Suite",
+    inclusions: [
+      "Decorated room upon arrival",
+      "3 meals daily",
+      "Horse riding",
+      "1-hr couple massage",
+      "Sunset Picnic",
+      "Romantic Dinner",
+      "Paint and chill",
+      "Hand casting",
+      "Floating Movie",
+      "Complimentary minibar",
+      "No Floating Breakfast on this package",
+    ],
+  },
+  {
+    id: "07",
+    name: "Honeymoon Package 7",
+    price: "₦1,760,000",
+    stay: "4-night stay in an Overwater Room",
+    inclusions: [
+      "Decorated room upon arrival",
+      "3 meals daily",
+      "Horse riding",
+      "1-hr couple massage",
+      "Sunset Picnic",
+      "Romantic Dinner",
+      "Paint and chill",
+      "Floating Breakfast",
+      "Hand casting",
+      "Floating Movie",
+      "Complimentary minibar",
+    ],
+  },
+  {
+    id: "08",
+    name: "Honeymoon Package 8",
+    price: "₦1,940,000",
+    stay: "4-night stay in an Overwater Suite",
+    inclusions: [
+      "Decorated room upon arrival",
+      "3 meals daily",
+      "Horse riding",
+      "1-hr couple massage",
+      "Sunset Picnic",
+      "Romantic Dinner",
+      "Paint and chill",
+      "Floating Breakfast",
+      "Hand casting",
+      "Floating Movie",
+      "Complimentary minibar",
+    ],
+  },
+  {
+    id: "09",
+    name: "Honeymoon Package 9",
+    price: "₦2,100,000",
+    stay: "6-night stay in a Beach Facing Room",
+    inclusions: [
+      "Decorated room upon arrival",
+      "3 meals daily",
+      "Horse riding",
+      "Flying dress or clear kayak photo shoot",
+      "1-hr couple massage",
+      "Sunset Picnic",
+      "Romantic Dinner",
+      "Paint and chill",
+      "Hand casting",
+      "Floating Movie",
+      "Complimentary minibar",
+      "No Floating Breakfast on this package",
+    ],
+  },
+  {
+    id: "10",
+    name: "Honeymoon Package 10",
+    price: "₦2,450,000",
+    stay: "6-night stay in Beach Facing Suite",
+    inclusions: [
+      "Decorated room upon arrival",
+      "3 meals daily",
+      "Horse riding",
+      "1-hr couple massage",
+      "Sunset Picnic",
+      "Romantic Dinner",
+      "Paint and chill",
+      "Floating Breakfast",
+      "Hand casting",
+      "Floating Movie",
+      "Complimentary minibar",
+    ],
+  },
+  {
+    id: "11",
+    name: "Honeymoon Package 11",
+    price: "₦2,340,000",
+    stay: "4-night stay in an Overwater Suite",
+    inclusions: [
+      "Decorated room upon arrival",
+      "3 meals daily",
+      "Horse riding",
+      "1-hr couple massage",
+      "Sunset Picnic",
+      "Romantic Dinner",
+      "Paint and chill",
+      "Floating Breakfast",
+      "Hand casting",
+      "Floating Movie",
+      "Complimentary minibar",
+    ],
+  },
+  {
+    id: "12",
+    name: "Honeymoon Package 12",
+    price: "₦2,720,000",
+    stay: "6-night stay in an Overwater Suite",
+    inclusions: [
+      "Decorated room upon arrival",
+      "3 meals daily",
+      "Horse riding",
+      "1-hr couple massage",
+      "Sunset Picnic",
+      "Romantic Dinner",
+      "Paint and chill",
+      "Floating Breakfast",
+      "Hand casting",
+      "Floating Movie",
+      "Complimentary minibar",
+    ],
+  },
+];
+
 const faqItems = [];
 
 export default function Celebrate() {
+  const headingFont = { fontFamily: "Cormorant Garamond, serif" };
+  const [selectedNights, setSelectedNights] = useState<"all" | 2 | 4 | 6>(
+    "all",
+  );
+
+  const getNightsFromStay = (stay: string) => {
+    const match = stay.match(/(\d+)-night/i);
+    return match ? Number(match[1]) : null;
+  };
+
+  const filteredHoneymoonPackages = honeymoonPackages.filter((pkg) => {
+    if (selectedNights === "all") return true;
+    return getNightsFromStay(pkg.stay) === selectedNights;
+  });
+
+  const getWhatsAppLink = (pkg: (typeof honeymoonPackages)[number]) => {
+    const inclusionsText = pkg.inclusions.map((item) => `• ${item}`).join("\n");
+    const prefilledMessage = `Hello Ziba Beach Resort, I would like to book this honeymoon package:\n\nPackage ID: ${pkg.id}\nPackage Name: ${pkg.name}\nPrice: ${pkg.price}\nStay: ${pkg.stay}\n\nInclusions:\n${inclusionsText}\n\nPlease confirm availability for my preferred dates and share the payment steps. I found this package on the Experience page.`;
+    return `https://wa.me/2347047300013?text=${encodeURIComponent(prefilledMessage)}`;
+  };
+
   // Debug: log when component mounts
   useEffect(() => {
     console.log("🔧 Celebrate component mounted");
@@ -113,7 +364,10 @@ export default function Celebrate() {
         {/* Honeymoon Gallery/Hero Section */}
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-blue-50 to-white">
           <div className="max-w-7xl mx-auto">
-            <h2 className="h2 font-light text-blue-900 mb-4 text-center">
+            <h2
+              style={headingFont}
+              className="h2 font-light text-blue-900 mb-4 text-center"
+            >
               Your Perfect Honeymoon Awaits
             </h2>
             <div className="w-16 h-0.5 mx-auto mb-12 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
@@ -194,12 +448,12 @@ export default function Celebrate() {
             </div>
 
             {/* Gallery Description */}
-            <div className="text-center text-white">
+            <div className="text-center text-gray-900">
               <p className="font-light text-lg text-blue-900 mb-6">
                 Create timeless memories with your loved one at Nigeria's most
                 romantic beachfront destination
               </p>
-              <div className="flex gap-3 justify-center text-white font-light flex-wrap">
+              <div className="flex gap-3 justify-center text-gray-800 font-light flex-wrap">
                 <span className="flex items-center gap-1">
                   <Sparkles className="w-5 h-5 text-pink-400" /> Overwater
                   Paradise
@@ -219,10 +473,116 @@ export default function Celebrate() {
           </div>
         </section>
 
+        {/* Honeymoon Packages */}
+        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-b from-white via-blue-50/40 to-white">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-14">
+              <h2
+                style={headingFont}
+                className="h2 font-light text-blue-900 mb-4"
+              >
+                Honeymoon Packages
+              </h2>
+              <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
+              <p className="text-gray-600 font-light max-w-2xl mx-auto">
+                Choose the package that fits your perfect romantic escape. Each
+                package includes curated experiences for unforgettable moments.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
+              {[
+                { label: "All Packages", value: "all" as const },
+                { label: "2 Nights", value: 2 as const },
+                { label: "4 Nights", value: 4 as const },
+                { label: "6 Nights", value: 6 as const },
+              ].map((option) => {
+                const isActive = selectedNights === option.value;
+
+                return (
+                  <button
+                    key={option.label}
+                    type="button"
+                    onClick={() => setSelectedNights(option.value)}
+                    className={`px-5 py-2.5 rounded-full border text-sm font-light transition-all duration-300 ${
+                      isActive
+                        ? "bg-blue-900 text-white border-blue-900 shadow-md"
+                        : "bg-white text-blue-900 border-blue-200 hover:border-blue-400 hover:bg-blue-50"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-7">
+              {filteredHoneymoonPackages.map((pkg) => (
+                <article
+                  key={pkg.id}
+                  className="group relative overflow-hidden rounded-3xl border border-blue-100/80 bg-white/90 shadow-md hover:shadow-2xl transition-all duration-300 p-6 sm:p-7 flex flex-col hover:-translate-y-1"
+                >
+                  <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-blue-800 via-blue-500 to-pink-400" />
+
+                  <div className="flex items-start justify-between gap-4 mb-5 mt-1">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.2em] text-blue-700/80 mb-2">
+                        Romantic Escape
+                      </p>
+                      <h3 className="h4 text-2xl font-light text-blue-900 mb-1 leading-tight">
+                        {pkg.name}
+                      </h3>
+                      <p className="text-3xl font-light text-gray-900">
+                        {pkg.price}
+                      </p>
+                    </div>
+                    <span className="inline-flex items-center justify-center min-w-12 h-12 px-3 rounded-full bg-linear-to-br from-blue-900 to-blue-700 text-white text-sm font-light shadow-lg">
+                      {pkg.id}
+                    </span>
+                  </div>
+
+                  <div className="rounded-xl bg-blue-50 border border-blue-100 px-4 py-3 mb-5">
+                    <p className="text-blue-900 font-light">{pkg.stay}</p>
+                  </div>
+
+                  <p className="text-sm text-gray-500 mb-3 font-light">
+                    What is included
+                  </p>
+                  <ul className="space-y-2.5 mb-7 flex-1">
+                    {pkg.inclusions.map((item) => (
+                      <li
+                        key={`${pkg.id}-${item}`}
+                        className="flex items-start gap-2.5 text-gray-700 font-light text-sm"
+                      >
+                        <CheckCircle className="w-4 h-4 text-blue-900 mt-0.5 shrink-0 group-hover:text-blue-700 transition-colors" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="pt-1 border-t border-blue-100">
+                    <a
+                      href={getWhatsAppLink(pkg)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 w-full bg-linear-to-r from-blue-900 to-blue-700 text-white py-3.5 rounded-xl hover:from-blue-800 hover:to-blue-600 transition font-light shadow-md"
+                    >
+                      Book This Package <span aria-hidden="true">⟶</span>
+                    </a>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Honeymoon Experiences Include */}
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-blue-50 via-pink-50 to-blue-50">
           <div className="max-w-6xl mx-auto">
-            <h2 className="h2 font-light text-blue-900 mb-4 text-center">
+            <h2
+              style={headingFont}
+              className="h2 font-light text-blue-900 mb-4 text-center"
+            >
               Experience at Ziba
             </h2>
             <p className="text-center text-gray-600 font-light mb-16 max-w-2xl mx-auto">
@@ -276,7 +636,10 @@ export default function Celebrate() {
         <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="h2 font-light text-blue-900 mb-4 text-center">
+              <h2
+                style={headingFont}
+                className="h2 font-light text-blue-900 mb-4 text-center"
+              >
                 Team Bonding Experiences
               </h2>
               <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
@@ -376,7 +739,10 @@ export default function Celebrate() {
         {/* Event Spaces for Conferences & Team Bonding */}
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-blue-50">
           <div className="max-w-6xl mx-auto">
-            <h2 className="h2 font-light text-blue-900 mb-4 text-center">
+            <h2
+              style={headingFont}
+              className="h2 font-light text-blue-900 mb-4 text-center"
+            >
               Event Spaces & Team Bonding
             </h2>
             <p className="text-center text-gray-600 font-light mb-16 max-w-2xl mx-auto">
@@ -440,8 +806,8 @@ export default function Celebrate() {
         {/* Wedding Celebrations */}
         <section className="px-4 sm:px-6 lg:px-8 py-20">
           <div className="max-w-6xl mx-auto">
-            <div className="bg-gradient-to-br from-blue-900 to-blue-800 rounded-2xl p-12 text-center">
-              <h2 className="h2 font-light text-white mb-6">
+            <div className="bg-linear-to-br from-blue-900 to-blue-800 rounded-2xl p-12 text-center">
+              <h2 style={headingFont} className="h2 font-light text-white mb-6">
                 Wedding Celebrations & Receptions
               </h2>
               <p className="text-blue-100 font-light mb-8 max-w-2xl mx-auto text-lg">
@@ -464,7 +830,10 @@ export default function Celebrate() {
         {/* Professional Shoots Section */}
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-blue-50">
           <div className="max-w-6xl mx-auto">
-            <h2 className="h2 font-light text-blue-900 mb-4 text-center">
+            <h2
+              style={headingFont}
+              className="h2 font-light text-blue-900 mb-4 text-center"
+            >
               Professional Shoots & Content Creation
             </h2>
             <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
@@ -536,7 +905,7 @@ export default function Celebrate() {
         {/* Final CTA */}
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-blue-900">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="h2 font-light text-white mb-6">
+            <h2 style={headingFont} className="h2 font-light text-white mb-6">
               Ready to Celebrate?
             </h2>
             <p className="text-blue-100 font-light text-lg mb-8 max-w-2xl mx-auto">

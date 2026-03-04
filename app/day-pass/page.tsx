@@ -359,8 +359,68 @@ export default function DayPass() {
             </div>
 
             {/* ORDER SUMMARY - REMOVED - Use header cart icon instead */}
+          </div>
+        </section>
 
-            {/* Next section content */}
+        {/* WHAT YOUR DAY PASS COVERS */}
+        <section className="px-4 sm:px-6 lg:px-8 py-28 bg-linear-to-br from-blue-50 via-white to-pink-50">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2
+                className="text-5xl font-light text-blue-900 mb-4 text-center"
+                style={{ fontFamily: "Cormorant Garamond, serif" }}
+              >
+                What Your Day Pass Covers
+              </h2>
+              <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+              {[
+                { icon: "🚪", title: "Entrance", description: "Full resort access" },
+                { icon: "🎬", title: "3pm Movie in Cinema", description: "Daily screening" },
+                { icon: "🏊", title: "Swimming Pool", description: "General pool access" },
+                { icon: "🎪", title: "Children's Playground", description: "Fun for kids" },
+                { icon: "🔥", title: "Fire Pit", description: "Evening relaxation" },
+                { icon: "🎮", title: "Games Room", description: "Indoor entertainment" },
+                { icon: "☀️", title: "Pool Cabanas", description: "Shaded comfort" },
+                { icon: "🏖️", title: "Beachfront Access", description: "Direct beach entry" },
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white border-2 border-gray-200 rounded-2xl p-6 text-center hover:border-blue-300 hover:shadow-lg transition-all duration-300"
+                >
+                  <div className="text-5xl mb-4">{item.icon}</div>
+                  <h3 className="font-semibold text-gray-900 mb-2">{item.title}</h3>
+                  <p className="text-sm text-gray-600 font-light">{item.description}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Important Policies & Guidelines */}
+            <div className="bg-white border-2 border-blue-200 rounded-2xl p-8 shadow-lg">
+              <h3
+                className="text-3xl font-light text-blue-900 mb-6 text-center"
+                style={{ fontFamily: "Cormorant Garamond, serif" }}
+              >
+                Important Policies & Guidelines
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  "No outside food & beverage allowed",
+                  "One pass required per guest",
+                  "No pets allowed",
+                  "Only general pool access included. Overwater pool excluded",
+                  "Time Access: 10am - 6:00pm strictly. Exit by 6:30pm",
+                  "Subject to availability & blackout dates may apply",
+                ].map((policy, idx) => (
+                  <div key={idx} className="flex items-start gap-3">
+                    <span className="text-green-600 text-xl mt-0.5">✓</span>
+                    <p className="text-gray-700 font-light flex-1">{policy}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
       </main>

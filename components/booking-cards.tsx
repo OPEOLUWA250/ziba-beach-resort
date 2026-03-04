@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 export default function BookingCards() {
+  const headingFont = { fontFamily: "Cormorant Garamond, serif" };
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
 
@@ -39,7 +40,7 @@ export default function BookingCards() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <h2 className="h2 text-blue-900 mb-6 text-center">
+          <h2 className="h2 text-blue-900 mb-6 text-center" style={headingFont}>
             Choose Your Experience
           </h2>
           <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
