@@ -78,22 +78,8 @@ export default function Hero() {
             ))}
           </div>
 
-          {/* Cinematic Overlay Gradients - Dynamic with Scroll */}
-          <div
-            className="absolute inset-0 bg-linear-to-b from-black/70 via-black/30 to-transparent transition-opacity duration-300"
-            style={{
-              opacity: 1 - scrollPos * 0.002,
-            }}
-          />
-          <div
-            className="absolute inset-0 bg-linear-to-r from-slate-900/60 via-transparent to-blue-900/40"
-            style={{
-              opacity: 1 - scrollPos * 0.0015,
-            }}
-          />
-
-          {/* Vignette Effect */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)]" />
+          {/* Subtle Overlay - Minimal to show images */}
+          <div className="absolute inset-0 bg-black/10" />
 
           {/* Dynamic Color Gradient */}
           <div
@@ -130,10 +116,10 @@ export default function Hero() {
               <h1
                 className={`${cormorant.className} text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-tight`}
               >
-                <span className="bg-linear-to-r from-white via-blue-200 to-cyan-100 bg-clip-text text-transparent block">
+                <span className="text-white block">
                   Nigeria's first
                 </span>
-                <span className="bg-linear-to-r from-white via-blue-200 to-cyan-100 bg-clip-text text-transparent block font-bold mt-1 sm:mt-2 md:mt-3 lg:mt-4">
+                <span className="text-white block font-bold mt-1 sm:mt-2 md:mt-3 lg:mt-4">
                   overwater resort
                 </span>
               </h1>
@@ -141,7 +127,7 @@ export default function Hero() {
 
             {/* Subtitle */}
             <p
-              className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/95 max-w-3xl mx-auto font-light leading-relaxed px-2 sm:px-0"
+              className="text-base sm:text-lg md:text-xl lg:text-2xl text-white max-w-3xl mx-auto font-light leading-relaxed px-2 sm:px-0"
               style={{ animation: "slideUp 0.8s ease-out 0.1s both" }}
             >
               World-class, experience-led beach side holidays in Nigeria
