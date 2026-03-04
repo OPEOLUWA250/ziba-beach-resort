@@ -20,8 +20,8 @@ export async function isRoomAvailable(
       .select("id")
       .eq("room_id", roomId)
       .in("payment_status", ["PENDING", "CONFIRMED"])
-      .lt("check_out_date", checkOutDate.toISOString())
-      .gt("check_in_date", checkInDate.toISOString());
+      .gt("check_out_date", checkInDate.toISOString())
+      .lt("check_in_date", checkOutDate.toISOString());
 
     if (error) throw error;
 
@@ -43,8 +43,8 @@ export async function getRoomBookings(
       .select("*")
       .eq("room_id", roomId)
       .in("payment_status", ["PENDING", "CONFIRMED"])
-      .gte("check_in_date", startDate.toISOString())
-      .lte("check_out_date", endDate.toISOString());
+      .gt("check_out_date", startDate.toISOString())
+      .lt("check_in_date", endDate.toISOString());
 
     if (error) throw error;
 

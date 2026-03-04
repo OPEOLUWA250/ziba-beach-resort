@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { isRoomAvailable } from "@/lib/services/booking";
 
 export const dynamic = "force-dynamic";
 
@@ -64,6 +65,19 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
+
+    // Check availability BEFORE creating booking
+    const isAvailable = await isRoomAvailable(roomId, checkIn, checkOut);
+
+    if (!isAvailable) {
+      return NextResponse.json(
+        {
+          error:
+            "Room is not available for the selected dates. Please choose different dates.",
+        },
+        { status: 409 }
+      );
+    }
 
     // Generate unique Paystack reference
     const paystackReference = `ziba-${Date.now()}-${Math.random().toString(36).substring(7)}`;
