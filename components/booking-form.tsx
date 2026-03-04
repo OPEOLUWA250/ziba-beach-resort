@@ -37,6 +37,34 @@ export default function BookingForm({
   const [checking, setChecking] = useState(false);
   const [showCheckInCalendar, setShowCheckInCalendar] = useState(false);
   const [showCheckOutCalendar, setShowCheckOutCalendar] = useState(false);
+  const [bookedDates, setBookedDates] = useState<string[]>([]);
+  const [loadingBookedDates, setLoadingBookedDates] = useState(false);
+
+  // Fetch booked dates when room is selected
+  useEffect(() => {
+    if (!selectedRoom) {
+      setBookedDates([]);
+      return;
+    }
+
+    const fetchBookedDates = async () => {
+      setLoadingBookedDates(true);
+      try {
+        const res = await fetch(
+          `/api/bookings/room-booked-dates?roomId=${selectedRoom.id}`,
+        );
+        const data = await res.json();
+        setBookedDates(data.bookedDates || []);
+      } catch (error) {
+        console.error("Failed to fetch booked dates:", error);
+        setBookedDates([]);
+      } finally {
+        setLoadingBookedDates(false);
+      }
+    };
+
+    fetchBookedDates();
+  }, [selectedRoom]);
 
   // Check availability whenever room or dates change
   useEffect(() => {
@@ -71,6 +99,20 @@ export default function BookingForm({
   const isValidCheckIn = !isPast(checkIn) && checkIn < checkOut;
   const isValidCheckOut = checkOut > checkIn;
   const totalPrice = selectedRoom ? selectedRoom.priceNGN * nights : 0;
+
+  // Helper function to check if a date is booked
+  const isDateBooked = (date: Date): boolean => {
+    const dateStr = format(date, "yyyy-MM-dd");
+    return bookedDates.includes(dateStr);
+  };
+
+  // Helper function to get tile class name for booked dates
+  const getTileClassName = ({ date }: { date: Date }): string | null => {
+    if (isDateBooked(date)) {
+      return "booked-date";
+    }
+    return null;
+  };
 
   return (
     <div className="space-y-6">
@@ -127,6 +169,8 @@ export default function BookingForm({
                   minDate={new Date()}
                   maxDate={addDays(new Date(), 365)}
                   className="react-calendar-custom"
+                  tileDisabled={({ date }) => isDateBooked(date)}
+                  tileClassName={getTileClassName}
                 />
               </div>
             )}
@@ -159,6 +203,8 @@ export default function BookingForm({
                   minDate={addDays(checkIn, 1)}
                   maxDate={addDays(new Date(), 365)}
                   className="react-calendar-custom"
+                  tileDisabled={({ date }) => isDateBooked(date)}
+                  tileClassName={getTileClassName}
                 />
               </div>
             )}
