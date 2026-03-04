@@ -212,6 +212,29 @@ export default function BookingForm({
         </div>
       </div>
 
+      {/* Date Legend */}
+      <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
+        <p className="text-xs font-semibold text-amber-900 mb-2">📅 Calendar Guide:</p>
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-white border-2 border-gray-300 rounded text-center flex items-center justify-center text-gray-700 font-bold text-sm">
+              25
+            </div>
+            <span className="text-xs text-gray-700">Available dates</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded text-center flex items-center justify-center text-white font-bold text-sm border-2 border-red-900"
+              style={{
+                background: 'repeating-linear-gradient(45deg, #dc2626, #dc2626 2px, #991b1b 2px, #991b1b 4px)'
+              }}
+            >
+              ✗
+            </div>
+            <span className="text-xs text-gray-700">Already booked (not available)</span>
+          </div>
+        </div>
+      </div>
+
       {/* Guests Selection */}
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-3">

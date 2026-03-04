@@ -305,21 +305,32 @@
 }
 
 .booked-date {
-  background-color: #fee2e2 !important;
-  color: #dc2626 !important;
-  font-weight: 600;
+  background: repeating-linear-gradient(
+    45deg,
+    #dc2626,
+    #dc2626 2px,
+    #991b1b 2px,
+    #991b1b 4px
+  ) !important;
+  color: #fecaca !important;
+  font-weight: 700;
   cursor: not-allowed;
   position: relative;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  border: 2px solid #7f1d1d !important;
+  box-shadow: inset 0 0 0 1px #7f1d1d;
 }
 
 .booked-date::after {
   content: "✗";
   position: absolute;
   top: 50%;
-  right: 2px;
+  right: 3px;
   transform: translateY(-50%);
-  font-size: 0.75rem;
-  opacity: 0.7;
+  font-size: 0.875rem;
+  opacity: 1;
+  font-weight: 900;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .react-calendar-custom__month-view__days__day--active {
