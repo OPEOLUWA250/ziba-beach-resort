@@ -451,7 +451,7 @@ export default function OurStory() {
               <p className="text-gray-600 font-light text-lg mb-8">
                 Plan your perfect team experience with us
               </p>
-              <a href="mailto:bookings@zibabeachresort.com?subject=Team%20Bonding%20Inquiry">
+              <a href="https://wa.me/2347047300013?text=Hello%20Ziba%20Beach%20Resort%2C%20I%20would%20like%20to%20inquire%20about%20team%20bonding%20experiences%20and%20corporate%20retreat%20packages.%20Please%20share%20available%20dates%20and%20pricing." target="_blank" rel="noopener noreferrer">
                 <button className="bg-linear-to-r from-blue-900 to-blue-800 text-white px-8 py-3 rounded-lg font-light hover:shadow-lg hover:scale-105 transition-all duration-300">
                   Inquire About Team Bonding
                 </button>
@@ -482,7 +482,7 @@ export default function OurStory() {
                     fully equipped with projector, speakers, Wi-Fi, and beverage
                     service.
                   </p>
-                  <a href="mailto:bookings@zibabeachresort.com?subject=Event%20Space%20Booking">
+                  <a href="https://wa.me/2347047300013?text=Hello%20Ziba%20Beach%20Resort%2C%20I%20would%20like%20to%20book%20your%20event%20space%20for%20a%20meeting%2Fconference.%20Please%20share%20availability%2C%20pricing%2C%20and%20booking%20details." target="_blank" rel="noopener noreferrer">
                     <button className="bg-linear-to-r from-blue-900 to-blue-800 text-white px-6 py-2 rounded-lg font-light hover:shadow-lg transition-all duration-300">
                       Book Event Space
                     </button>
@@ -601,7 +601,7 @@ export default function OurStory() {
               <p className="text-gray-600 font-light text-lg mb-8">
                 Interested in partnering with Ziba Beach Resort?
               </p>
-              <a href="mailto:bookings@zibabeachresort.com?subject=Partnership%20Inquiry">
+              <a href="https://wa.me/2347047300013?text=Hello%20Ziba%20Beach%20Resort%2C%20I%20am%20interested%20in%20exploring%20partnership%20opportunities%20with%20your%20resort.%20Please%20share%20more%20information%20about%20collaboration%20options." target="_blank" rel="noopener noreferrer">
                 <button className="bg-linear-to-r from-blue-900 to-blue-800 text-white px-8 py-3 rounded-lg font-light hover:shadow-lg hover:scale-105 transition-all duration-300">
                   Explore Partnership Opportunities
                 </button>

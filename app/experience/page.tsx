@@ -789,7 +789,9 @@ export default function Celebrate() {
                     </div>
 
                     <a
-                      href="mailto:bookings@zibabeachresort.com?subject=Experience%20Inquiry"
+                      href={`https://wa.me/2347047300013?text=Hello%20Ziba%20Beach%20Resort%2C%20I%20would%20like%20to%20inquire%20about%20booking%20the%20${encodeURIComponent(space.name)}%20for%20my%20event.%20Capacity%3A%20${encodeURIComponent(space.capacity)}.%20Please%20share%20availability%20and%20pricing.`}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="block"
                     >
                       <button className="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition font-light">
@@ -817,7 +819,9 @@ export default function Celebrate() {
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
                 <a
-                  href="mailto:bookings@zibabeachresort.com?subject=Wedding%20Planning"
+                  href="https://wa.me/2347047300013?text=Hello%20Ziba%20Beach%20Resort%2C%20I%20would%20like%20to%20plan%20my%20wedding%20at%20your%20beautiful%20beachfront%20location.%20Please%20share%20wedding%20packages%2C%20availability%2C%20and%20planning%20details."
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="bg-white text-blue-900 px-8 py-3 rounded-lg hover:bg-blue-50 transition font-light"
                 >
                   Plan Your Wedding
@@ -891,7 +895,9 @@ export default function Celebrate() {
                     ))}
                   </ul>
                   <a
-                    href="mailto:bookings@zibabeachresort.com?subject=Photoshoot%20Booking"
+                    href="https://wa.me/2347047300013?text=Hello%20Ziba%20Beach%20Resort%2C%20I%20would%20like%20to%20book%20your%20beachfront%20location%20for%20a%20professional%20photoshoot%2Fvideo%20production.%20Please%20share%20your%20day%20rates%20and%20available%20dates."
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-block bg-blue-900 text-white px-8 py-3 rounded-lg hover:bg-blue-800 transition font-light w-fit"
                   >
                     Book Your Shoot
