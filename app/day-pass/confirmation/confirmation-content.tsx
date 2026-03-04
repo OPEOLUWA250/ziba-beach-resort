@@ -16,6 +16,7 @@ interface DayPassBooking {
   items: Array<{ name: string; quantity: number; price: number }>;
   totalAmount: number;
   paymentStatus: string;
+  paystackReference?: string;
 }
 
 export default function DayPassConfirmationContent() {
@@ -196,6 +197,18 @@ export default function DayPassConfirmationContent() {
                 {booking.referenceCode}
               </p>
             </div>
+
+            {/* Paystack Reference Box */}
+            {booking.paystackReference && (
+              <div className="bg-linear-to-r from-cyan-50 to-blue-50 p-3 rounded border border-cyan-200 text-center">
+                <p className="text-gray-600 text-xs font-medium mb-1">
+                  Payment Reference
+                </p>
+                <p className="font-mono font-bold text-blue-900 text-sm break-all">
+                  {booking.paystackReference}
+                </p>
+              </div>
+            )}
 
             {/* Guest Info */}
             <div className="space-y-2">

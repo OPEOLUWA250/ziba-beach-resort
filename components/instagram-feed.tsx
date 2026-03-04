@@ -2,10 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faInstagram,
-  faArrowUpRightFromSquare,
-} from "@fortawesome/free-brands-svg-icons";
+import { faInstagram } from "@fortawesome/free-brands-svg-icons";
+import { Cormorant_Garamond } from "next/font/google";
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
 
 interface InstagramPost {
   id: string;
@@ -151,7 +154,7 @@ export default function InstagramFeed() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <h2 className="h2 text-blue-900 mb-4 text-center">
+          <h2 className={`${cormorant.className} h2 text-blue-900 mb-6`}>
             Follow Our Journey
           </h2>
           <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-900 to-transparent" />
@@ -196,7 +199,7 @@ export default function InstagramFeed() {
           >
             <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-6">
               {/* Profile Icon */}
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-900 to-blue-800 flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div className="w-32 h-32 rounded-full bg-linear-to-br from-blue-900 to-blue-800 flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <FontAwesomeIcon
                   icon={faInstagram}
                   className="w-24 h-24 text-white"
@@ -205,12 +208,7 @@ export default function InstagramFeed() {
 
               {/* Profile Info */}
               <div>
-                <h3
-                  className="text-4xl font-light text-blue-900 mb-2"
-                  style={{ fontFamily: "Cormorant Garamond" }}
-                >
-                  @zibabeachresorts
-                </h3>
+                <h3 className="h3 text-blue-900 mb-2">@zibabeachresorts</h3>
                 <p className="text-gray-600 font-light text-lg">
                   Nigeria's First Overwater Resort
                 </p>
@@ -228,7 +226,7 @@ export default function InstagramFeed() {
                 href="https://www.instagram.com/zibabeachresorts"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center bg-gradient-to-r from-blue-900 to-blue-800 text-white px-8 py-3 rounded-lg hover:shadow-xl transition-all duration-500 transform hover:scale-105 active:scale-95 font-light tracking-wide group/btn w-full sm:w-auto mt-4"
+                className="inline-flex items-center justify-center bg-linear-to-r from-blue-900 to-blue-800 text-white px-8 py-3 rounded-lg hover:shadow-xl transition-all duration-500 transform hover:scale-105 active:scale-95 font-light tracking-wide group/btn w-full sm:w-auto mt-4"
               >
                 <span className="flex items-center gap-3">
                   <FontAwesomeIcon

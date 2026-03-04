@@ -25,6 +25,7 @@ interface Booking {
   number_of_nights: number;
   total_amount_ngn: number;
   payment_status: string;
+  paystack_reference?: string;
   created_at: string;
 }
 
@@ -38,6 +39,7 @@ interface DayPassBooking {
   items: any[];
   total_amount: number;
   payment_status: string;
+  paystack_reference?: string;
   created_at: string;
 }
 
@@ -202,6 +204,14 @@ const RoomBookingModal = ({
                   {booking.booking_reference_code}
                 </p>
               </div>
+              {booking.paystack_reference && (
+                <div>
+                  <p className="text-gray-400 text-sm">Paystack Reference</p>
+                  <p className="text-white font-medium font-mono">
+                    {booking.paystack_reference}
+                  </p>
+                </div>
+              )}
               <div>
                 <p className="text-gray-400 text-sm">Check-In Date</p>
                 <p className="text-white font-medium">
@@ -396,6 +406,14 @@ const DayPassBookingModal = ({
                   {booking.reference_code}
                 </p>
               </div>
+              {booking.paystack_reference && (
+                <div>
+                  <p className="text-gray-400 text-sm">Paystack Reference</p>
+                  <p className="text-white font-medium font-mono">
+                    {booking.paystack_reference}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 

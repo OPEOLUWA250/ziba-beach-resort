@@ -268,6 +268,18 @@ export default function BookingConfirmationContent() {
                 </p>
               </div>
 
+              {/* Paystack Reference Box */}
+              {booking.paystack_reference && (
+                <div className="bg-linear-to-r from-blue-50 to-cyan-50 p-3 rounded border border-blue-200 text-center">
+                  <p className="text-gray-600 text-xs font-medium mb-1">
+                    Payment Reference
+                  </p>
+                  <p className="font-mono font-bold text-blue-900 text-sm break-all">
+                    {booking.paystack_reference}
+                  </p>
+                </div>
+              )}
+
               {/* Guest Info - Compact */}
               <div className="space-y-2">
                 <div className="flex justify-between border-b border-gray-200 pb-1.5">
