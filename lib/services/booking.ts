@@ -15,17 +15,42 @@ export async function isRoomAvailable(
   checkOutDate: Date,
 ): Promise<boolean> {
   try {
-    const { data, error } = await supabase
+    const reservationHoldMinutes = 10;
+    const reservedUntil = new Date(Date.now() - reservationHoldMinutes * 60 * 1000);
+
+    // Check for CONFIRMED bookings (always blocking)
+    const { data: confirmedBookings, error: confirmedError } = await supabase
       .from("bookings")
       .select("id")
       .eq("room_id", roomId)
-      .in("payment_status", ["PENDING", "CONFIRMED"])
+      .eq("payment_status", "CONFIRMED")
       .gt("check_out_date", checkInDate.toISOString())
       .lt("check_in_date", checkOutDate.toISOString());
 
-    if (error) throw error;
+    if (confirmedError) throw confirmedError;
+    if (confirmedBookings && confirmedBookings.length > 0) {
+      console.log(`[Availability] Room ${roomId} has CONFIRMED booking blocking dates`);
+      return false;
+    }
 
-    return (data?.length || 0) === 0;
+    // Check for non-expired RESERVED bookings (hold period still active)
+    const { data: reservedBookings, error: reservedError } = await supabase
+      .from("bookings")
+      .select("id, created_at")
+      .eq("room_id", roomId)
+      .eq("payment_status", "RESERVED")
+      .gt("created_at", reservedUntil.toISOString())
+      .gt("check_out_date", checkInDate.toISOString())
+      .lt("check_in_date", checkOutDate.toISOString());
+
+    if (reservedError) throw reservedError;
+    if (reservedBookings && reservedBookings.length > 0) {
+      console.log(`[Availability] Room ${roomId} has active RESERVED booking(s) blocking dates`);
+      return false;
+    }
+
+    console.log(`[Availability] Room ${roomId} is available for ${checkInDate.toDateString()} - ${checkOutDate.toDateString()}`);
+    return true;
   } catch (error) {
     console.error("Error checking room availability:", error);
     return true;
@@ -38,17 +63,35 @@ export async function getRoomBookings(
   endDate: Date,
 ) {
   try {
-    const { data, error } = await supabase
+    const reservationHoldMinutes = 10;
+    const reservedUntil = new Date(Date.now() - reservationHoldMinutes * 60 * 1000);
+
+    // Get all CONFIRMED bookings
+    const { data: confirmedBookings, error: confirmedError } = await supabase
       .from("bookings")
       .select("*")
       .eq("room_id", roomId)
-      .in("payment_status", ["PENDING", "CONFIRMED"])
+      .eq("payment_status", "CONFIRMED")
       .gt("check_out_date", startDate.toISOString())
       .lt("check_in_date", endDate.toISOString());
 
-    if (error) throw error;
+    if (confirmedError) throw confirmedError;
 
-    return data || [];
+    // Get non-expired RESERVED bookings
+    const { data: reservedBookings, error: reservedError } = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("room_id", roomId)
+      .eq("payment_status", "RESERVED")
+      .gt("created_at", reservedUntil.toISOString())
+      .gt("check_out_date", startDate.toISOString())
+      .lt("check_in_date", endDate.toISOString());
+
+    if (reservedError) throw reservedError;
+
+    // Combine both arrays
+    const allBookings = [...(confirmedBookings || []), ...(reservedBookings || [])];
+    return allBookings;
   } catch (error) {
     console.error("Error fetching room bookings:", error);
     return [];

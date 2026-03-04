@@ -44,9 +44,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }
 
-    // If already completed, return early
-    if (booking.payment_status === "COMPLETED") {
-      console.log("[Verify And Confirm] Booking already completed");
+    // If already confirmed, return early
+    if (booking.payment_status === "CONFIRMED") {
+      console.log("[Verify And Confirm] Booking already confirmed");
       return NextResponse.json({
         success: true,
         message: "Booking already confirmed",
@@ -117,13 +117,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Payment is successful - update database
+    // Payment is successful - update database from RESERVED to CONFIRMED
     console.log("[Verify And Confirm] Payment verified! Updating database...");
 
     const { data: updatedBooking, error: updateError } = await supabase
       .from("bookings")
       .update({
-        payment_status: "COMPLETED",
+        payment_status: "CONFIRMED",
         paid_at: new Date().toISOString(),
       })
       .eq("id", bookingId)

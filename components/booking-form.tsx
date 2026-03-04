@@ -115,11 +115,11 @@ export default function BookingForm({
     if (isDateBooked(date)) {
       return {
         background:
-          "repeating-linear-gradient(45deg, #dc2626, #dc2626 2px, #991b1b 2px, #991b1b 4px)",
-        color: "#fecaca",
+          "repeating-linear-gradient(45deg, #fbbf24, #fbbf24 3px, #f59e0b 3px, #f59e0b 6px)",
+        color: "#78350f",
         fontWeight: 700,
-        border: "2px solid #7f1d1d",
-        textShadow: "0 1px 2px rgba(0, 0, 0, 0.3)",
+        border: "2px solid #b45309",
+        textShadow: "0 1px 2px rgba(0, 0, 0, 0.2)",
         cursor: "not-allowed",
         position: "relative",
       };
@@ -249,13 +249,13 @@ export default function BookingForm({
           </div>
           <div className="flex items-center gap-3">
             <div
-              className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded text-center flex items-center justify-center text-white font-bold text-sm border-2 border-red-900"
+              className="w-8 h-8 rounded text-center flex items-center justify-center text-amber-900 font-bold text-xs border-2 border-amber-700"
               style={{
                 background:
-                  "repeating-linear-gradient(45deg, #dc2626, #dc2626 2px, #991b1b 2px, #991b1b 4px)",
+                  "repeating-linear-gradient(45deg, #fbbf24, #fbbf24 3px, #f59e0b 3px, #f59e0b 6px)",
               }}
             >
-              ✗
+              15
             </div>
             <span className="text-xs text-gray-700">
               Already booked (not available)

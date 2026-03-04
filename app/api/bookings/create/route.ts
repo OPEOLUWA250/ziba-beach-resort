@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
     const randomNumber = Math.floor(Math.random() * 90000) + 10000; // 5 digit random number
     const bookingReferenceCode = `ZB-${year}-${randomNumber}`;
 
-    // Save booking to database with PENDING status
+    // Save booking to database with RESERVED status (10 min hold while processing payment)
     const { data: booking, error: bookingError } = await supabase
       .from("bookings")
       .insert({
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
         room_price_ngn: roomPriceNGN,
         number_of_nights: numberOfNights,
         total_amount_ngn: totalAmountNGN,
-        payment_status: "PENDING",
+        payment_status: "RESERVED",
         paystack_reference: paystackReference,
         booking_reference_code: bookingReferenceCode,
       })
