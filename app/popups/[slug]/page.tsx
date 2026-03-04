@@ -1,9 +1,8 @@
 import React from "react";
-import { ArrowLeft } from "lucide-react";
 import { PopupData } from "@/lib/services/popups";
-import { PopupBackButton } from "@/components/popup-back-button";
-import { PopupCTAButton } from "@/components/popup-cta-button";
 import { supabaseServer } from "@/lib/supabase/server";
+import { PopupHero } from "@/components/popup-hero";
+import { PopupCTASection } from "@/components/popup-cta-section";
 
 interface PopupDetailsPageProps {
   params: Promise<{
@@ -83,81 +82,78 @@ export default async function PopupDetailsPage({
   }
 
   return (
-    <div className="min-h-screen bg-white py-12 md:py-16">
-      <div className="max-w-3xl mx-auto px-4 md:px-6">
-        <PopupBackButton variant="button" />
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
+      {/* Hero Image - Clean, no text overlay */}
+      <PopupHero featuredImage={popup.featured_image} title={popup.title} />
 
-        {/* Featured Image */}
-        {popup.featured_image && (
-          <div className="mb-12 w-full h-96 overflow-hidden rounded-lg border border-blue-900/20">
-            <img
-              src={popup.featured_image}
-              alt={popup.title}
-              className="w-full h-full object-cover"
-            />
+      {/* Title and Excerpt Section */}
+      <div className="max-w-4xl mx-auto px-4 md:px-8 py-8 md:py-12">
+        {/* Tags */}
+        {popup.tags && popup.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-6">
+            {popup.tags.map((tag) => (
+              <span
+                key={tag}
+                className="px-3 py-1 bg-blue-900 text-white text-xs font-light rounded-full"
+              >
+                {tag}
+              </span>
+            ))}
           </div>
         )}
 
-        {/* Content */}
-        <div className="space-y-8">
-          {/* Title */}
-          <h1 className="text-5xl font-light text-gray-900 cormorant leading-tight break-words">
-            {popup.title}
-          </h1>
+        {/* Title */}
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 cormorant leading-tight mb-6">
+          {popup.title}
+        </h1>
 
-          {/* Excerpt */}
-          <p className="text-xl text-gray-600 font-light leading-relaxed border-l-2 border-blue-900 pl-6 break-words">
-            {popup.excerpt}
-          </p>
+        {/* Excerpt */}
+        <p className="text-lg md:text-xl text-gray-600 font-light leading-relaxed mb-8 pb-8 border-b border-gray-200">
+          {popup.excerpt}
+        </p>
+      </div>
 
-          {/* Tags */}
-          {popup.tags && popup.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 pt-4">
-              {popup.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-4 py-1.5 border border-blue-900/20 text-blue-900 text-sm font-light rounded-lg"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Main Content */}
+      {/* Content Section */}
+      <div className="max-w-4xl mx-auto px-4 md:px-8 pb-12 md:pb-16">
+        {/* Main Content Card */}
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 md:p-12 mb-8">
           {popup.content && (
-            <div className="space-y-6 pt-8 border-t border-blue-900/10">
+            <div className="prose prose-lg max-w-none">
               {popup.content.split("\n\n").map((paragraph, index) => {
+                // Section Headers
                 if (paragraph.startsWith("**") && paragraph.endsWith(":**")) {
                   return (
-                    <h3
+                    <h2
                       key={index}
-                      className="text-2xl font-light text-gray-900 cormorant mt-8 mb-4 break-words"
+                      className="text-3xl md:text-4xl font-light text-gray-900 cormorant mt-10 mb-6 first:mt-0 pb-3 border-b border-blue-900/20"
                     >
                       {paragraph.replace(/\*\*/g, "").replace(":", "")}
-                    </h3>
+                    </h2>
                   );
                 }
 
+                // Bullet Lists
                 if (paragraph.startsWith("- ")) {
                   return (
-                    <ul key={index} className="space-y-2 pl-6">
+                    <ul key={index} className="space-y-3 my-6">
                       {paragraph.split("\n").map((item, idx) => (
                         <li
                           key={idx}
-                          className="text-gray-700 font-light leading-relaxed relative before:absolute before:-left-6 before:content-['•'] before:text-blue-900 break-words"
+                          className="text-gray-700 font-light leading-relaxed flex items-start gap-3"
                         >
-                          {item.replace("- ", "")}
+                          <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-900 mt-2.5 shrink-0" />
+                          <span className="flex-1">{item.replace("- ", "")}</span>
                         </li>
                       ))}
                     </ul>
                   );
                 }
 
+                // Regular Paragraphs
                 return (
                   <p
                     key={index}
-                    className="text-gray-700 font-light leading-relaxed break-words"
+                    className="text-gray-700 font-light leading-relaxed text-lg mb-6"
                   >
                     {paragraph}
                   </p>
@@ -165,18 +161,13 @@ export default async function PopupDetailsPage({
               })}
             </div>
           )}
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 pt-8">
-            {popup.dedicated_page_cta_url && (
-              <PopupCTAButton
-                text={popup.dedicated_page_cta_text || "Get Started"}
-                url={popup.dedicated_page_cta_url}
-              />
-            )}
-            <PopupBackButton />
-          </div>
         </div>
+
+        {/* CTA Section */}
+        <PopupCTASection
+          ctaText={popup.dedicated_page_cta_text}
+          ctaUrl={popup.dedicated_page_cta_url}
+        />
       </div>
     </div>
   );
