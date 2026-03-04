@@ -54,6 +54,7 @@ export default function BookingForm({
           `/api/bookings/room-booked-dates?roomId=${selectedRoom.id}`,
         );
         const data = await res.json();
+        console.log("Fetched booked dates:", data.bookedDates);
         setBookedDates(data.bookedDates || []);
       } catch (error) {
         console.error("Failed to fetch booked dates:", error);
@@ -104,6 +105,23 @@ export default function BookingForm({
   const isDateBooked = (date: Date): boolean => {
     const dateStr = format(date, "yyyy-MM-dd");
     return bookedDates.includes(dateStr);
+  };
+
+  // Tile style for booked dates  
+  const getTileStyle = ({ date }: { date: Date }): React.CSSProperties | undefined => {
+    if (isDateBooked(date)) {
+      console.log("Applying booked style to:", format(date, "yyyy-MM-dd"));
+      return {
+        background: "repeating-linear-gradient(45deg, #dc2626, #dc2626 2px, #991b1b 2px, #991b1b 4px)",
+        color: "#fecaca",
+        fontWeight: 700,
+        border: "2px solid #7f1d1d",
+        textShadow: "0 1px 2px rgba(0, 0, 0, 0.3)",
+        cursor: "not-allowed",
+        position: "relative",
+      };
+    }
+    return undefined;
   };
 
   // Helper function to get tile class name for booked dates
@@ -171,6 +189,7 @@ export default function BookingForm({
                   className="react-calendar-custom"
                   tileDisabled={({ date }) => isDateBooked(date)}
                   tileClassName={getTileClassName}
+                  tileStyle={getTileStyle}
                 />
               </div>
             )}
@@ -205,6 +224,7 @@ export default function BookingForm({
                   className="react-calendar-custom"
                   tileDisabled={({ date }) => isDateBooked(date)}
                   tileClassName={getTileClassName}
+                  tileStyle={getTileStyle}
                 />
               </div>
             )}
