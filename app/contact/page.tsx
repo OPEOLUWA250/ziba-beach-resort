@@ -229,9 +229,13 @@ export default function Contact() {
                         />
                       </button>
 
-                      <div className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                            expandedFAQ === index ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-                          }`}>
+                      <div
+                        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                          expandedFAQ === index
+                            ? "max-h-96 opacity-100"
+                            : "max-h-0 opacity-0"
+                        }`}
+                      >
                         <div className="px-6 py-4 bg-blue-50 border-t border-gray-200">
                           <p className="text-gray-700 font-light leading-relaxed">
                             {item.answer}

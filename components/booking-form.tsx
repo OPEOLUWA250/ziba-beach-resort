@@ -54,7 +54,6 @@ export default function BookingForm({
           `/api/bookings/room-booked-dates?roomId=${selectedRoom.id}`,
         );
         const data = await res.json();
-        console.log("Fetched booked dates:", data.bookedDates);
         setBookedDates(data.bookedDates || []);
       } catch (error) {
         console.error("Failed to fetch booked dates:", error);
@@ -107,12 +106,16 @@ export default function BookingForm({
     return bookedDates.includes(dateStr);
   };
 
-  // Tile style for booked dates  
-  const getTileStyle = ({ date }: { date: Date }): React.CSSProperties | undefined => {
+  // Tile style for booked dates
+  const getTileStyle = ({
+    date,
+  }: {
+    date: Date;
+  }): React.CSSProperties | undefined => {
     if (isDateBooked(date)) {
-      console.log("Applying booked style to:", format(date, "yyyy-MM-dd"));
       return {
-        background: "repeating-linear-gradient(45deg, #dc2626, #dc2626 2px, #991b1b 2px, #991b1b 4px)",
+        background:
+          "repeating-linear-gradient(45deg, #dc2626, #dc2626 2px, #991b1b 2px, #991b1b 4px)",
         color: "#fecaca",
         fontWeight: 700,
         border: "2px solid #7f1d1d",
@@ -234,7 +237,9 @@ export default function BookingForm({
 
       {/* Date Legend */}
       <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
-        <p className="text-xs font-semibold text-amber-900 mb-2">📅 Calendar Guide:</p>
+        <p className="text-xs font-semibold text-amber-900 mb-2">
+          📅 Calendar Guide:
+        </p>
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-white border-2 border-gray-300 rounded text-center flex items-center justify-center text-gray-700 font-bold text-sm">
@@ -243,14 +248,18 @@ export default function BookingForm({
             <span className="text-xs text-gray-700">Available dates</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded text-center flex items-center justify-center text-white font-bold text-sm border-2 border-red-900"
+            <div
+              className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded text-center flex items-center justify-center text-white font-bold text-sm border-2 border-red-900"
               style={{
-                background: 'repeating-linear-gradient(45deg, #dc2626, #dc2626 2px, #991b1b 2px, #991b1b 4px)'
+                background:
+                  "repeating-linear-gradient(45deg, #dc2626, #dc2626 2px, #991b1b 2px, #991b1b 4px)",
               }}
             >
               ✗
             </div>
-            <span className="text-xs text-gray-700">Already booked (not available)</span>
+            <span className="text-xs text-gray-700">
+              Already booked (not available)
+            </span>
           </div>
         </div>
       </div>

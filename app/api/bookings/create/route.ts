@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
           error:
             "Room is not available for the selected dates. Please choose different dates.",
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
