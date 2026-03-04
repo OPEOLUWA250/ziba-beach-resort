@@ -6,6 +6,7 @@ import Hero from "@/components/hero";
 import { PopupModal } from "@/components/popup-modal";
 import AboutUs from "@/components/about-us";
 import Ratings from "@/components/ratings";
+import TrustStrip from "@/components/trust-strip";
 import BookingCards from "@/components/booking-cards";
 import ExperienceHighlights from "@/components/experience-highlights";
 import Rooms from "@/components/rooms";
@@ -24,6 +25,7 @@ export default function Home() {
       <PopupModal />
       <AboutUs />
       <Ratings />
+      <TrustStrip />
       <BookingCards />
       <ExperiencesCarousel />
       <Rooms />

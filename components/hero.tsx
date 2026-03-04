@@ -26,7 +26,7 @@ export default function Hero() {
       setScrollPos(window.scrollY);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -51,10 +51,10 @@ export default function Hero() {
     <>
       {/* HERO SECTION - Exactly 100vh */}
       <section className="relative h-screen w-full overflow-hidden bg-linear-to-br from-slate-900 via-blue-900 to-slate-900">
-        {/* Background with Image Slider */}
+        {/* Background with Image Slider - Enhanced Parallax */}
         <div className="absolute inset-0 w-full h-full">
-          {/* Image Slider Container */}
-          <div className="absolute inset-0 w-full h-full">
+          {/* Image Slider Container with Zoom Effect */}
+          <div className="absolute inset-0 w-full h-full scale-110">
             {heroImages.map((image, index) => (
               <div
                 key={index}
@@ -69,23 +69,39 @@ export default function Hero() {
                   fill
                   priority={index === 0}
                   quality={95}
-                  className="object-cover"
+                  className="object-cover transition-transform duration-100 ease-out"
                   style={{
-                    transform: `translateY(${scrollPos * 0.5}px)`,
+                    transform: `translateY(${scrollPos * 0.4}px) scale(${1 + scrollPos * 0.0003})`,
                   }}
                 />
               </div>
             ))}
           </div>
 
-          {/* Overlay Gradients */}
-          <div className="absolute inset-0 bg-linear-to-b from-black/60 via-black/40 to-transparent" />
-          <div className="absolute inset-0 bg-linear-to-r from-slate-900/50 via-transparent to-blue-900/30" />
+          {/* Cinematic Overlay Gradients - Dynamic with Scroll */}
           <div
-            className="absolute inset-0 opacity-30 mix-blend-multiply"
+            className="absolute inset-0 bg-linear-to-b from-black/70 via-black/30 to-transparent transition-opacity duration-300"
+            style={{
+              opacity: 1 - scrollPos * 0.002,
+            }}
+          />
+          <div
+            className="absolute inset-0 bg-linear-to-r from-slate-900/60 via-transparent to-blue-900/40"
+            style={{
+              opacity: 1 - scrollPos * 0.0015,
+            }}
+          />
+
+          {/* Vignette Effect */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)]" />
+
+          {/* Dynamic Color Gradient */}
+          <div
+            className="absolute inset-0 opacity-20 mix-blend-multiply transition-opacity duration-500"
             style={{
               background:
-                "radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.2) 0%, transparent 50%)",
+                "radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.3) 0%, transparent 50%)",
+              opacity: Math.max(0.1, 0.3 - scrollPos * 0.001),
             }}
           />
 
@@ -131,16 +147,38 @@ export default function Hero() {
               World-class, experience-led beach side holidays in Nigeria
             </p>
 
-            {/* CTA Buttons */}
+            {/* CTA Buttons - Enhanced with Scroll Animation */}
             <div
               className="flex flex-col sm:flex-row gap-4 sm:gap-4 md:gap-6 justify-center pt-2 sm:pt-4"
-              style={{ animation: "slideUp 0.8s ease-out 0.2s both" }}
+              style={{
+                animation: "slideUp 0.8s ease-out 0.2s both",
+                transform: `scale(${Math.min(1.08, 1 + scrollPos * 0.0001)})`,
+                transition: "transform 0.3s ease-out",
+              }}
             >
-              {/* Primary Button - Brand Blue Gradient */}
+              {/* Primary Button - Brand Blue Gradient with Pulse */}
               <button
                 onClick={() => (window.location.href = "/bookings")}
                 className="group relative px-8 sm:px-10 md:px-12 py-4 sm:py-4 md:py-5 text-white font-semibold text-sm sm:text-base md:text-lg tracking-wide overflow-hidden rounded-lg transition-all duration-500 transform hover:scale-105 hover:shadow-2xl w-full sm:w-auto active:scale-95 bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700"
+                style={{
+                  boxShadow:
+                    scrollPos > 50
+                      ? "0 0 30px rgba(59, 130, 246, 0.4), 0 0 60px rgba(59, 130, 246, 0.2)"
+                      : "none",
+                  animation:
+                    scrollPos > 100
+                      ? "ctaPulse 2s ease-in-out infinite"
+                      : "none",
+                }}
               >
+                {/* Shimmer Effect on Scroll */}
+                <div
+                  className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent"
+                  style={{
+                    transform: `translateX(${-100 + (scrollPos % 100)}%)`,
+                    transition: "transform 0.6s ease-out",
+                  }}
+                />
                 <span className="relative z-10 flex items-center justify-center gap-2 sm:gap-3">
                   Reserve Your Stay
                   <svg
@@ -266,6 +304,22 @@ export default function Hero() {
             }
             100% {
               box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+            }
+          }
+
+          @keyframes ctaPulse {
+            0%,
+            100% {
+              transform: scale(1);
+              box-shadow:
+                0 0 30px rgba(59, 130, 246, 0.4),
+                0 0 60px rgba(59, 130, 246, 0.2);
+            }
+            50% {
+              transform: scale(1.02);
+              box-shadow:
+                0 0 40px rgba(59, 130, 246, 0.6),
+                0 0 80px rgba(59, 130, 246, 0.3);
             }
           }
 

@@ -49,11 +49,11 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    // Update day-pass booking status to PENDING (payment confirmed, awaiting admin activation)
+    // Update day-pass booking status to CONFIRMED (payment confirmed)
     const { data, error } = await supabase
       .from("day_pass_bookings")
       .update({
-        payment_status: "PENDING",
+        payment_status: "CONFIRMED",
         updated_at: new Date().toISOString(),
       })
       .eq("id", bookingId)

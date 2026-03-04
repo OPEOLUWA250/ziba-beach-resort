@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import Footer from "@/components/footer";
 import PaymentSuccessModal from "@/components/payment-success-modal";
+import PaymentMethodModal from "@/components/payment-method-modal";
 import { format, parse, differenceInDays } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
 import { AlertCircle, ChevronLeft } from "lucide-react";
@@ -40,6 +41,10 @@ function PaymentContent() {
   const [receipBookingId, setReceiptBookingId] = useState("");
   const [receiptPaystackRef, setReceiptPaystackRef] = useState("");
   const [showReceiptButton, setShowReceiptButton] = useState(false);
+
+  // Payment method modal state
+  const [showPaymentMethodModal, setShowPaymentMethodModal] = useState(false);
+  const [pendingBooking, setPendingBooking] = useState<any>(null);
 
   // Guest info
   const [guestName, setGuestName] = useState("");
@@ -395,7 +400,7 @@ function PaymentContent() {
     paystackKey !== "pk_test_xxxxxxxxxxxx" &&
     paystackKey.startsWith("pk_");
 
-  const handlePayment = async () => {
+  const handleOpenPaymentMethod = async () => {
     if (!guestName || !guestEmail || !guestPhone) {
       setError("Please fill in all guest information");
       return;
@@ -405,17 +410,6 @@ function PaymentContent() {
     setError("");
 
     try {
-      console.log("📝 Creating booking with data:", {
-        guestEmail,
-        guestName,
-        guestPhone,
-        roomId: room.id,
-        checkInDate: format(checkInDate, "yyyy-MM-dd"),
-        checkOutDate: format(checkOutDate, "yyyy-MM-dd"),
-        roomPriceNGN: room.priceNGN,
-        numberOfNights: nights,
-      });
-
       // Create booking
       const bookingRes = await fetch("/api/bookings/create", {
         method: "POST",
@@ -434,184 +428,196 @@ function PaymentContent() {
         }),
       });
 
-      console.log("📬 Booking API response status:", bookingRes.status);
       const bookingData = await bookingRes.json();
-      console.log("📥 Booking API response:", bookingData);
 
       if (!bookingRes.ok) {
-        const errorMsg = bookingData.error || `API error: ${bookingRes.status}`;
-        console.error("❌ Booking creation failed:", errorMsg);
-        throw new Error(errorMsg);
+        throw new Error(bookingData.error || "Booking creation failed");
       }
 
-      if (!bookingData.booking) {
-        throw new Error(bookingData.error || "No booking returned from API");
-      }
+      // Store booking data for payment method selection
+      setPendingBooking(bookingData.booking);
 
-      const booking = bookingData.booking;
-      const { payment } = bookingData;
-      const paystackReference = payment.reference;
+      // Show payment method modal
+      setShowPaymentMethodModal(true);
+      setProcessing(false);
+    } catch (err: any) {
+      setError(err.message || "Failed to create booking");
+      setProcessing(false);
+    }
+  };
 
-      console.log("✅ Booking created:", booking.id);
-      console.log("💳 Paystack reference:", paystackReference);
+  const handlePaystackPayment = async () => {
+    if (!pendingBooking) return;
 
-      // Transform booking to match confirmation page expectations
-      const transformedBooking = {
-        id: booking.id,
-        checkInDate: booking.check_in_date,
-        checkOutDate: booking.check_out_date,
-        numberOfGuests: booking.number_of_guests,
-        specialRequests: booking.special_requests,
-        room: {
-          title: room.title,
-          priceNGN: room.priceNGN,
-        },
-        user: {
-          firstName: guestName.split(" ")[0],
-          lastName: guestName.split(" ").slice(1).join(" "),
-          email: booking.guest_email,
-        },
-        payment: {
-          amountNGN: booking.total_amount_ngn,
-          paystackReference,
-        },
-      };
+    setProcessing(true);
+    setShowPaymentMethodModal(false);
 
-      console.log("🎬 Demo mode?", !isValidPaystackKey);
+    try {
+      const paystackReference =
+        pendingBooking.paystack_reference ||
+        `ziba-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
 
+      // In demo mode
       if (!isValidPaystackKey) {
-        // Demo mode - simulate successful payment
-        console.log("🔄 Entering demo mode - simulating payment");
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        // Store booking details in sessionStorage
-        if (typeof window !== "undefined") {
-          sessionStorage.setItem(
-            "lastBooking",
-            JSON.stringify(transformedBooking),
-          );
-        }
-
-        // Send confirmation email with booking details included
-        const nights = Math.ceil(
-          (new Date(checkOutDate).getTime() - new Date(checkInDate).getTime()) /
-            (1000 * 60 * 60 * 24),
-        );
-
-        console.log("📧 Sending confirmation email");
+        // Send confirmation email
         await fetch("/api/emails/send-confirmation", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            bookingId: booking.id,
+            bookingId: pendingBooking.id,
             email: guestEmail,
-            bookingDetails: {
-              id: booking.id,
-              checkInDate: checkInDate.toISOString(),
-              checkOutDate: checkOutDate.toISOString(),
-              roomTitle: room.title,
-              totalAmount: totalPrice,
-              numberOfGuests: 1,
-            },
           }),
-        }).catch((err) => console.error("Failed to send email:", err));
+        }).catch((err) => console.error("Email send failed:", err));
 
-        console.log("✅ Demo booking complete - redirecting to confirmation");
+        // Confirm payment status
+        await fetch("/api/bookings/confirm-payment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            bookingId: pendingBooking.id,
+            reference: paystackReference,
+          }),
+        }).catch((err) => console.error("Payment confirmation failed:", err));
 
-        // Small delay to ensure sessionStorage is committed
-        await new Promise((resolve) => setTimeout(resolve, 300));
-
+        setReceiptBookingId(pendingBooking.id);
+        setReceiptPaystackRef(paystackReference);
+        setShowReceiptButton(true);
+        setShowReceiptPopup(true);
         setProcessing(false);
-
-        // Redirect to confirmation
-        router.push(`/booking-confirmation?bookingId=${booking.id}`);
         return;
       }
 
-      // Initialize Paystack with real key
-      console.log("💳 Real Paystack mode - initializing payment");
+      // Real Paystack payment
       if (typeof window !== "undefined" && window.PaystackPop) {
-        console.log("✅ PaystackPop loaded");
         const handler = window.PaystackPop.setup({
           key: paystackKey,
           email: guestEmail,
-          amount: totalPrice * 100, // Paystack expects amount in kobo
+          amount: totalPrice * 100,
           ref: paystackReference,
-          cust_id_start: booking.id,
-          onSuccess: (response: any) => {
-            console.log("✅ Payment successful:", response);
+          onSuccess: async () => {
+            // Send confirmation email
+            await fetch("/api/emails/send-confirmation", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                bookingId: pendingBooking.id,
+                email: guestEmail,
+              }),
+            }).catch((err) => console.error("Email send failed:", err));
+
+            // Confirm payment status
+            await fetch("/api/bookings/confirm-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                bookingId: pendingBooking.id,
+                reference: paystackReference,
+              }),
+            }).catch((err) =>
+              console.error("Payment confirmation failed:", err),
+            );
+
+            setReceiptBookingId(pendingBooking.id);
+            setReceiptPaystackRef(paystackReference);
             setShowReceiptButton(true);
+            setShowReceiptPopup(true);
+            setProcessing(false);
           },
           onClose: () => {
-            console.log("🚫 Paystack modal closed by user");
-            setShowReceiptPopup(false);
             setProcessing(false);
           },
         });
-        console.log("🎬 Opening Paystack iframe");
         handler.openIframe();
 
-        setReceiptBookingId(booking.id);
-        setReceiptPaystackRef(paystackReference);
-
-        // Show receipt popup after 10 seconds (when Paystack is fully loaded)
-        const timeoutId = setTimeout(() => {
+        // Show receipt modal after 10 seconds (fallback if payment modal doesn't close)
+        setTimeout(() => {
+          setReceiptBookingId(pendingBooking.id);
+          setReceiptPaystackRef(paystackReference);
           setShowReceiptPopup(true);
+          setProcessing(false);
         }, 10000);
       } else {
-        // Load Paystack script if not loaded
-        console.log("📥 Loading Paystack script...");
+        // Load Paystack script
         const script = document.createElement("script");
         script.src = "https://js.paystack.co/v1/inline.js";
         script.async = true;
         script.onload = () => {
-          console.log("✅ Paystack script loaded");
           if (window.PaystackPop) {
-            console.log("✅ PaystackPop available");
             const handler = window.PaystackPop.setup({
               key: paystackKey,
               email: guestEmail,
               amount: totalPrice * 100,
               ref: paystackReference,
-              cust_id_start: booking.id,
-              onSuccess: (response: any) => {
-                console.log("✅ Payment successful:", response);
+              onSuccess: async () => {
+                // Send confirmation email
+                await fetch("/api/emails/send-confirmation", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    bookingId: pendingBooking.id,
+                    email: guestEmail,
+                  }),
+                }).catch((err) => console.error("Email send failed:", err));
+
+                // Confirm payment status
+                await fetch("/api/bookings/confirm-payment", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    bookingId: pendingBooking.id,
+                    reference: paystackReference,
+                  }),
+                }).catch((err) =>
+                  console.error("Payment confirmation failed:", err),
+                );
+
+                setReceiptBookingId(pendingBooking.id);
+                setReceiptPaystackRef(paystackReference);
                 setShowReceiptButton(true);
+                setShowReceiptPopup(true);
+                setProcessing(false);
               },
               onClose: () => {
-                console.log("🚫 Paystack modal closed by user");
-                setShowReceiptPopup(false);
                 setProcessing(false);
               },
             });
-            console.log("🎬 Opening Paystack iframe from script load");
             handler.openIframe();
 
-            setReceiptBookingId(booking.id);
-            setReceiptPaystackRef(paystackReference);
-
-            // Show receipt popup after 10 seconds (when Paystack is fully loaded)
+            // Show receipt modal after 10 seconds (fallback if payment modal doesn't close)
             setTimeout(() => {
+              setReceiptBookingId(pendingBooking.id);
+              setReceiptPaystackRef(paystackReference);
               setShowReceiptPopup(true);
+              setProcessing(false);
             }, 10000);
-          } else {
-            console.error("❌ PaystackPop not available after script load");
-            setError("Payment system failed to load");
-            setProcessing(false);
           }
         };
-        script.onerror = () => {
-          console.error("❌ Failed to load Paystack script");
-          setError("Failed to load payment system");
-          setProcessing(false);
-        };
-        document.body.appendChild(script);
+        document.head.appendChild(script);
       }
     } catch (err: any) {
-      console.error("Payment error:", err);
-      setError(err.message || "Failed to process booking");
+      setError(err.message);
       setProcessing(false);
     }
+  };
+
+  const handleWhatsAppPayment = () => {
+    if (!pendingBooking) return;
+
+    // Generate WhatsApp message with booking details
+    const checkIn = format(checkInDate, "MMM dd, yyyy");
+    const checkOut = format(checkOutDate, "MMM dd, yyyy");
+    const message = `Hi Ziba Resort! 👋\n\nI would like to make a booking payment.\n\n📋 *Booking Details:*\n- Guest: ${guestName}\n- Room: ${room.title}\n- Check-in: ${checkIn}\n- Check-out: ${checkOut}\n- Total Amount: ₦${totalPrice.toLocaleString()}\n- Phone: ${guestPhone}\n\nPlease confirm the payment options available. Thank you!`;
+
+    const whatsappUrl = `https://wa.me/+2347047300013?text=${encodeURIComponent(message)}`;
+
+    // Close modal and open WhatsApp
+    setShowPaymentMethodModal(false);
+    window.open(whatsappUrl, "_blank");
+
+    // Still complete the booking process
+    setProcessing(false);
   };
 
   return (
@@ -746,7 +752,7 @@ function PaymentContent() {
 
             {/* Payment Button */}
             <button
-              onClick={handlePayment}
+              onClick={handleOpenPaymentMethod}
               disabled={
                 processing ||
                 isRedirecting ||
@@ -756,13 +762,7 @@ function PaymentContent() {
               }
               className="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition disabled:opacity-50 disabled:cursor-not-allowed font-bold text-base shadow-lg"
             >
-              {isRedirecting
-                ? "Redirecting..."
-                : processing
-                  ? "Processing..."
-                  : isValidPaystackKey
-                    ? "Pay with Paystack"
-                    : "Complete Booking (Demo)"}
+              {processing ? "Processing..." : "Make Payment"}
             </button>
 
             {!isValidPaystackKey && (
@@ -785,51 +785,40 @@ function PaymentContent() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-in fade-in zoom-in">
               <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                Payment Successful
+                ✅ Payment Successful
               </h2>
               <p className="text-gray-600 text-sm mb-6">
-                {showReceiptButton
-                  ? "Your payment has been completed. Click below to view your receipt and booking details."
-                  : "Loading Your Receipt..."}
+                Your booking has been confirmed. Click below to view your
+                receipt and booking details.
               </p>
-
-              {showReceiptButton && (
-                <button
-                  onClick={() => {
-                    router.push(
-                      `/booking-confirmation?bookingId=${receipBookingId}&ref=${receiptPaystackRef}`,
-                    );
-                  }}
-                  className="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition font-bold text-base shadow-lg"
-                >
-                  Generate Receipt
-                </button>
-              )}
-
-              {!showReceiptButton && (
-                <div className="space-y-3">
-                  <button
-                    onClick={() => {
-                      router.push(
-                        `/booking-confirmation?bookingId=${receipBookingId}&ref=${receiptPaystackRef}`,
-                      );
-                    }}
-                    className="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition font-bold text-base shadow-lg"
-                  >
-                    Generate Receipt
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowReceiptPopup(false);
-                    }}
-                    className="w-full bg-gray-200 text-gray-900 py-3 rounded-lg hover:bg-gray-300 transition font-semibold text-base"
-                  >
-                    Close
-                  </button>
-                </div>
-              )}
+              <button
+                onClick={() => {
+                  router.push(
+                    `/booking-confirmation?bookingId=${receipBookingId}&ref=${receiptPaystackRef}`,
+                  );
+                }}
+                className="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition font-bold text-base shadow-lg"
+              >
+                Generate Receipt
+              </button>
             </div>
           </div>
+        )}
+
+        {/* Payment Method Modal */}
+        {pendingBooking && (
+          <PaymentMethodModal
+            isOpen={showPaymentMethodModal}
+            onClose={() => setShowPaymentMethodModal(false)}
+            onPaystackClick={handlePaystackPayment}
+            onWhatsAppClick={handleWhatsAppPayment}
+            roomName={room?.title || ""}
+            totalAmount={totalPrice}
+            checkInDate={format(checkInDate, "MMM dd, yyyy")}
+            checkOutDate={format(checkOutDate, "MMM dd, yyyy")}
+            guestName={guestName}
+            isProcessing={processing}
+          />
         )}
 
         {/* Payment Success Modal */}

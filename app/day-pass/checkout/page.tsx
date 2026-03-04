@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
+import PaymentMethodModal from "@/components/payment-method-modal";
 import { ChevronLeft, AlertCircle, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -43,6 +42,8 @@ export default function DayPassCheckout() {
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [bookingId, setBookingId] = useState("");
   const [paystackReference, setPaystackReference] = useState("");
+  const [showPaymentMethodModal, setShowPaymentMethodModal] = useState(false);
+  const [pendingBooking, setPendingBooking] = useState<any>(null);
 
   // Load cart from localStorage
   useEffect(() => {
@@ -68,7 +69,13 @@ export default function DayPassCheckout() {
     }
   }, [loading, cart.items.length, router]);
 
-  const handlePayment = async (e: React.FormEvent) => {
+  const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+  const isValidPaystackKey =
+    paystackKey &&
+    paystackKey !== "pk_test_xxxxxxxxxxxx" &&
+    paystackKey.startsWith("pk_");
+
+  const handleOpenPaymentMethod = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!fullName || !email || !phone) {
@@ -105,108 +112,189 @@ export default function DayPassCheckout() {
       }
 
       const bookingData = await bookingRes.json();
-      const newBookingId = bookingData.id;
-      const paystackRef = bookingData.paystackReference;
+      setPendingBooking(bookingData);
+      setShowPaymentMethodModal(true);
+      setProcessing(false);
+    } catch (err: any) {
+      setError(err.message || "Failed to create booking");
+      setProcessing(false);
+    }
+  };
 
-      setBookingId(newBookingId);
-      setPaystackReference(paystackRef);
+  const handlePaystackPayment = async () => {
+    if (!pendingBooking) return;
 
-      // Initialize Paystack payment
-      const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+    setProcessing(true);
+    setShowPaymentMethodModal(false);
 
-      if (!paystackKey || paystackKey.includes("placeholder")) {
-        // Demo mode - clear cart and show receipt
+    try {
+      const paystackRef = `day-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+
+      if (!isValidPaystackKey) {
+        // Demo mode
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        // Confirm payment status
+        try {
+          await fetch("/api/day-pass/confirm-payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ bookingId: pendingBooking.id }),
+          });
+        } catch (err) {
+          console.error("Failed to confirm payment:", err);
+        }
+
         if (typeof window !== "undefined") {
           localStorage.removeItem("dayPassCart");
           localStorage.setItem("lastOrderCompleted", Date.now().toString());
           window.dispatchEvent(new Event("cart-updated"));
         }
+
+        setBookingId(pendingBooking.id);
+        setPaystackReference(paystackRef);
         setShowReceiptModal(true);
         setProcessing(false);
         return;
       }
 
-      // Load Paystack script
-      const script = document.createElement("script");
-      script.src = "https://js.paystack.co/v1/inline.js";
-      script.async = true;
-      script.onload = () => {
-        if (window.PaystackPop) {
-          const handler = window.PaystackPop.setup({
-            key: paystackKey,
-            email: email,
-            amount: cart.totalAmount * 100,
-            ref: paystackRef,
-            onSuccess: async (response: any) => {
-              // Mark payment as confirmed
-              try {
-                await fetch("/api/day-pass/confirm-payment", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ bookingId }),
-                });
-              } catch (err) {
-                console.error("Failed to confirm payment:", err);
-              }
+      // Real Paystack payment
+      if (typeof window !== "undefined" && window.PaystackPop) {
+        const handler = window.PaystackPop.setup({
+          key: paystackKey,
+          email: email,
+          amount: cart.totalAmount * 100,
+          ref: paystackRef,
+          onSuccess: async (response: any) => {
+            // Mark payment as confirmed
+            try {
+              await fetch("/api/day-pass/confirm-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ bookingId: pendingBooking.id }),
+              });
+            } catch (err) {
+              console.error("Failed to confirm payment:", err);
+            }
 
-              // Clear the cart immediately after successful payment
-              if (typeof window !== "undefined") {
-                localStorage.removeItem("dayPassCart");
-                localStorage.setItem(
-                  "lastOrderCompleted",
-                  Date.now().toString(),
-                );
-                // Dispatch event synchronously to ensure it's processed
-                window.dispatchEvent(new Event("cart-updated"));
-              }
-
-              setShowReceiptModal(true);
-              setProcessing(false);
-            },
-            onClose: () => {
-              setError("Payment cancelled");
-              setProcessing(false);
-            },
-          });
-          handler.openIframe();
-
-          // Show receipt modal after 10 seconds (fallback if payment modal doesn't close)
-          setTimeout(() => {
-            setShowReceiptModal(true);
-            // Also clear cart on fallback
+            // Clear the cart immediately after successful payment
             if (typeof window !== "undefined") {
               localStorage.removeItem("dayPassCart");
               localStorage.setItem("lastOrderCompleted", Date.now().toString());
               window.dispatchEvent(new Event("cart-updated"));
             }
-          }, 10000);
-        }
-      };
-      document.head.appendChild(script);
+
+            setBookingId(pendingBooking.id);
+            setPaystackReference(paystackRef);
+            setShowReceiptModal(true);
+            setProcessing(false);
+          },
+          onClose: () => {
+            setError("Payment cancelled");
+            setProcessing(false);
+          },
+        });
+        handler.openIframe();
+
+        // Show receipt modal after 10 seconds (fallback if payment modal doesn't close)
+        setTimeout(() => {
+          setBookingId(pendingBooking.id);
+          setPaystackReference(paystackRef);
+          setShowReceiptModal(true);
+          setProcessing(false);
+        }, 10000);
+      } else {
+        // Load Paystack script
+        const script = document.createElement("script");
+        script.src = "https://js.paystack.co/v1/inline.js";
+        script.async = true;
+        script.onload = () => {
+          if (window.PaystackPop) {
+            const handler = window.PaystackPop.setup({
+              key: paystackKey,
+              email: email,
+              amount: cart.totalAmount * 100,
+              ref: paystackRef,
+              onSuccess: async (response: any) => {
+                // Mark payment as confirmed
+                try {
+                  await fetch("/api/day-pass/confirm-payment", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ bookingId: pendingBooking.id }),
+                  });
+                } catch (err) {
+                  console.error("Failed to confirm payment:", err);
+                }
+
+                // Clear the cart immediately after successful payment
+                if (typeof window !== "undefined") {
+                  localStorage.removeItem("dayPassCart");
+                  localStorage.setItem(
+                    "lastOrderCompleted",
+                    Date.now().toString(),
+                  );
+                  window.dispatchEvent(new Event("cart-updated"));
+                }
+
+                setBookingId(pendingBooking.id);
+                setPaystackReference(paystackRef);
+                setShowReceiptModal(true);
+                setProcessing(false);
+              },
+              onClose: () => {
+                setError("Payment cancelled");
+                setProcessing(false);
+              },
+            });
+            handler.openIframe();
+
+            // Show receipt modal after 10 seconds (fallback if payment modal doesn't close)
+            setTimeout(() => {
+              setBookingId(pendingBooking.id);
+              setPaystackReference(paystackRef);
+              setShowReceiptModal(true);
+              setProcessing(false);
+            }, 10000);
+          }
+        };
+        document.head.appendChild(script);
+      }
     } catch (err: any) {
       setError(err.message || "Payment failed");
       setProcessing(false);
     }
   };
 
+  const handleZibaPayment = () => {
+    if (!pendingBooking) return;
+
+    const visitDate = format(new Date(cart.visitDate!), "MMM dd, yyyy");
+    const itemsList = cart.items
+      .map((item) => `- ${item.name} ×${item.quantity}`)
+      .join("\n");
+    const message = `Hi Ziba Resort! 👋\n\nI would like to make a booking payment.\n\n📋 *Booking Details:*\n- Guest: ${fullName}\n- Visit Date: ${visitDate}\n- Items:\n${itemsList}\n- Total Amount: ₦${cart.totalAmount.toLocaleString()}\n- Phone: ${phone}\n\nPlease confirm the payment options available. Thank you!`;
+
+    const whatsappUrl = `https://wa.me/+2347047300013?text=${encodeURIComponent(message)}`;
+
+    setShowPaymentMethodModal(false);
+    window.open(whatsappUrl, "_blank");
+    setProcessing(false);
+  };
+
   if (loading) {
     return (
-      <>
-        <Header />
-        <main className="min-h-screen bg-linear-to-b from-blue-50 to-white flex items-center justify-center px-4">
-          <div className="text-center">
-            <Loader2 className="w-12 h-12 text-blue-900 animate-spin mx-auto mb-4" />
-            <p className="text-gray-600">Loading...</p>
-          </div>
-        </main>
-        <Footer />
-      </>
+      <main className="min-h-screen bg-linear-to-b from-blue-50 to-white flex items-center justify-center px-4">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-blue-900 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </main>
     );
   }
 
   return (
     <>
-      <Header />
       <main className="min-h-screen bg-linear-to-b from-blue-50 to-white py-8 px-4">
         <div className="max-w-2xl mx-auto">
           {/* Back Button */}
@@ -234,7 +322,7 @@ export default function DayPassCheckout() {
                   </div>
                 )}
 
-                <form onSubmit={handlePayment} className="space-y-4">
+                <form onSubmit={handleOpenPaymentMethod} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Full Name *
@@ -279,7 +367,7 @@ export default function DayPassCheckout() {
                     disabled={processing}
                     className="w-full bg-blue-900 hover:bg-blue-800 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-colors"
                   >
-                    {processing ? "Processing..." : "Pay with Paystack"}
+                    {processing ? "Processing..." : "Make Payment"}
                   </button>
                 </form>
               </div>
@@ -364,7 +452,23 @@ export default function DayPassCheckout() {
         </div>
       )}
 
-      <Footer />
+      {/* Payment Method Modal */}
+      <PaymentMethodModal
+        isOpen={showPaymentMethodModal}
+        onClose={() => setShowPaymentMethodModal(false)}
+        onPaystackClick={handlePaystackPayment}
+        onWhatsAppClick={handleZibaPayment}
+        roomName={cart.items.length > 0 ? "Day Experience Pass" : ""}
+        totalAmount={cart.totalAmount}
+        checkInDate={
+          cart.visitDate ? format(new Date(cart.visitDate), "MMM dd, yyyy") : ""
+        }
+        checkOutDate={
+          cart.visitDate ? format(new Date(cart.visitDate), "MMM dd, yyyy") : ""
+        }
+        guestName={fullName}
+        isProcessing={processing}
+      />
     </>
   );
 }

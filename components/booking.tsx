@@ -12,7 +12,9 @@ export default function Booking() {
   return (
     <section className="py-32 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-6xl mx-auto">
-        <h2 className="h2 text-blue-900 mb-4">Check Availability</h2>
+        <h2 className="h2 font-light text-blue-900 mb-4 text-center">
+          Check Availability
+        </h2>
         <p className="text-gray-600 font-light mb-12 max-w-2xl">
           Real-time room availability. See exactly what's available before you
           book.
@@ -87,12 +89,7 @@ export default function Booking() {
 
         <div className="mt-16 grid md:grid-cols-2 gap-12">
           <div>
-            <h3
-              className="text-2xl font-light text-gray-900 mb-4"
-              style={{ fontFamily: "Cormorant Garamond" }}
-            >
-              Why Book Direct
-            </h3>
+            <h3 className="h4 text-gray-900 mb-4">Why Book Direct</h3>
             <ul className="space-y-3 text-gray-600 font-light">
               <li className="flex gap-3">
                 <span className="text-blue-900">✓</span>
@@ -114,12 +111,7 @@ export default function Booking() {
           </div>
 
           <div className="bg-gray-50 p-8 rounded-lg border border-gray-100">
-            <h3
-              className="text-2xl font-light text-gray-900 mb-6"
-              style={{ fontFamily: "Cormorant Garamond" }}
-            >
-              Offline Booking
-            </h3>
+            <h3 className="h4 text-gray-900 mb-6">Offline Booking</h3>
             <p className="text-gray-600 font-light mb-6">
               Prefer to book in person? Call our reservations team for
               personalized assistance and custom packages.

@@ -3,9 +3,9 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Footer from "@/components/footer";
-import { Check, Loader2, AlertCircle, Download } from "lucide-react";
+import Confetti from "@/components/confetti";
+import { Check, Loader2, AlertCircle, Copy } from "lucide-react";
 import { getRoomName } from "@/lib/utils";
-import { downloadReceiptPDF } from "@/lib/pdf-utils";
 
 interface BookingData {
   id: string;
@@ -26,42 +26,46 @@ export default function BookingConfirmationContent() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId");
   const paystackReference = searchParams.get("ref");
-  const [downloading, setDownloading] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const [booking, setBooking] = useState<BookingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [paymentVerified, setPaymentVerified] = useState(false);
+  const hasProcessedRef = useRef(false);
 
-  const downloadReceipt = async () => {
-    if (!booking) {
-      alert("Booking data not available");
-      return;
-    }
-    setDownloading(true);
-
+  const copyReceiptLink = async () => {
     try {
-      const success = await downloadReceiptPDF(
-        "booking-receipt-container",
-        `Ziba-Booking-${booking.booking_reference_code}.pdf`,
-      );
-      if (!success) {
+      const url = window.location.href;
+      await navigator.clipboard.writeText(url);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    } catch {
+      try {
+        const textArea = document.createElement("textarea");
+        textArea.value = window.location.href;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2000);
+      } catch {
         alert(
-          "Receipt export failed. Please allow popups and try again, or use Print/Save as PDF.",
+          "Failed to copy link. Please copy from your browser address bar.",
         );
       }
-    } catch (err) {
-      console.error("Error downloading receipt:", err);
-      alert(
-        "Receipt export failed. Please allow popups and try again, or use Print/Save as PDF.",
-      );
-    } finally {
-      setDownloading(false);
     }
   };
 
   useEffect(() => {
     const verifyPayment = async () => {
+      if (hasProcessedRef.current) {
+        return;
+      }
+      hasProcessedRef.current = true;
+
       if (!bookingId) {
         setError("No booking ID provided");
         setLoading(false);
@@ -96,6 +100,27 @@ export default function BookingConfirmationContent() {
           console.warn("⚠️  No Paystack reference in URL");
         }
 
+        // Step 1b: Force booking status confirmation by bookingId
+        const confirmRes = await fetch("/api/bookings/confirm-payment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            bookingId,
+            reference: paystackReference || "",
+          }),
+        });
+
+        if (!confirmRes.ok) {
+          const confirmText = await confirmRes.text();
+          console.warn(
+            "[Booking Confirmation] confirm-payment returned non-OK:",
+            {
+              status: confirmRes.status,
+              body: confirmText,
+            },
+          );
+        }
+
         // Step 2: Fetch booking details
         console.log("📋 Fetching booking details...");
         const bookingRes = await fetch(`/api/bookings/${bookingId}`);
@@ -108,17 +133,31 @@ export default function BookingConfirmationContent() {
         const fetchedBooking = bookingData.booking;
         setBooking(fetchedBooking);
 
+        // Trigger confetti celebration on successful booking
+        setShowConfetti(true);
+
         // Step 3: Send confirmation email (now that we have the booking data)
         if (fetchedBooking?.guest_email) {
           console.log("📧 Sending confirmation email...");
-          await fetch("/api/emails/send-confirmation", {
+          const emailRes = await fetch("/api/emails/send-confirmation", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               bookingId: bookingId,
               email: fetchedBooking.guest_email,
             }),
-          }).catch((err) => console.error("Email error:", err));
+          });
+
+          if (!emailRes.ok) {
+            const emailText = await emailRes.text();
+            console.warn(
+              "[Booking Confirmation] send-confirmation returned non-OK:",
+              {
+                status: emailRes.status,
+                body: emailText,
+              },
+            );
+          }
         }
 
         setLoading(false);
@@ -193,17 +232,23 @@ export default function BookingConfirmationContent() {
 
   return (
     <>
+      {/* Confetti Celebration */}
+      <Confetti active={showConfetti} duration={4000} particleCount={60} />
+
       <main className="min-h-screen bg-linear-to-b from-blue-50 to-white py-6 sm:py-8 px-4 flex items-center justify-center">
         <div className="w-full max-w-md">
           {/* Receipt Card - No Scrolling */}
           <div
             id="booking-receipt-container"
-            className="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-100"
+            className="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-100 transition-all duration-500 ease-out"
           >
             {/* Header */}
             <div className="bg-linear-to-r from-blue-900 to-blue-800 text-white p-4 text-center">
               <div className="flex items-center justify-center gap-2 mb-2">
-                <Check className="w-5 h-5" />
+                <div className="relative">
+                  <Check className="w-5 h-5 animate-check-pulse" />
+                  <div className="absolute inset-0 rounded-full bg-white/20 animate-ping" />
+                </div>
                 <h1 className="text-xl sm:text-2xl font-bold">
                   Payment Successful
                 </h1>
@@ -214,7 +259,7 @@ export default function BookingConfirmationContent() {
             {/* Content - Compact Layout */}
             <div className="p-4 sm:p-5 text-xs sm:text-sm space-y-3 sm:space-y-4">
               {/* Booking Ref Box */}
-              <div className="bg-linear-to-r from-emerald-50 to-blue-50 p-3 rounded border border-emerald-200 text-center\">
+              <div className="bg-linear-to-r from-emerald-50 to-blue-50 p-3 rounded border border-emerald-200 text-center">
                 <p className="text-gray-600 text-xs font-medium mb-1">
                   Reference Code
                 </p>
@@ -296,7 +341,7 @@ export default function BookingConfirmationContent() {
               </div>
 
               {/* Payment - Highlighted */}
-              <div className="bg-linear-to-r from-emerald-50 to-green-50 border-2 border-emerald-300 p-3 rounded\">
+              <div className="bg-linear-to-r from-emerald-50 to-green-50 border-2 border-emerald-300 p-3 rounded">
                 <div className="flex justify-between items-start mb-2">
                   <span className="font-bold text-gray-900">Total</span>
                   <span className="text-lg sm:text-xl font-bold text-emerald-700">
@@ -347,12 +392,11 @@ export default function BookingConfirmationContent() {
                 </a>
               </p>
               <button
-                onClick={downloadReceipt}
-                disabled={downloading}
-                className="w-full bg-linear-to-r from-blue-600 to-blue-500 text-white py-2 rounded font-semibold hover:from-blue-700 hover:to-blue-600 transition-all duration-200 disabled:opacity-50lex items-center justify-center gap-2 text-sm"
+                onClick={copyReceiptLink}
+                className="w-full bg-linear-to-r from-blue-600 to-blue-500 text-white py-2 rounded font-semibold hover:from-blue-700 hover:to-blue-600 transition-all duration-200 flex items-center justify-center gap-2 text-sm"
               >
-                <Download size={16} />
-                {downloading ? "Downloading..." : "Download Receipt"}
+                <Copy size={16} />
+                Copy Link to Receipt
               </button>
               <a
                 href="/"
@@ -365,11 +409,34 @@ export default function BookingConfirmationContent() {
 
           {/* Actions Hint */}
           <p className="text-center text-gray-500 text-xs mt-4">
-            💡 Download, screenshot, or print this receipt for your records
+            💡 Copy this receipt link to save or share your booking receipt
           </p>
         </div>
       </main>
       <Footer />
+      {copiedLink && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-60 bg-emerald-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm font-semibold animate-in fade-in slide-in-from-bottom-2 duration-200">
+          Receipt link has been copied.
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes check-pulse {
+          0%,
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+          50% {
+            transform: scale(1.2);
+            opacity: 0.8;
+          }
+        }
+
+        .animate-check-pulse {
+          animation: check-pulse 1.5s ease-in-out 3;
+        }
+      `}</style>
     </>
   );
 }

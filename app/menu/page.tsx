@@ -83,12 +83,7 @@ export default function Menu() {
   }) => (
     <div className="mb-16" style={{ animation: "fadeInUp 0.6s ease-out" }}>
       <div>
-        <h2
-          className="text-4xl font-light text-blue-900 mb-2"
-          style={{ fontFamily: "Cormorant Garamond, serif" }}
-        >
-          {title}
-        </h2>
+        <h2 className="h2 text-blue-900 mb-2">{title}</h2>
         <p className="text-gray-600 font-light text-sm">{timing}</p>
         {note && (
           <p className="text-amber-700 bg-amber-50 px-4 py-3 rounded-lg mt-3 font-light text-sm border border-amber-200">
@@ -116,12 +111,9 @@ export default function Menu() {
         >
           <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/30 to-black/50"></div>
           <div className="relative max-w-5xl mx-auto text-center px-4 z-10">
-            <h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-white mb-6"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
-            >
+            <h2 className="h2 font-light text-white mb-6 text-center">
               Our Culinary Menu
-            </h1>
+            </h2>
             <p className="text-lg sm:text-xl lg:text-2xl text-gray-100 font-light">
               Experience exquisite dining with our carefully crafted menus
             </p>
@@ -190,10 +182,7 @@ export default function Menu() {
 
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-blue-900">
           <div className="max-w-4xl mx-auto text-center">
-            <h2
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-light text-white mb-6"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
-            >
+            <h2 className="h2 font-light text-white mb-6 text-center">
               Ready to Dine?
             </h2>
             <p className="text-base sm:text-lg lg:text-xl text-blue-100 font-light mb-10">

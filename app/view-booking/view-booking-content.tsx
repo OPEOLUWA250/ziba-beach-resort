@@ -114,7 +114,7 @@ export function ViewBookingContent() {
     return (
       <>
         <Header />
-        <div className="min-h-screen bg-linear-to-b from-blue-50 to-white flex items-center justify-center px-4\">
+        <div className="min-h-screen bg-linear-to-b from-blue-50 to-white flex items-center justify-center px-4">
           <div className="text-center">
             <AlertCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
             <p className="text-gray-900 font-semibold">No booking found</p>
@@ -263,7 +263,7 @@ export function ViewBookingContent() {
             )}
 
             {/* Price Summary */}
-            <div className="bg-linear-to-r from-blue-50 to-blue-100 rounded-lg p-6\">
+            <div className="bg-linear-to-r from-blue-50 to-blue-100 rounded-lg p-6">
               <div className="flex justify-between mb-4 pb-4 border-b border-blue-200">
                 <span className="text-gray-900 font-semibold">
                   ₦{booking.rooms?.priceNGN.toLocaleString()} × {nights} night
@@ -292,7 +292,7 @@ export function ViewBookingContent() {
 
             <div className="space-y-4">
               <div className="flex gap-4">
-                <div className="shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center\">
+                <div className="shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
                   <span className="text-blue-900 font-bold">1</span>
                 </div>
                 <div>
@@ -307,7 +307,7 @@ export function ViewBookingContent() {
               </div>
 
               <div className="flex gap-4">
-                <div className="shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center\">
+                <div className="shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
                   <span className="text-blue-900 font-bold">2</span>
                 </div>
                 <div>
@@ -321,7 +321,7 @@ export function ViewBookingContent() {
               </div>
 
               <div className="flex gap-4">
-                <div className="shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center\">
+                <div className="shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
                   <span className="text-blue-900 font-bold">3</span>
                 </div>
                 <div>
@@ -335,7 +335,7 @@ export function ViewBookingContent() {
               </div>
 
               <div className="flex gap-4">
-                <div className="shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center\">
+                <div className="shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
                   <span className="text-blue-900 font-bold">4</span>
                 </div>
                 <div>

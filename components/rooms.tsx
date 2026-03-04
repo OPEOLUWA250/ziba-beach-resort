@@ -147,38 +147,41 @@ export default function Rooms() {
           {rooms.map((room, idx) => (
             <div
               key={room.id}
-              className={`group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 flex flex-col h-full ${
+              className={`group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 ease-out transform hover:-translate-y-2 flex flex-col h-full ${
                 isVisible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-10"
               }`}
               style={{
                 transitionDelay: isVisible ? `${300 + idx * 100}ms` : "0ms",
+                transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
-              {/* Image Container - using Next.js Image component */}
-              <div className="relative w-full h-64 overflow-hidden">
+              {/* Image Container - Enhanced with smooth zoom */}
+              <div className="relative w-full h-64 overflow-hidden bg-slate-100">
                 <Image
                   src={getRoomHeroImage(room.id)}
                   alt={`${room.name} - Hero Image`}
                   fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover transition-all duration-700 ease-out group-hover:scale-110"
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   quality={85}
                 />
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
+                {/* Overlay with subtle brightness on hover */}
+                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent group-hover:from-black/50 transition-all duration-500" />
 
-                {/* Room Type Badge */}
-                <div className="absolute top-4 right-4 z-10 transform group-hover:scale-110 transition-transform duration-500">
-                  <span className="inline-block px-4 py-1 bg-blue-900 text-white text-xs font-light rounded-full shadow-lg">
+                {/* Room Type Badge - Smooth scale and glow */}
+                <div className="absolute top-4 right-4 z-10 transition-all duration-500 ease-out group-hover:scale-105">
+                  <span className="inline-block px-4 py-1 bg-blue-900 text-white text-xs font-light rounded-full shadow-lg group-hover:shadow-xl group-hover:bg-blue-800 transition-all duration-500">
                     {room.type}
                   </span>
                 </div>
 
-                {/* Icon */}
-                <div className="absolute bottom-4 left-4 transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                  <div className="text-5xl">{room.icon}</div>
+                {/* Icon - Playful rotation and bounce */}
+                <div className="absolute bottom-4 left-4 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3">
+                  <div className="text-5xl filter drop-shadow-lg">
+                    {room.icon}
+                  </div>
                 </div>
               </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   X,
   Loader2,
@@ -28,6 +28,7 @@ export default function AvailabilityModal({
   pricePerNight,
   onProceedToBooking,
 }: AvailabilityModalProps) {
+  const resultsRef = useRef<HTMLDivElement>(null);
   const [checkInDate, setCheckInDate] = useState<Date | null>(null);
   const [checkOutDate, setCheckOutDate] = useState<Date | null>(null);
   const [isChecking, setIsChecking] = useState(false);
@@ -55,14 +56,15 @@ export default function AvailabilityModal({
       setNights(daysDiff);
       setTotalPrice(daysDiff * pricePerNight);
       setAvailabilityStatus("idle");
+
+      // Auto-check availability after a brief delay so state updates complete
+      setTimeout(() => {
+        checkAvailabilityImmediate(checkInDate, date);
+      }, 300);
     }
   };
 
-  const checkAvailability = async () => {
-    if (!checkInDate || !checkOutDate) {
-      return;
-    }
-
+  const checkAvailabilityImmediate = async (checkIn: Date, checkOut: Date) => {
     setIsChecking(true);
     setAvailabilityStatus("checking");
 
@@ -72,8 +74,8 @@ export default function AvailabilityModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           roomId,
-          checkInDate: checkInDate.toISOString().split("T")[0],
-          checkOutDate: checkOutDate.toISOString().split("T")[0],
+          checkInDate: checkIn.toISOString().split("T")[0],
+          checkOutDate: checkOut.toISOString().split("T")[0],
         }),
       });
 
@@ -85,14 +87,12 @@ export default function AvailabilityModal({
       } else if ("available" in data && data.available === false) {
         setAvailabilityStatus("not_available");
       } else if ("error" in data && response.ok) {
-        // Error message but still available (fallback scenario)
         setAvailabilityStatus("available");
       } else {
         setAvailabilityStatus("not_available");
       }
     } catch (error) {
       console.error("Availability check failed:", error);
-      // Network error - allow booking anyway with fallback
       setAvailabilityStatus("available");
     } finally {
       setIsChecking(false);
@@ -105,13 +105,29 @@ export default function AvailabilityModal({
     }
   };
 
+  // Auto-scroll to results when availability status changes
+  useEffect(() => {
+    if (
+      (availabilityStatus === "available" ||
+        availabilityStatus === "not_available") &&
+      resultsRef.current
+    ) {
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
+      }, 100);
+    }
+  }, [availabilityStatus]);
+
   if (!isOpen) return null;
 
   const today = startOfToday();
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
+      <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 ease-out">
         {/* Header */}
         <div className="sticky top-0 bg-linear-to-r from-blue-50 to-blue-100 px-6 sm:px-8 pt-6 pb-4 border-b-2 border-blue-200">
           <div className="flex items-center justify-between">
@@ -136,43 +152,36 @@ export default function AvailabilityModal({
         {/* Content */}
         <div className="flex-1 px-6 sm:px-8 py-8 space-y-8">
           {/* Date Range Picker */}
-          <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
-            <DateRangePicker
-              startDate={checkInDate}
-              endDate={checkOutDate}
-              onStartDateChange={handleCheckInChange}
-              onEndDateChange={handleCheckOutChange}
-              minDate={today}
-              maxDate={addDays(today, 365)}
-            />
+          <div className="space-y-5">
+            <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
+              <DateRangePicker
+                startDate={checkInDate}
+                endDate={checkOutDate}
+                onStartDateChange={handleCheckInChange}
+                onEndDateChange={handleCheckOutChange}
+                minDate={today}
+                maxDate={addDays(today, 365)}
+              />
+            </div>
+
+            {/* Auto-checking status */}
+            {availabilityStatus === "checking" && (
+              <div className="animate-pulse bg-linear-to-r from-blue-50 to-blue-100 border-2 border-blue-400 rounded-xl p-4 text-center">
+                <p className="text-sm font-semibold text-blue-700">
+                  🔍 Checking availability...
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* Check Availability Button */}
-          {checkInDate && checkOutDate && availabilityStatus === "idle" && (
-            <button
-              onClick={checkAvailability}
-              disabled={isChecking}
-              className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white py-4 rounded-xl hover:from-blue-800 hover:to-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-semibold text-lg shadow-lg"
-            >
-              {isChecking && <Loader2 className="w-5 h-5 animate-spin" />}
-              {isChecking ? "Checking Availability..." : "Check Availability"}
-            </button>
-          )}
-
           {/* Availability Results */}
-          {availabilityStatus === "checking" && (
-            <div className="flex items-center justify-center gap-3 bg-blue-50 py-8 rounded-xl border-2 border-blue-200">
-              <Loader2 className="w-6 h-6 animate-spin text-blue-900" />
-              <span className="text-lg font-semibold text-blue-900">
-                Verifying availability...
-              </span>
-            </div>
-          )}
-
           {availabilityStatus === "available" &&
             checkInDate &&
             checkOutDate && (
-              <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-6 space-y-4">
+              <div
+                ref={resultsRef}
+                className="bg-blue-50 border-2 border-blue-300 rounded-xl p-6 space-y-4 animate-in fade-in duration-300"
+              >
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-7 h-7 text-blue-600 shrink-0 mt-0.5" />
                   <div>
@@ -248,7 +257,10 @@ export default function AvailabilityModal({
             )}
 
           {availabilityStatus === "not_available" && (
-            <div className="bg-red-50 border-2 border-red-300 rounded-xl p-6 space-y-3">
+            <div
+              ref={resultsRef}
+              className="bg-red-50 border-2 border-red-300 rounded-xl p-6 space-y-3 animate-in fade-in duration-300"
+            >
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-7 h-7 text-red-600 shrink-0 mt-0.5" />
                 <div>
