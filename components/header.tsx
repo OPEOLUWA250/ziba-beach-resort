@@ -86,7 +86,7 @@ export default function Header() {
 
   return (
     <header
-      className="fixed top-4 left-1/2 transform -translate-x-1/2 w-[90%] sm:w-[98%] max-w-7xl z-50 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-2xl sm:rounded-3xl transition-all duration-300 ring-1 ring-white/10 shadow-2xl"
+      className="fixed top-4 left-1/2 transform -translate-x-1/2 w-[90%] sm:w-[98%] max-w-7xl z-50 bg-white/20 sm:bg-white/10 backdrop-blur-3xl border border-white/30 sm:border-white/20 rounded-2xl sm:rounded-3xl transition-all duration-300 ring-1 ring-white/10 shadow-2xl"
       style={{
         boxShadow: `
           0 8px 32px 0 rgba(31, 38, 135, 0.25),
@@ -100,20 +100,20 @@ export default function Header() {
         {/* Logo */}
         <Link
           href="/"
-          className="transition-opacity hover:opacity-80 w-24 sm:w-24 md:w-28"
+          className="transition-opacity hover:opacity-80 w-28 sm:w-24 md:w-28 flex-shrink-0"
         >
           <Image
             src="/ZIBA-LOGO-WHITE.png"
             alt="ZIBA Beach Resort Logo"
-            width={80}
-            height={50}
+            width={90}
+            height={56}
             className="h-auto w-full transition-all duration-300"
             style={{
               filter: isNearFooter
-                ? "brightness(1) saturate(100%)"
+                ? "brightness(1) saturate(100%) drop-shadow(0 2px 4px rgba(0,0,0,0.1))"
                 : isScrolled
-                  ? "brightness(0) saturate(100%) invert(15%) sepia(90%) saturate(3000%) hue-rotate(192deg)"
-                  : "brightness(1) saturate(100%)",
+                  ? "brightness(0) saturate(100%) invert(20%) sepia(85%) saturate(3500%) hue-rotate(195deg) drop-shadow(0 2px 6px rgba(30,58,138,0.3))"
+                  : "brightness(1) saturate(100%) drop-shadow(0 2px 8px rgba(0,0,0,0.1))",
             }}
             priority
           />
@@ -188,35 +188,35 @@ export default function Header() {
         <div className="md:hidden flex items-center gap-2">
           <Link
             href="/day-pass/cart"
-            className="relative p-2.5 rounded-lg hover:bg-white/10 transition-colors"
+            className="relative p-2.5 rounded-lg hover:bg-white/20 transition-colors drop-shadow-lg"
           >
             <ShoppingCart
-              size={20}
-              className={`transition-colors ${
+              size={22}
+              className={`transition-colors font-bold ${
                 isNearFooter
-                  ? "text-white"
+                  ? "text-white drop-shadow-md"
                   : isScrolled
-                    ? "text-gray-900 hover:text-blue-900"
-                    : "text-white"
+                    ? "text-blue-900 hover:text-blue-700 drop-shadow-md font-bold"
+                    : "text-white drop-shadow-lg font-bold"
               }`}
             />
             {cartCount > 0 && (
-              <span className="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center drop-shadow-md">
                 {cartCount}
               </span>
             )}
           </Link>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`transition-colors duration-300 ${
+            className={`transition-colors duration-300 p-2 drop-shadow-lg ${
               isNearFooter
                 ? "text-white"
                 : isScrolled
-                  ? "text-gray-900 hover:text-blue-900"
+                  ? "text-blue-900 hover:text-blue-700"
                   : "text-white"
             }`}
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
       </div>

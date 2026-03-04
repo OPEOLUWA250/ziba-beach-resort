@@ -116,9 +116,7 @@ export default function Hero() {
               <h1
                 className={`${cormorant.className} text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-tight`}
               >
-                <span className="text-white block">
-                  Nigeria's first
-                </span>
+                <span className="text-white block">Nigeria's first</span>
                 <span className="text-white block font-bold mt-1 sm:mt-2 md:mt-3 lg:mt-4">
                   overwater resort
                 </span>
