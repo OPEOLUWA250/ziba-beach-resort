@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -9,6 +10,7 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +54,9 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-sm text-gray-300 block mb-1">Username or Email</label>
+            <label className="text-sm text-gray-300 block mb-1">
+              Username or Email
+            </label>
             <input
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
@@ -64,14 +68,23 @@ export default function AdminLoginPage() {
 
           <div>
             <label className="text-sm text-gray-300 block mb-1">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500"
-              placeholder="••••••••••"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 pr-10 text-white focus:outline-none focus:border-blue-500"
+                placeholder="••••••••••"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           <button
@@ -84,7 +97,8 @@ export default function AdminLoginPage() {
         </form>
 
         <p className="text-xs text-gray-500 mt-6">
-          First-time setup: call POST /api/admin/auth/bootstrap to create the immutable SUPER_ADMIN.
+          First-time setup: call POST /api/admin/auth/bootstrap to create the
+          immutable SUPER_ADMIN.
         </p>
       </div>
     </div>

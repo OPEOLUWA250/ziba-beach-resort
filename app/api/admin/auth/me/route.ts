@@ -16,7 +16,9 @@ export async function GET(request: NextRequest) {
 
     const { data: admin, error } = await supabaseServer
       .from("admin_users")
-      .select("id, username, email, role, status, last_login, created_by, created_at")
+      .select(
+        "id, username, email, role, status, last_login, created_by, created_at, current_session_token",
+      )
       .eq("id", session.adminId)
       .maybeSingle();
 
@@ -24,7 +26,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Session expired" }, { status: 401 });
     }
 
-    return NextResponse.json({ success: true, admin });
+    // Single-session enforcement: verify session ID matches database
+    if (admin.current_session_token !== session.sessionId) {
+      return NextResponse.json(
+        {
+          error:
+            "Your session has been invalidated. This account is logged in elsewhere.",
+        },
+        { status: 401 },
+      );
+    }
+
+    // Return admin data without the session token
+    const { current_session_token, ...adminData } = admin;
+
+    return NextResponse.json({ success: true, admin: adminData });
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || "Failed to fetch session" },

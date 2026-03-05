@@ -32,7 +32,9 @@ export async function GET(request: NextRequest) {
 
     const { data, error } = await supabaseServer
       .from("admin_users")
-      .select("id, username, email, role, status, last_login, created_by, created_at")
+      .select(
+        "id, username, email, role, status, last_login, created_by, created_at",
+      )
       .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -58,7 +60,13 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { username, email, password, role = "ADMIN", status = "active" } = body;
+    const {
+      username,
+      email,
+      password,
+      role = "ADMIN",
+      status = "active",
+    } = body;
 
     if (!username || !email || !password) {
       return NextResponse.json(
@@ -93,7 +101,9 @@ export async function POST(request: NextRequest) {
         status,
         created_by: actor.id,
       })
-      .select("id, username, email, role, status, last_login, created_by, created_at")
+      .select(
+        "id, username, email, role, status, last_login, created_by, created_at",
+      )
       .single();
 
     if (error) throw error;

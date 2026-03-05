@@ -48,37 +48,37 @@ export function PopupCarousel() {
   const currentPopup = popups[currentIndex];
 
   return (
-    <div className="w-full bg-white py-12 md:py-16">
+    <div className="w-full bg-linear-to-b from-white via-blue-50 to-white py-6 sm:py-12 md:py-16">
       <div className="container mx-auto px-4">
-        <div className="max-w-sm mx-auto">
-          {/* Image on Top */}
+        <div className="md:max-w-sm mx-auto">
+          {/* Image on Top - Optimized for Mobile */}
           {currentPopup.featured_image && (
-            <div className="relative w-full h-64 mb-6 overflow-hidden rounded-lg border border-blue-900/20">
+            <div className="relative w-full aspect-video sm:aspect-auto sm:h-72 mb-4 sm:mb-6 overflow-hidden rounded-xl sm:rounded-2xl border-2 border-blue-900/30 shadow-lg hover:shadow-xl transition-shadow">
               <img
                 src={currentPopup.featured_image}
                 alt={currentPopup.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
           )}
 
           {/* Card Content */}
-          <div className="rounded-lg border border-blue-900/20 p-6 space-y-5">
+          <div className="rounded-xl sm:rounded-2xl border-2 border-blue-900/20 bg-white/90 backdrop-blur-sm p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-lg hover:shadow-xl transition-shadow">
             {/* Title */}
-            <h2 className="text-2xl font-light text-gray-900 cormorant leading-tight">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-light text-gray-900 cormorant leading-tight">
               {currentPopup.title}
             </h2>
 
             {/* Excerpt */}
-            <p className="text-base text-gray-600 leading-relaxed font-light">
+            <p className="text-sm sm:text-base text-gray-600 leading-relaxed font-light line-clamp-3 sm:line-clamp-none">
               {currentPopup.excerpt}
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col gap-3 pt-3">
+            <div className="flex flex-col gap-2 sm:gap-3 pt-2 sm:pt-3">
               <Link
                 href={`/popups/${currentPopup.slug}`}
-                className="w-full px-4 py-3 bg-blue-900 hover:bg-blue-800 text-white font-light text-center transition border border-blue-900 rounded-2xl"
+                className="w-full px-4 py-2.5 sm:py-3 bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700 text-white font-light text-center transition border border-blue-900 rounded-lg sm:rounded-2xl shadow-md hover:shadow-lg active:scale-95"
               >
                 Learn More
               </Link>
@@ -86,15 +86,15 @@ export function PopupCarousel() {
 
             {/* Carousel Indicators */}
             {popups.length > 1 && (
-              <div className="flex gap-1.5 pt-4 justify-center">
+              <div className="flex gap-1.5 pt-3 sm:pt-4 justify-center">
                 {popups.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentIndex(index)}
                     className={`transition ${
                       index === currentIndex
-                        ? "w-8 h-1 bg-blue-900"
-                        : "w-1.5 h-1 bg-blue-200"
+                        ? "w-6 sm:w-8 h-1.5 sm:h-1 bg-blue-900"
+                        : "w-1 sm:w-1.5 h-1.5 sm:h-1 bg-blue-300 hover:bg-blue-400"
                     }`}
                     aria-label={`Go to popup ${index + 1}`}
                   />
@@ -106,7 +106,7 @@ export function PopupCarousel() {
           {/* Close Button */}
           <button
             onClick={() => setIsVisible(false)}
-            className="flex items-center justify-center gap-1 mt-4 text-blue-900/60 hover:text-blue-900 text-sm transition"
+            className="flex items-center justify-center gap-1 mt-3 sm:mt-4 text-blue-900/60 hover:text-blue-900 text-xs sm:text-sm transition hover:underline"
           >
             <X size={16} />
             Close

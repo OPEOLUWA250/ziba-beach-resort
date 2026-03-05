@@ -35,7 +35,12 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { bookingId, note, noteType = "note", createdBy = "operations-admin" } = body;
+    const {
+      bookingId,
+      note,
+      noteType = "note",
+      createdBy = "operations-admin",
+    } = body;
 
     if (!bookingId || !note) {
       return NextResponse.json(

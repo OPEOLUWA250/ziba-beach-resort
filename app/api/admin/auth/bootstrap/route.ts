@@ -5,6 +5,7 @@ import {
   validatePasswordPolicy,
   signAdminSession,
   getSessionCookieName,
+  generateSessionId,
 } from "@/lib/admin-auth";
 
 export async function POST(request: NextRequest) {
@@ -48,6 +49,11 @@ export async function POST(request: NextRequest) {
     }
 
     const passwordHash = await hashAdminPassword(password);
+    const sessionId = generateSessionId();
+    const clientIp =
+      request.headers.get("x-forwarded-for")?.split(",")[0] ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
 
     const { data: created, error: insertError } = await supabaseServer
       .from("admin_users")
@@ -57,6 +63,9 @@ export async function POST(request: NextRequest) {
         password_hash: passwordHash,
         role: "SUPER_ADMIN",
         status: "active",
+        current_session_token: sessionId,
+        session_created_at: new Date().toISOString(),
+        session_ip_address: clientIp,
       })
       .select("id, username, email, role")
       .single();
@@ -70,6 +79,7 @@ export async function POST(request: NextRequest) {
       username: created.username,
       email: created.email,
       role: created.role,
+      sessionId,
     });
 
     const response = NextResponse.json({

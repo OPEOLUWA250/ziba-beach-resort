@@ -39,11 +39,33 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
 
+    const { data: targetUser } = await supabaseServer
+      .from("admin_users")
+      .select("id, role")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (!targetUser) {
+      return NextResponse.json({ error: "Admin not found" }, { status: 404 });
+    }
+
+    // Prevent downgrading SUPER_ADMIN to ADMIN
+    if (targetUser.role === "SUPER_ADMIN" && body.role === "ADMIN") {
+      return NextResponse.json(
+        { error: "Cannot downgrade SUPER_ADMIN to ADMIN" },
+        { status: 400 },
+      );
+    }
+
     const updates: Record<string, any> = {};
 
     if (body.username) updates.username = body.username;
     if (body.email) updates.email = String(body.email).toLowerCase();
-    if (body.role && ["SUPER_ADMIN", "ADMIN"].includes(body.role)) {
+    if (
+      body.role &&
+      ["SUPER_ADMIN", "ADMIN"].includes(body.role) &&
+      !(targetUser.role === "SUPER_ADMIN") // Don't allow role changes for SUPER_ADMIN
+    ) {
       updates.role = body.role;
     }
     if (body.status && ["active", "inactive", "locked"].includes(body.status)) {
@@ -59,7 +81,9 @@ export async function PUT(
       .from("admin_users")
       .update(updates)
       .eq("id", id)
-      .select("id, username, email, role, status, last_login, created_by, created_at")
+      .select(
+        "id, username, email, role, status, last_login, created_by, created_at",
+      )
       .single();
 
     if (error) throw error;
@@ -115,7 +139,10 @@ export async function DELETE(
       );
     }
 
-    const { error } = await supabaseServer.from("admin_users").delete().eq("id", id);
+    const { error } = await supabaseServer
+      .from("admin_users")
+      .delete()
+      .eq("id", id);
     if (error) throw error;
 
     await supabaseServer.from("admin_audit_logs").insert({

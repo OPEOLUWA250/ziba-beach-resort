@@ -130,7 +130,9 @@ export default function Rooms() {
         if (data?.rooms && Array.isArray(data.rooms)) {
           data.rooms.forEach((room: any) => {
             if (room?.id) {
-              statusMap[room.id] = String(room.status || "available").toLowerCase();
+              statusMap[room.id] = String(
+                room.status || "available",
+              ).toLowerCase();
             }
           });
         }
@@ -172,7 +174,6 @@ export default function Rooms() {
         {/* Rooms Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {rooms.map((room, idx) => (
-            
             <div
               key={room.id}
               className={`group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 ease-out transform hover:-translate-y-2 flex flex-col h-full ${

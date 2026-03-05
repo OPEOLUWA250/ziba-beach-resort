@@ -95,6 +95,21 @@ export default function AdminLayout({
     );
   }
 
+  // Filter navigation items based on admin role
+  const filteredNavItems = adminNavItems.filter((item) => {
+    if (adminProfile?.role === "SUPER_ADMIN") {
+      return true; // SUPER_ADMIN sees all items
+    }
+    // ADMIN role: hide Rooms, Experiences, Popups, Admin System
+    const restrictedForAdmin = [
+      "/admin/rooms",
+      "/admin/experiences",
+      "/admin/popups",
+      "/admin/users",
+    ];
+    return !restrictedForAdmin.includes(item.href);
+  });
+
   return (
     <div className="flex min-h-screen bg-gray-900">
       {/* Sidebar */}
@@ -124,7 +139,7 @@ export default function AdminLayout({
 
         {/* Navigation */}
         <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          {adminNavItems.map((item) => {
+          {filteredNavItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
 
@@ -150,21 +165,16 @@ export default function AdminLayout({
         {/* Sidebar Footer */}
         <div className="p-6 border-t border-gray-700 bg-linear-to-t from-gray-800/40 to-transparent space-y-4">
           <div className="px-4 py-3 rounded-lg bg-gray-800/50 border border-gray-700">
-            <p className="text-gray-400 text-xs uppercase tracking-wider font-semibold mb-2">
+            <p className="text-gray-400 text-xs uppercase tracking-wider font-semibold mb-3">
               Logged In As
             </p>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-bold">
-                A
-              </div>
-              <div>
-                <p className="text-white text-sm font-medium">
-                  {adminProfile?.username || "Admin"}
-                </p>
-                <p className="text-gray-500 text-xs">
-                  {adminProfile?.email || "system@ziba.local"}
-                </p>
-              </div>
+            <div>
+              <p className="text-white text-sm font-medium">
+                {adminProfile?.username || "Admin"}
+              </p>
+              <p className="text-gray-500 text-xs mt-1">
+                {adminProfile?.email || "system@ziba.local"}
+              </p>
             </div>
           </div>
           <button

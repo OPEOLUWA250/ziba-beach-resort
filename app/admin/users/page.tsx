@@ -1,7 +1,17 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { AlertCircle, CheckCircle2, Edit2, Plus, Shield, Trash2, Users } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Edit2,
+  Eye,
+  EyeOff,
+  Plus,
+  Shield,
+  Trash2,
+  Users,
+} from "lucide-react";
 
 interface AdminUser {
   id: string;
@@ -46,6 +56,9 @@ export default function AdminSystemPage() {
     role: "ADMIN",
     status: "active",
   });
+
+  const [showCreatePassword, setShowCreatePassword] = useState(false);
+  const [showEditPassword, setShowEditPassword] = useState(false);
 
   const isSuperAdmin = sessionAdmin?.role === "SUPER_ADMIN";
 
@@ -113,10 +126,17 @@ export default function AdminSystemPage() {
       });
 
       const payload = await response.json();
-      if (!response.ok) throw new Error(payload.error || "Failed to create admin");
+      if (!response.ok)
+        throw new Error(payload.error || "Failed to create admin");
 
       setShowCreate(false);
-      setCreateForm({ username: "", email: "", password: "", role: "ADMIN", status: "active" });
+      setCreateForm({
+        username: "",
+        email: "",
+        password: "",
+        role: "ADMIN",
+        status: "active",
+      });
       await fetchData();
       showSuccess("Admin created successfully");
     } catch (err: any) {
@@ -151,7 +171,8 @@ export default function AdminSystemPage() {
       });
 
       const payload = await response.json();
-      if (!response.ok) throw new Error(payload.error || "Failed to update admin");
+      if (!response.ok)
+        throw new Error(payload.error || "Failed to update admin");
 
       setEditingUser(null);
       await fetchData();
@@ -175,7 +196,8 @@ export default function AdminSystemPage() {
       });
 
       const payload = await response.json();
-      if (!response.ok) throw new Error(payload.error || "Failed to delete admin");
+      if (!response.ok)
+        throw new Error(payload.error || "Failed to delete admin");
 
       await fetchData();
       showSuccess("Admin deleted successfully");
@@ -190,8 +212,12 @@ export default function AdminSystemPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-light text-white cormorant">Admin System</h1>
-          <p className="text-gray-400">SUPER_ADMIN controlled admin management</p>
+          <h1 className="text-3xl font-light text-white cormorant">
+            Admin System
+          </h1>
+          <p className="text-gray-400">
+            SUPER_ADMIN controlled admin management
+          </p>
         </div>
         {isSuperAdmin && (
           <button
@@ -234,7 +260,8 @@ export default function AdminSystemPage() {
 
       {!isSuperAdmin && (
         <div className="bg-amber-900/20 border border-amber-900/50 rounded-lg p-4 text-amber-300 text-sm">
-          You are logged in as ADMIN. Only SUPER_ADMIN can create/edit/delete admins.
+          You are logged in as ADMIN. Only SUPER_ADMIN can create/edit/delete
+          admins.
         </div>
       )}
 
@@ -250,41 +277,56 @@ export default function AdminSystemPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-700 bg-gray-900/40">
-                  <th className="px-4 py-3 text-left text-gray-400">Username</th>
+                  <th className="px-4 py-3 text-left text-gray-400">
+                    Username
+                  </th>
                   <th className="px-4 py-3 text-left text-gray-400">Email</th>
                   <th className="px-4 py-3 text-left text-gray-400">Role</th>
                   <th className="px-4 py-3 text-left text-gray-400">Status</th>
-                  <th className="px-4 py-3 text-left text-gray-400">Last Login</th>
+                  <th className="px-4 py-3 text-left text-gray-400">
+                    Last Login
+                  </th>
                   <th className="px-4 py-3 text-left text-gray-400">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map((user) => (
-                  <tr key={user.id} className="border-b border-gray-700 hover:bg-gray-700/20">
-                    <td className="px-4 py-3 text-white font-medium">{user.username}</td>
+                  <tr
+                    key={user.id}
+                    className="border-b border-gray-700 hover:bg-gray-700/20"
+                  >
+                    <td className="px-4 py-3 text-white font-medium">
+                      {user.username}
+                    </td>
                     <td className="px-4 py-3 text-gray-300">{user.email}</td>
                     <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        user.role === "SUPER_ADMIN"
-                          ? "bg-blue-900/40 text-blue-300"
-                          : "bg-gray-700 text-gray-200"
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          user.role === "SUPER_ADMIN"
+                            ? "bg-blue-900/40 text-blue-300"
+                            : "bg-gray-700 text-gray-200"
+                        }`}
+                      >
                         {user.role}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        user.status === "active"
-                          ? "bg-green-900/40 text-green-300"
-                          : user.status === "locked"
-                            ? "bg-red-900/40 text-red-300"
-                            : "bg-gray-700 text-gray-300"
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          user.status === "active"
+                            ? "bg-green-900/40 text-green-300"
+                            : user.status === "locked"
+                              ? "bg-red-900/40 text-red-300"
+                              : "bg-gray-700 text-gray-300"
+                        }`}
+                      >
                         {user.status}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-gray-300">
-                      {user.last_login ? new Date(user.last_login).toLocaleString() : "Never"}
+                      {user.last_login
+                        ? new Date(user.last_login).toLocaleString()
+                        : "Never"}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
@@ -310,7 +352,9 @@ export default function AdminSystemPage() {
                           </>
                         )}
                         {!isSuperAdmin && (
-                          <span className="text-xs text-gray-500 flex items-center gap-1"><Shield size={12} /> SUPER_ADMIN only</span>
+                          <span className="text-xs text-gray-500 flex items-center gap-1">
+                            <Shield size={12} /> SUPER_ADMIN only
+                          </span>
                         )}
                       </div>
                     </td>
@@ -324,25 +368,87 @@ export default function AdminSystemPage() {
 
       {showCreate && isSuperAdmin && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <form onSubmit={handleCreate} className="w-full max-w-lg bg-gray-900 border border-gray-700 rounded-2xl p-6 space-y-4">
+          <form
+            onSubmit={handleCreate}
+            className="w-full max-w-lg bg-gray-900 border border-gray-700 rounded-2xl p-6 space-y-4"
+          >
             <h3 className="text-xl font-semibold text-white">Create Admin</h3>
-            <input className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white" placeholder="Username" value={createForm.username} onChange={(e)=>setCreateForm((p)=>({...p, username:e.target.value}))} required />
-            <input className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white" placeholder="Email" value={createForm.email} onChange={(e)=>setCreateForm((p)=>({...p, email:e.target.value}))} required />
-            <input type="password" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white" placeholder="Password" value={createForm.password} onChange={(e)=>setCreateForm((p)=>({...p, password:e.target.value}))} required />
+            <input
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white"
+              placeholder="Username"
+              value={createForm.username}
+              onChange={(e) =>
+                setCreateForm((p) => ({ ...p, username: e.target.value }))
+              }
+              required
+            />
+            <input
+              type="password"
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white"
+              placeholder="Email"
+              value={createForm.email}
+              onChange={(e) =>
+                setCreateForm((p) => ({ ...p, email: e.target.value }))
+              }
+              required
+            />
+            <div className="relative">
+              <input
+                type={showCreatePassword ? "text" : "password"}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 pr-10 text-white"
+                placeholder="Password (min 10 chars, uppercase, lowercase, number, special char)"
+                value={createForm.password}
+                onChange={(e) =>
+                  setCreateForm((p) => ({ ...p, password: e.target.value }))
+                }
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowCreatePassword(!showCreatePassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+              >
+                {showCreatePassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
             <div className="grid grid-cols-2 gap-3">
-              <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white" value={createForm.role} onChange={(e)=>setCreateForm((p)=>({...p, role:e.target.value}))}>
+              <select
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white"
+                value={createForm.role}
+                onChange={(e) =>
+                  setCreateForm((p) => ({ ...p, role: e.target.value }))
+                }
+              >
                 <option value="ADMIN">ADMIN</option>
                 <option value="SUPER_ADMIN">SUPER_ADMIN</option>
               </select>
-              <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white" value={createForm.status} onChange={(e)=>setCreateForm((p)=>({...p, status:e.target.value}))}>
+              <select
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white"
+                value={createForm.status}
+                onChange={(e) =>
+                  setCreateForm((p) => ({ ...p, status: e.target.value }))
+                }
+              >
                 <option value="active">active</option>
                 <option value="inactive">inactive</option>
                 <option value="locked">locked</option>
               </select>
             </div>
             <div className="flex justify-end gap-3 pt-2">
-              <button type="button" onClick={()=>setShowCreate(false)} className="px-4 py-2 rounded-lg bg-gray-700 text-white">Cancel</button>
-              <button type="submit" disabled={saving} className="px-4 py-2 rounded-lg bg-blue-900 text-white">{saving ? "Saving..." : "Create"}</button>
+              <button
+                type="button"
+                onClick={() => setShowCreate(false)}
+                className="px-4 py-2 rounded-lg bg-gray-700 text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="px-4 py-2 rounded-lg bg-blue-900 text-white"
+              >
+                {saving ? "Saving..." : "Create"}
+              </button>
             </div>
           </form>
         </div>
@@ -350,25 +456,95 @@ export default function AdminSystemPage() {
 
       {editingUser && isSuperAdmin && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <form onSubmit={handleEdit} className="w-full max-w-lg bg-gray-900 border border-gray-700 rounded-2xl p-6 space-y-4">
+          <form
+            onSubmit={handleEdit}
+            className="w-full max-w-lg bg-gray-900 border border-gray-700 rounded-2xl p-6 space-y-4"
+          >
             <h3 className="text-xl font-semibold text-white">Edit Admin</h3>
-            <input className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white" placeholder="Username" value={editForm.username} onChange={(e)=>setEditForm((p)=>({...p, username:e.target.value}))} required />
-            <input className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white" placeholder="Email" value={editForm.email} onChange={(e)=>setEditForm((p)=>({...p, email:e.target.value}))} required />
-            <input type="password" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white" placeholder="New password (leave blank to keep current)" value={editForm.password} onChange={(e)=>setEditForm((p)=>({...p, password:e.target.value}))} />
+            <input
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white"
+              placeholder="Username"
+              value={editForm.username}
+              onChange={(e) =>
+                setEditForm((p) => ({ ...p, username: e.target.value }))
+              }
+              required
+            />
+            <input
+              type="password"
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white"
+              placeholder="Email"
+              value={editForm.email}
+              onChange={(e) =>
+                setEditForm((p) => ({ ...p, email: e.target.value }))
+              }
+              required
+            />
+            <div className="relative">
+              <input
+                type={showEditPassword ? "text" : "password"}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 pr-10 text-white"
+                placeholder="New password (leave blank to keep current)"
+                value={editForm.password}
+                onChange={(e) =>
+                  setEditForm((p) => ({ ...p, password: e.target.value }))
+                }
+              />
+              <button
+                type="button"
+                onClick={() => setShowEditPassword(!showEditPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+              >
+                {showEditPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
             <div className="grid grid-cols-2 gap-3">
-              <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white" value={editForm.role} onChange={(e)=>setEditForm((p)=>({...p, role:e.target.value}))}>
-                <option value="ADMIN">ADMIN</option>
-                <option value="SUPER_ADMIN">SUPER_ADMIN</option>
-              </select>
-              <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white" value={editForm.status} onChange={(e)=>setEditForm((p)=>({...p, status:e.target.value}))}>
+              <div>
+                {editingUser?.role === "SUPER_ADMIN" ? (
+                  <div className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 text-white flex items-center cursor-not-allowed opacity-60">
+                    <span className="text-blue-300 font-medium">SUPER_ADMIN</span>
+                    <span className="text-xs text-gray-500 ml-auto">(Immutable)</span>
+                  </div>
+                ) : (
+                  <select
+                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white"
+                    value={editForm.role}
+                    onChange={(e) =>
+                      setEditForm((p) => ({ ...p, role: e.target.value }))
+                    }
+                  >
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+                  </select>
+                )}
+              </div>
+              <select
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white"
+                value={editForm.status}
+                onChange={(e) =>
+                  setEditForm((p) => ({ ...p, status: e.target.value }))
+                }
+              >
                 <option value="active">active</option>
                 <option value="inactive">inactive</option>
                 <option value="locked">locked</option>
               </select>
             </div>
             <div className="flex justify-end gap-3 pt-2">
-              <button type="button" onClick={()=>setEditingUser(null)} className="px-4 py-2 rounded-lg bg-gray-700 text-white">Cancel</button>
-              <button type="submit" disabled={saving} className="px-4 py-2 rounded-lg bg-blue-900 text-white">{saving ? "Saving..." : "Save"}</button>
+              <button
+                type="button"
+                onClick={() => setEditingUser(null)}
+                className="px-4 py-2 rounded-lg bg-gray-700 text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="px-4 py-2 rounded-lg bg-blue-900 text-white"
+              >
+                {saving ? "Saving..." : "Save"}
+              </button>
             </div>
           </form>
         </div>

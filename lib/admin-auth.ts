@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 export type AdminRole = "SUPER_ADMIN" | "ADMIN";
 
@@ -8,6 +9,7 @@ export interface AdminSessionPayload {
   username: string;
   email: string;
   role: AdminRole;
+  sessionId: string; // Unique identifier for this session
 }
 
 const SESSION_COOKIE_NAME = "ziba_admin_session";
@@ -55,4 +57,12 @@ export function validatePasswordPolicy(password: string) {
   const hasSpecial = /[^A-Za-z0-9]/.test(password);
 
   return hasMinLength && hasUpper && hasLower && hasNumber && hasSpecial;
+}
+
+/**
+ * Generate a unique session identifier
+ * Used to track and invalidate sessions
+ */
+export function generateSessionId() {
+  return crypto.randomBytes(32).toString("hex");
 }

@@ -82,10 +82,14 @@ export default function OperationsCheckInOut() {
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [roomNames, setRoomNames] = useState<Record<string, string>>({});
-  const [notesMap, setNotesMap] = useState<Record<string, { note?: string; issue?: string }>>({});
+  const [notesMap, setNotesMap] = useState<
+    Record<string, { note?: string; issue?: string }>
+  >({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"workflow" | "monitor">("workflow");
+  const [activeTab, setActiveTab] = useState<"workflow" | "monitor">(
+    "workflow",
+  );
   const [checkInForm, setCheckInForm] = useState({ bookingId: "", notes: "" });
   const [checkOutForm, setCheckOutForm] = useState({
     bookingId: "",
@@ -192,7 +196,9 @@ export default function OperationsCheckInOut() {
 
     try {
       setIsSubmitting(true);
-      const booking = bookings.find((b) => String(b.id) === String(checkInForm.bookingId));
+      const booking = bookings.find(
+        (b) => String(b.id) === String(checkInForm.bookingId),
+      );
       if (!booking) return;
 
       const updated = await updateBookingStatus(booking.id, "CHECKED_IN");
@@ -202,7 +208,9 @@ export default function OperationsCheckInOut() {
         }
         await refreshData();
         setCheckInForm({ bookingId: "", notes: "" });
-        setSuccessMessage(`Guest ${booking.guest_name} checked in successfully!`);
+        setSuccessMessage(
+          `Guest ${booking.guest_name} checked in successfully!`,
+        );
         setTimeout(() => setSuccessMessage(null), 3000);
       }
     } catch (err) {
@@ -219,7 +227,9 @@ export default function OperationsCheckInOut() {
 
     try {
       setIsSubmitting(true);
-      const booking = bookings.find((b) => String(b.id) === String(checkOutForm.bookingId));
+      const booking = bookings.find(
+        (b) => String(b.id) === String(checkOutForm.bookingId),
+      );
       if (!booking) return;
 
       const updated = await updateBookingStatus(booking.id, "COMPLETED");
@@ -232,7 +242,9 @@ export default function OperationsCheckInOut() {
         }
         await refreshData();
         setCheckOutForm({ bookingId: "", roomCondition: "", notes: "" });
-        setSuccessMessage(`Guest ${booking.guest_name} checked out successfully!`);
+        setSuccessMessage(
+          `Guest ${booking.guest_name} checked out successfully!`,
+        );
         setTimeout(() => setSuccessMessage(null), 3000);
       }
     } catch (err) {
@@ -244,7 +256,10 @@ export default function OperationsCheckInOut() {
   };
 
   const handleAddNote = async (booking: Booking) => {
-    const note = window.prompt("Add status note", notesMap[booking.id]?.note || "");
+    const note = window.prompt(
+      "Add status note",
+      notesMap[booking.id]?.note || "",
+    );
     if (note === null) return;
     if (!note.trim()) return;
 
@@ -258,7 +273,10 @@ export default function OperationsCheckInOut() {
   };
 
   const handleFlagIssue = async (booking: Booking) => {
-    const issue = window.prompt("Flag an issue", notesMap[booking.id]?.issue || "");
+    const issue = window.prompt(
+      "Flag an issue",
+      notesMap[booking.id]?.issue || "",
+    );
     if (issue === null) return;
     if (!issue.trim()) return;
 
@@ -288,7 +306,9 @@ export default function OperationsCheckInOut() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-light text-white cormorant">Check-In / Check-Out</h1>
+        <h1 className="text-3xl font-light text-white cormorant">
+          Check-In / Check-Out
+        </h1>
         <p className="text-gray-400">Manage guest arrivals and departures</p>
       </div>
 
@@ -344,11 +364,16 @@ export default function OperationsCheckInOut() {
 
             <form onSubmit={handleCheckIn} className="space-y-4">
               <div>
-                <label className="text-gray-400 text-sm font-light block mb-2">Select Guest (Confirmed)</label>
+                <label className="text-gray-400 text-sm font-light block mb-2">
+                  Select Guest (Confirmed)
+                </label>
                 <select
                   value={checkInForm.bookingId}
                   onChange={(e) =>
-                    setCheckInForm((prev) => ({ ...prev, bookingId: e.target.value }))
+                    setCheckInForm((prev) => ({
+                      ...prev,
+                      bookingId: e.target.value,
+                    }))
                   }
                   className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-500"
                 >
@@ -362,11 +387,18 @@ export default function OperationsCheckInOut() {
               </div>
 
               <div>
-                <label className="text-gray-400 text-sm font-light block mb-2">Notes (Optional)</label>
+                <label className="text-gray-400 text-sm font-light block mb-2">
+                  Notes (Optional)
+                </label>
                 <textarea
                   placeholder="Any special requirements..."
                   value={checkInForm.notes}
-                  onChange={(e) => setCheckInForm((prev) => ({ ...prev, notes: e.target.value }))}
+                  onChange={(e) =>
+                    setCheckInForm((prev) => ({
+                      ...prev,
+                      notes: e.target.value,
+                    }))
+                  }
                   rows={3}
                   className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-green-500 resize-none"
                 />
@@ -391,11 +423,16 @@ export default function OperationsCheckInOut() {
 
             <form onSubmit={handleCheckOut} className="space-y-4">
               <div>
-                <label className="text-gray-400 text-sm font-light block mb-2">Select Guest (Checked In)</label>
+                <label className="text-gray-400 text-sm font-light block mb-2">
+                  Select Guest (Checked In)
+                </label>
                 <select
                   value={checkOutForm.bookingId}
                   onChange={(e) =>
-                    setCheckOutForm((prev) => ({ ...prev, bookingId: e.target.value }))
+                    setCheckOutForm((prev) => ({
+                      ...prev,
+                      bookingId: e.target.value,
+                    }))
                   }
                   className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                 >
@@ -409,11 +446,16 @@ export default function OperationsCheckInOut() {
               </div>
 
               <div>
-                <label className="text-gray-400 text-sm font-light block mb-2">Room Condition</label>
+                <label className="text-gray-400 text-sm font-light block mb-2">
+                  Room Condition
+                </label>
                 <select
                   value={checkOutForm.roomCondition}
                   onChange={(e) =>
-                    setCheckOutForm((prev) => ({ ...prev, roomCondition: e.target.value }))
+                    setCheckOutForm((prev) => ({
+                      ...prev,
+                      roomCondition: e.target.value,
+                    }))
                   }
                   className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                 >
@@ -424,11 +466,18 @@ export default function OperationsCheckInOut() {
               </div>
 
               <div>
-                <label className="text-gray-400 text-sm font-light block mb-2">Notes (Optional)</label>
+                <label className="text-gray-400 text-sm font-light block mb-2">
+                  Notes (Optional)
+                </label>
                 <textarea
                   placeholder="Any damage or issues to report..."
                   value={checkOutForm.notes}
-                  onChange={(e) => setCheckOutForm((prev) => ({ ...prev, notes: e.target.value }))}
+                  onChange={(e) =>
+                    setCheckOutForm((prev) => ({
+                      ...prev,
+                      notes: e.target.value,
+                    }))
+                  }
                   rows={3}
                   className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 resize-none"
                 />
@@ -455,14 +504,18 @@ export default function OperationsCheckInOut() {
                   <LogIn size={16} className="text-green-400" />
                   Ready for Check-In
                 </p>
-                <p className="text-white font-bold text-lg">{checkInReady.length}</p>
+                <p className="text-white font-bold text-lg">
+                  {checkInReady.length}
+                </p>
               </div>
               <div className="flex items-center justify-between">
                 <p className="text-gray-400 flex items-center gap-2">
                   <LogOut size={16} className="text-blue-400" />
                   Ready for Check-Out
                 </p>
-                <p className="text-white font-bold text-lg">{checkOutReady.length}</p>
+                <p className="text-white font-bold text-lg">
+                  {checkOutReady.length}
+                </p>
               </div>
               <div className="flex items-center justify-between">
                 <p className="text-gray-400 flex items-center gap-2">
@@ -470,7 +523,10 @@ export default function OperationsCheckInOut() {
                   Completed
                 </p>
                 <p className="text-white font-bold text-lg">
-                  {bookings.filter((b) => b.payment_status === "COMPLETED").length}
+                  {
+                    bookings.filter((b) => b.payment_status === "COMPLETED")
+                      .length
+                  }
                 </p>
               </div>
             </div>
@@ -480,23 +536,39 @@ export default function OperationsCheckInOut() {
         <div className="bg-gray-800 rounded-2xl border border-gray-700 shadow-lg overflow-hidden">
           <div className="bg-gray-950 p-4 border-b border-gray-700">
             <h3 className="text-white font-bold">Checked-In Guest Monitor</h3>
-            <p className="text-gray-400 text-sm mt-1">Monitor all currently checked-in guests in one place</p>
+            <p className="text-gray-400 text-sm mt-1">
+              Monitor all currently checked-in guests in one place
+            </p>
           </div>
 
           {checkedInGuests.length === 0 ? (
-            <div className="p-8 text-center text-gray-400">No checked-in guests right now.</div>
+            <div className="p-8 text-center text-gray-400">
+              No checked-in guests right now.
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-700 bg-gray-900/40">
-                    <th className="px-3 py-3 text-left text-gray-400">Guest Name</th>
+                    <th className="px-3 py-3 text-left text-gray-400">
+                      Guest Name
+                    </th>
                     <th className="px-3 py-3 text-left text-gray-400">Room</th>
-                    <th className="px-3 py-3 text-left text-gray-400">Check-In Time</th>
-                    <th className="px-3 py-3 text-left text-gray-400">Stay Duration</th>
-                    <th className="px-3 py-3 text-left text-gray-400">Checkout Due</th>
-                    <th className="px-3 py-3 text-left text-gray-400">Status Notes</th>
-                    <th className="px-3 py-3 text-left text-gray-400">Quick Actions</th>
+                    <th className="px-3 py-3 text-left text-gray-400">
+                      Check-In Time
+                    </th>
+                    <th className="px-3 py-3 text-left text-gray-400">
+                      Stay Duration
+                    </th>
+                    <th className="px-3 py-3 text-left text-gray-400">
+                      Checkout Due
+                    </th>
+                    <th className="px-3 py-3 text-left text-gray-400">
+                      Status Notes
+                    </th>
+                    <th className="px-3 py-3 text-left text-gray-400">
+                      Quick Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -504,18 +576,41 @@ export default function OperationsCheckInOut() {
                     const note = notesMap[booking.id]?.note;
                     const issue = notesMap[booking.id]?.issue;
                     return (
-                      <tr key={booking.id} className="border-b border-gray-700 hover:bg-gray-700/20">
+                      <tr
+                        key={booking.id}
+                        className="border-b border-gray-700 hover:bg-gray-700/20"
+                      >
                         <td className="px-3 py-3">
-                          <p className="text-white font-medium">{booking.guest_name}</p>
-                          <p className="text-gray-500 text-xs">{booking.booking_reference_code}</p>
+                          <p className="text-white font-medium">
+                            {booking.guest_name}
+                          </p>
+                          <p className="text-gray-500 text-xs">
+                            {booking.booking_reference_code}
+                          </p>
                         </td>
-                        <td className="px-3 py-3 text-gray-200">{roomNames[booking.room_id] || booking.room_id}</td>
-                        <td className="px-3 py-3 text-gray-200">{formatDateTime(booking.check_in_date)}</td>
-                        <td className="px-3 py-3 text-gray-200">{getStayDuration(booking.check_in_date)}</td>
-                        <td className="px-3 py-3 text-gray-200">{formatDateTime(booking.check_out_date)}</td>
+                        <td className="px-3 py-3 text-gray-200">
+                          {roomNames[booking.room_id] || booking.room_id}
+                        </td>
+                        <td className="px-3 py-3 text-gray-200">
+                          {formatDateTime(booking.check_in_date)}
+                        </td>
+                        <td className="px-3 py-3 text-gray-200">
+                          {getStayDuration(booking.check_in_date)}
+                        </td>
+                        <td className="px-3 py-3 text-gray-200">
+                          {formatDateTime(booking.check_out_date)}
+                        </td>
                         <td className="px-3 py-3">
-                          {note ? <p className="text-gray-200 text-xs mb-1">📝 {note}</p> : <p className="text-gray-500 text-xs">No note</p>}
-                          {issue ? <p className="text-red-300 text-xs">🚩 {issue}</p> : null}
+                          {note ? (
+                            <p className="text-gray-200 text-xs mb-1">
+                              📝 {note}
+                            </p>
+                          ) : (
+                            <p className="text-gray-500 text-xs">No note</p>
+                          )}
+                          {issue ? (
+                            <p className="text-red-300 text-xs">🚩 {issue}</p>
+                          ) : null}
                         </td>
                         <td className="px-3 py-3">
                           <div className="flex flex-wrap gap-2">
