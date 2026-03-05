@@ -28,14 +28,32 @@ export async function GET(request: NextRequest) {
     const bookedDates: string[] = [];
 
     bookings.forEach((booking: any) => {
-      const checkIn = new Date(booking.check_in_date);
-      const checkOut = new Date(booking.check_out_date);
+      // Parse dates as UTC to avoid timezone shifts
+      const checkInStr = booking.check_in_date.split("T")[0]; // Get YYYY-MM-DD
+      const checkOutStr = booking.check_out_date.split("T")[0]; // Get YYYY-MM-DD
 
-      // Add all dates in the booking range
+      const [checkInYear, checkInMonth, checkInDay] = checkInStr
+        .split("-")
+        .map(Number);
+      const [checkOutYear, checkOutMonth, checkOutDay] = checkOutStr
+        .split("-")
+        .map(Number);
+
+      const checkIn = new Date(
+        Date.UTC(checkInYear, checkInMonth - 1, checkInDay),
+      );
+      const checkOut = new Date(
+        Date.UTC(checkOutYear, checkOutMonth - 1, checkOutDay),
+      );
+
+      // Add all dates in the booking range (check-in to day before check-out)
       const currentDate = new Date(checkIn);
       while (currentDate < checkOut) {
-        bookedDates.push(currentDate.toISOString().split("T")[0]); // YYYY-MM-DD format
-        currentDate.setDate(currentDate.getDate() + 1);
+        const year = currentDate.getUTCFullYear();
+        const month = String(currentDate.getUTCMonth() + 1).padStart(2, "0");
+        const day = String(currentDate.getUTCDate()).padStart(2, "0");
+        bookedDates.push(`${year}-${month}-${day}`);
+        currentDate.setUTCDate(currentDate.getUTCDate() + 1);
       }
     });
 

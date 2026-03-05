@@ -131,7 +131,11 @@ async function handleChargeSuccess(data: any) {
     console.log(`[Paystack Webhook] Found booking: ${booking.id}`);
 
     // If already in a post-payment state, skip duplicate webhook handling
-    if (["PENDING", "CONFIRMED", "CHECKED_IN", "COMPLETED"].includes(booking.payment_status)) {
+    if (
+      ["PENDING", "CONFIRMED", "CHECKED_IN", "COMPLETED"].includes(
+        booking.payment_status,
+      )
+    ) {
       console.log(
         `[Paystack Webhook] Booking already in post-payment state (${booking.payment_status}), skipping`,
       );

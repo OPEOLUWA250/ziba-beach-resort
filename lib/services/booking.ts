@@ -15,15 +15,18 @@ export async function isRoomAvailable(
   checkOutDate: Date,
 ): Promise<boolean> {
   try {
+    console.log(`[Availability Check] Room ${roomId}: Checking ${checkInDate.toISOString()} to ${checkOutDate.toISOString()}`);
+    
     const reservationHoldMinutes = 10;
     const reservedUntil = new Date(
       Date.now() - reservationHoldMinutes * 60 * 1000,
     );
 
-    // Check for CONFIRMED and paid PENDING bookings (always blocking)
+    // Check for CONFIRMED and PENDING bookings (always blocking)
+    // PENDING includes: admin-created bookings and customer bookings awaiting payment confirmation
     const { data: blockingBookings, error: blockingError } = await supabase
       .from("bookings")
-      .select("id, payment_status")
+      .select("id, payment_status, check_in_date, check_out_date")
       .eq("room_id", roomId)
       .in("payment_status", ["CONFIRMED", "PENDING"])
       .gt("check_out_date", checkInDate.toISOString())
@@ -32,7 +35,8 @@ export async function isRoomAvailable(
     if (blockingError) throw blockingError;
     if (blockingBookings && blockingBookings.length > 0) {
       console.log(
-        `[Availability] Room ${roomId} has CONFIRMED/PENDING booking blocking dates`,
+        `[Availability] Room ${roomId} has CONFIRMED/PENDING booking blocking dates:`,
+        blockingBookings
       );
       return false;
     }
@@ -61,7 +65,9 @@ export async function isRoomAvailable(
     return true;
   } catch (error) {
     console.error("Error checking room availability:", error);
-    return true;
+    // SECURITY: Return false on error to prevent double bookings
+    // Better to block a booking than allow a double booking
+    return false;
   }
 }
 
@@ -76,7 +82,8 @@ export async function getRoomBookings(
       Date.now() - reservationHoldMinutes * 60 * 1000,
     );
 
-    // Get all CONFIRMED and paid PENDING bookings
+    // Get all CONFIRMED and PENDING bookings (this blocks dates on the booking calendar)
+    // PENDING includes: admin-created bookings and customer bookings awaiting payment confirmation
     const { data: blockingBookings, error: blockingError } = await supabase
       .from("bookings")
       .select("*")

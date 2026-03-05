@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
       specialRequests,
       roomPriceNGN,
       numberOfNights,
+      paymentStatus,
     } = body;
 
     // Validation
@@ -79,16 +80,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate unique Paystack reference
-    const paystackReference = `ziba-${Date.now()}-${Math.random().toString(36).substring(7)}`;
-
-    // Generate booking reference code: ZB-YYYY-NNNNN
+    // Generate booking reference code: ZB-YYYY-NNNNN (Always generated)
     const year = new Date().getFullYear();
     const randomNumber = Math.floor(Math.random() * 90000) + 10000; // 5 digit random number
     const bookingReferenceCode = `ZB-${year}-${randomNumber}`;
 
-    // Save booking to database with RESERVED status while payment is in progress.
-    // Booking moves to PENDING only after payment is genuinely confirmed.
+    // Determine if this is admin-created (PENDING) or customer booking (RESERVED)
+    const isAdminCreated = paymentStatus === "PENDING";
+
+    // Only generate Paystack reference for customer bookings, not for admin-created
+    const paystackReference = isAdminCreated
+      ? null
+      : `ziba-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+
+    // Save booking to database
     const { data: booking, error: bookingError } = await supabase
       .from("bookings")
       .insert({
@@ -103,7 +108,7 @@ export async function POST(request: NextRequest) {
         room_price_ngn: roomPriceNGN,
         number_of_nights: numberOfNights,
         total_amount_ngn: totalAmountNGN,
-        payment_status: "RESERVED",
+        payment_status: paymentStatus || "RESERVED",
         paystack_reference: paystackReference,
         booking_reference_code: bookingReferenceCode,
       })
@@ -118,88 +123,96 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Initialize Paystack payment
-    const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;
+    // Only perform Paystack operations for customer bookings (RESERVED status)
+    if (!isAdminCreated) {
+      // Initialize Paystack payment
+      const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;
 
-    if (!paystackSecretKey) {
-      console.error("Missing Paystack secret key");
-      return NextResponse.json(
-        { error: "Payment gateway configuration error" },
-        { status: 500 },
-      );
-    }
-
-    // Call Paystack API to initialize transaction
-    const paystackResponse = await fetch(
-      "https://api.paystack.co/transaction/initialize",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${paystackSecretKey}`,
-        },
-        body: JSON.stringify({
-          email: guestEmail,
-          amount: totalAmountNGN * 100, // Paystack uses kobo (1 NGN = 100 kobo)
-          reference: paystackReference,
-          metadata: {
-            booking_id: booking.id,
-            room_id: roomId,
-            check_in_date: checkIn.toISOString(),
-            check_out_date: checkOut.toISOString(),
-            guest_name: guestName,
-            guest_phone: guestPhone,
-          },
-        }),
-      },
-    );
-
-    const paystackData = await paystackResponse.json();
-
-    if (!paystackResponse.ok || !paystackData.status) {
-      console.error("Paystack initialization failed:", paystackData);
-      return NextResponse.json(
-        { error: "Failed to initialize payment" },
-        { status: 500 },
-      );
-    }
-
-    // Update booking with Paystack details (optional - columns may not exist yet)
-    const { error: updateError } = await supabase
-      .from("bookings")
-      .update({
-        paystack_reference: paystackReference,
-        paystack_access_code: paystackData.data.access_code,
-        paystack_authorization_url: paystackData.data.authorization_url,
-      })
-      .eq("id", booking.id);
-
-    if (updateError) {
-      // Log but don't fail if columns don't exist
-      if (updateError.code === "PGRST204") {
-        console.warn(
-          "⚠️  Paystack columns not yet created in database (will add in next migration):",
-          updateError.message,
-        );
-      } else {
-        console.error(
-          "Error updating booking with Paystack details:",
-          updateError,
+      if (!paystackSecretKey) {
+        console.error("Missing Paystack secret key");
+        return NextResponse.json(
+          { error: "Payment gateway configuration error" },
+          { status: 500 },
         );
       }
+
+      // Call Paystack API to initialize transaction
+      const paystackResponse = await fetch(
+        "https://api.paystack.co/transaction/initialize",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${paystackSecretKey}`,
+          },
+          body: JSON.stringify({
+            email: guestEmail,
+            amount: totalAmountNGN * 100, // Paystack uses kobo (1 NGN = 100 kobo)
+            reference: paystackReference,
+            metadata: {
+              booking_id: booking.id,
+              room_id: roomId,
+              check_in_date: checkIn.toISOString(),
+              check_out_date: checkOut.toISOString(),
+              guest_name: guestName,
+              guest_phone: guestPhone,
+            },
+          }),
+        },
+      );
+
+      const paystackData = await paystackResponse.json();
+
+      if (!paystackResponse.ok || !paystackData.status) {
+        console.error("Paystack initialization failed:", paystackData);
+        return NextResponse.json(
+          { error: "Failed to initialize payment" },
+          { status: 500 },
+        );
+      }
+
+      // Update booking with Paystack details
+      const { error: updateError } = await supabase
+        .from("bookings")
+        .update({
+          paystack_access_code: paystackData.data.access_code,
+          paystack_authorization_url: paystackData.data.authorization_url,
+        })
+        .eq("id", booking.id);
+
+      if (updateError) {
+        if (updateError.code !== "PGRST204") {
+          console.error(
+            "Error updating booking with Paystack details:",
+            updateError,
+          );
+        }
+      }
+
+      return NextResponse.json(
+        {
+          success: true,
+          booking: {
+            id: booking.id,
+            ...booking,
+          },
+          payment: {
+            reference: paystackReference,
+            authorizationUrl: paystackData.data.authorization_url,
+            accessCode: paystackData.data.access_code,
+          },
+        },
+        { status: 201 },
+      );
     }
 
+    // Admin-created bookings: return only booking details, no payment info
     return NextResponse.json(
       {
         success: true,
         booking: {
           id: booking.id,
           ...booking,
-        },
-        payment: {
-          reference: paystackReference,
-          authorizationUrl: paystackData.data.authorization_url,
-          accessCode: paystackData.data.access_code,
         },
       },
       { status: 201 },

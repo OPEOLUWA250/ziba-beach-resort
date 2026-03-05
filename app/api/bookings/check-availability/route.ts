@@ -37,24 +37,21 @@ export async function POST(request: NextRequest) {
       });
     } catch (dbError: any) {
       console.error("Database error checking availability:", dbError);
-      // Fallback: if database is unavailable, assume room is available
-      // This provides better UX - user can try to book and will get error if DB is truly down
+      // On database error, return unavailable for safety (prevent double bookings)
       return NextResponse.json({
         roomId,
-        available: true,
+        available: false,
         checkInDate: checkIn,
         checkOutDate: checkOut,
-        note: "Availability check performed with fallback",
+        error: "Unable to verify availability at this time",
       });
     }
   } catch (error: any) {
     console.error("Error in check-availability endpoint:", error);
-    // Return available=true on error for better UX
+    // Return unavailable on error for safety (prevent double bookings)
     return NextResponse.json({
-      available: true,
-      error:
-        error.message ||
-        "Could not verify availability, proceeding with booking",
+      available: false,
+      error: error.message || "Could not verify availability, please try again",
     });
   }
 }
@@ -62,31 +59,60 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const checkInDate = searchParams.get("checkInDate");
-    const checkOutDate = searchParams.get("checkOutDate");
+    const roomId = searchParams.get("roomId");
+    const checkIn = searchParams.get("checkIn");
+    const checkOut = searchParams.get("checkOut");
 
-    if (!checkInDate || !checkOutDate) {
+    if (!roomId || !checkIn || !checkOut) {
       return NextResponse.json(
-        { error: "Missing required query params: checkInDate, checkOutDate" },
+        { error: "Missing required query params: roomId, checkIn, checkOut" },
         { status: 400 },
       );
     }
 
-    const checkIn = new Date(checkInDate);
-    const checkOut = new Date(checkOutDate);
+    const checkInDate = new Date(checkIn + "T00:00:00.000Z");
+    const checkOutDate = new Date(checkOut + "T00:00:00.000Z");
 
-    const availableRooms = await getAvailableRooms(checkIn, checkOut);
+    // Validate dates
+    if (checkInDate >= checkOutDate) {
+      return NextResponse.json(
+        { error: "Check-out date must be after check-in date" },
+        { status: 400 },
+      );
+    }
 
-    return NextResponse.json({
-      checkInDate: checkIn,
-      checkOutDate: checkOut,
-      availableRoomsCount: availableRooms.length,
-      availableRooms,
-    });
+    try {
+      const { isRoomAvailable } = await import("@/lib/services/booking");
+      const available = await isRoomAvailable(
+        roomId,
+        checkInDate,
+        checkOutDate,
+      );
+
+      return NextResponse.json({
+        roomId,
+        available,
+        checkInDate: checkInDate,
+        checkOutDate: checkOutDate,
+      });
+    } catch (dbError: any) {
+      console.error("Database error checking availability:", dbError);
+      // On database error, return unavailable for safety (prevent double bookings)
+      return NextResponse.json({
+        roomId,
+        available: false,
+        checkInDate: checkInDate,
+        checkOutDate: checkOutDate,
+        error: "Unable to verify availability at this time",
+      });
+    }
   } catch (error: any) {
-    console.error("Error getting available rooms:", error);
+    console.error("Error in check-availability GET endpoint:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to get available rooms" },
+      {
+        available: false,
+        error: error.message || "Failed to check availability",
+      },
       { status: 500 },
     );
   }

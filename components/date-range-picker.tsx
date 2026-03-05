@@ -21,6 +21,7 @@ interface DateRangePickerProps {
   onEndDateChange: (date: Date) => void;
   minDate?: Date;
   maxDate?: Date;
+  bookedDates?: string[]; // YYYY-MM-DD format
 }
 
 export default function DateRangePicker({
@@ -30,6 +31,7 @@ export default function DateRangePicker({
   onEndDateChange,
   minDate,
   maxDate,
+  bookedDates = [],
 }: DateRangePickerProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectingStart, setSelectingStart] = useState(true);
@@ -84,6 +86,9 @@ export default function DateRangePicker({
     if (!date) return false;
     if (minDate && isBefore(date, minDate)) return true;
     if (maxDate && isAfter(date, maxDate)) return true;
+    // Disable if date is in bookedDates (use local date components since calendar operates in local time)
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    if (bookedDates.includes(dateStr)) return true;
     return false;
   };
 
@@ -94,6 +99,14 @@ export default function DateRangePicker({
         {selectingStart
           ? "📅 Select Check-In Date (Night)"
           : "📅 Select Check-Out Date"}
+      </div>
+
+      {/* Instructional Text */}
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+        <p className="text-xs text-amber-900 font-medium">
+          ℹ️ Dates with amber background are already booked and cannot be
+          selected.
+        </p>
       </div>
 
       {/* Month Navigation */}

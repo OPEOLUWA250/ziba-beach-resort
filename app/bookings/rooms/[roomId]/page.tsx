@@ -361,8 +361,9 @@ export default function RoomDetail({
 
   const handleBooking = (checkInDate: Date, checkOutDate: Date) => {
     if (isFullyBooked) return;
-    const checkInStr = checkInDate.toISOString().split("T")[0];
-    const checkOutStr = checkOutDate.toISOString().split("T")[0];
+    // Extract local date components to avoid timezone shifts
+    const checkInStr = `${checkInDate.getFullYear()}-${String(checkInDate.getMonth() + 1).padStart(2, '0')}-${String(checkInDate.getDate()).padStart(2, '0')}`;
+    const checkOutStr = `${checkOutDate.getFullYear()}-${String(checkOutDate.getMonth() + 1).padStart(2, '0')}-${String(checkOutDate.getDate()).padStart(2, '0')}`;
     setIsModalOpen(false);
     // Redirect to payment page with room pre-selected and dates
     const roomName = encodeURIComponent(room?.name || roomId);
@@ -454,7 +455,13 @@ export default function RoomDetail({
               >
                 {room.name}
               </h1>
-              <p className="text-2xl font-light text-gray-100">{room.price}</p>
+              <p className="text-2xl font-light text-gray-100">
+                {loading
+                  ? "Loading..."
+                  : livePrice
+                    ? `from ₦${livePrice.toLocaleString()} / night`
+                    : room.price}
+              </p>
             </div>
           </div>
 

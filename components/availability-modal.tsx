@@ -37,6 +37,31 @@ export default function AvailabilityModal({
   >("idle");
   const [nights, setNights] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [bookedDates, setBookedDates] = useState<string[]>([]);
+  const [loadingBookedDates, setLoadingBookedDates] = useState(false);
+
+  // Fetch booked dates when modal opens
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const fetchBookedDates = async () => {
+      setLoadingBookedDates(true);
+      try {
+        const res = await fetch(
+          `/api/bookings/room-booked-dates?roomId=${roomId}`,
+        );
+        const data = await res.json();
+        setBookedDates(data.bookedDates || []);
+      } catch (error) {
+        console.error("Failed to fetch booked dates:", error);
+        setBookedDates([]);
+      } finally {
+        setLoadingBookedDates(false);
+      }
+    };
+
+    fetchBookedDates();
+  }, [isOpen, roomId]);
 
   const handleCheckInChange = (date: Date) => {
     setCheckInDate(date);
@@ -69,13 +94,17 @@ export default function AvailabilityModal({
     setAvailabilityStatus("checking");
 
     try {
+      // Extract local date components to avoid timezone shifts
+      const checkInStr = `${checkIn.getFullYear()}-${String(checkIn.getMonth() + 1).padStart(2, '0')}-${String(checkIn.getDate()).padStart(2, '0')}`;
+      const checkOutStr = `${checkOut.getFullYear()}-${String(checkOut.getMonth() + 1).padStart(2, '0')}-${String(checkOut.getDate()).padStart(2, '0')}`;
+      
       const response = await fetch("/api/bookings/check-availability", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           roomId,
-          checkInDate: checkIn.toISOString().split("T")[0],
-          checkOutDate: checkOut.toISOString().split("T")[0],
+          checkInDate: checkInStr + "T00:00:00.000Z",
+          checkOutDate: checkOutStr + "T00:00:00.000Z",
         }),
       });
 
@@ -161,6 +190,7 @@ export default function AvailabilityModal({
                 onEndDateChange={handleCheckOutChange}
                 minDate={today}
                 maxDate={addDays(today, 365)}
+                bookedDates={bookedDates}
               />
             </div>
 

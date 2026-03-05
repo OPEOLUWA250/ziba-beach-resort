@@ -1086,12 +1086,13 @@ export default function BookingsManagement() {
           guestEmail: roomForm.guestEmail,
           guestPhone: roomForm.guestPhone,
           roomId: roomForm.roomId,
-          checkInDate: new Date(roomForm.checkInDate).toISOString(),
-          checkOutDate: new Date(roomForm.checkOutDate).toISOString(),
+          checkInDate: roomForm.checkInDate + "T00:00:00.000Z",
+          checkOutDate: roomForm.checkOutDate + "T00:00:00.000Z",
           numberOfGuests: 1,
           specialRequests: "",
           roomPriceNGN: roomForm.pricePerNight,
           numberOfNights: nights,
+          paymentStatus: "PENDING",
         }),
       });
 
@@ -1198,6 +1199,7 @@ export default function BookingsManagement() {
           visitDate: dayPassForm.visitDate,
           items: dayPassForm.items,
           totalAmount,
+          paymentStatus: "PENDING",
         }),
       });
 

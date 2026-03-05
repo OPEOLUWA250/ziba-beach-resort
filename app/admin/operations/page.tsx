@@ -632,13 +632,6 @@ export default function OperationsCheckInOut() {
                             >
                               <Flag size={14} /> Flag issue
                             </button>
-                            <button
-                              onClick={() => handleCheckoutNow(booking)}
-                              disabled={isSubmitting}
-                              className="px-2.5 py-1.5 rounded-md bg-green-900/40 text-green-300 hover:bg-green-900/60 flex items-center gap-1 disabled:opacity-50"
-                            >
-                              <LogOut size={14} /> Checkout now
-                            </button>
                           </div>
                         </td>
                       </tr>

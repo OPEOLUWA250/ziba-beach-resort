@@ -6,7 +6,15 @@ export const dynamic = "force-dynamic";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { fullName, email, phone, visitDate, items, totalAmount } = body;
+    const {
+      fullName,
+      email,
+      phone,
+      visitDate,
+      items,
+      totalAmount,
+      paymentStatus,
+    } = body;
 
     if (!fullName || !email || !phone || !visitDate || !items || !totalAmount) {
       return NextResponse.json(
@@ -29,14 +37,18 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Generate reference code
+    // Determine if this is admin-created (PENDING) or customer booking (RESERVED)
+    const isAdminCreated = paymentStatus === "PENDING";
+
+    // Generate reference code (always generated for Ziba)
     const referenceCode = `ZB-DP-${Date.now()}`;
 
-    // Generate Paystack reference
-    const paystackReference = `dp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // Only generate Paystack reference for customer bookings
+    const paystackReference = isAdminCreated
+      ? null
+      : `dp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    // Save to database with RESERVED while payment is in progress.
-    // Booking should appear to admin only after real payment confirmation.
+    // Save to database
     const { data, error } = await supabase
       .from("day_pass_bookings")
       .insert([
@@ -48,7 +60,7 @@ export async function POST(request: NextRequest) {
           visit_date: visitDate,
           items: items,
           total_amount: totalAmount,
-          payment_status: "RESERVED",
+          payment_status: paymentStatus || "RESERVED",
           paystack_reference: paystackReference,
         },
       ])
@@ -63,10 +75,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({
+    // Return response based on booking type
+    const response: any = {
       id: data.id,
-      paystackReference: paystackReference,
-    });
+      referenceCode: referenceCode,
+    };
+
+    // Only include Paystack reference for customer bookings
+    if (!isAdminCreated) {
+      response.paystackReference = paystackReference;
+    }
+
+    return NextResponse.json(response);
   } catch (err: any) {
     console.error("Day-pass booking error:", err);
     return NextResponse.json(

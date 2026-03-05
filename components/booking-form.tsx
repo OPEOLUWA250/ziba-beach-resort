@@ -102,7 +102,8 @@ export default function BookingForm({
 
   // Helper function to check if a date is booked
   const isDateBooked = (date: Date): boolean => {
-    const dateStr = format(date, "yyyy-MM-dd");
+    // Use local date components since calendar operates in local time
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     return bookedDates.includes(dateStr);
   };
 

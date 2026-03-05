@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ChevronUp } from "lucide-react";
+import { ChevronUp, MapPin } from "lucide-react";
 
 export default function BackToTop() {
   const [isVisible, setIsVisible] = useState(false);
@@ -32,12 +32,28 @@ export default function BackToTop() {
     });
   };
 
+  const openMaps = () => {
+    window.open(
+      "https://maps.google.com/?q=Ziba+Beach+Close,+Okun+Ajah,+Lagos,+Nigeria",
+      "_blank",
+    );
+  };
+
   if (isAdminRoute) return null;
 
   return (
     <>
       {isVisible && (
         <div className="fixed bottom-8 right-4 sm:right-6 md:right-8 z-50 flex flex-col gap-2 animate-fadeIn">
+          {/* Map Location Button */}
+          <button
+            onClick={openMaps}
+            className="p-3 rounded-full bg-blue-900 hover:bg-blue-800 text-white transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl"
+            aria-label="View location on map"
+            title="Ziba Beach Close, Okun Ajah, Lagos, Nigeria"
+          >
+            <MapPin size={24} strokeWidth={2.5} />
+          </button>
           {/* Back to Top Button */}
           <button
             onClick={scrollToTop}
