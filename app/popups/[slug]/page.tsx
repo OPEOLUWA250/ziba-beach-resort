@@ -142,7 +142,9 @@ export default async function PopupDetailsPage({
                           className="text-gray-700 font-light leading-relaxed flex items-start gap-3"
                         >
                           <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-900 mt-2.5 shrink-0" />
-                          <span className="flex-1">{item.replace("- ", "")}</span>
+                          <span className="flex-1">
+                            {item.replace("- ", "")}
+                          </span>
                         </li>
                       ))}
                     </ul>

@@ -1088,7 +1088,7 @@ export default function BookingsManagement() {
           )}
 
           {/* Filters & Search */}
-          <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+          <div className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1 relative">
                 <Search
@@ -1100,7 +1100,7 @@ export default function BookingsManagement() {
                   placeholder="Search by guest name, email, or booking ID..."
                   value={roomSearchTerm}
                   onChange={(e) => setRoomSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+                  className="w-full pl-12 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
                 />
               </div>
 
@@ -1108,7 +1108,7 @@ export default function BookingsManagement() {
                 <select
                   value={roomFilterStatus}
                   onChange={(e) => setRoomFilterStatus(e.target.value)}
-                  className="appearance-none pl-12 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                  className="appearance-none pl-12 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white focus:outline-none focus:border-blue-500 cursor-pointer"
                 >
                   <option value="all">All Status</option>
                   <option value="PENDING">Pending</option>
@@ -1137,10 +1137,10 @@ export default function BookingsManagement() {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-gray-700 bg-gray-950/50">
-                      <th className="px-6 py-4 text-left">
+                      <th className="px-3 py-3 text-left">
                         <input
                           type="checkbox"
                           className="rounded"
@@ -1155,28 +1155,28 @@ export default function BookingsManagement() {
                           }}
                         />
                       </th>
-                      <th className="px-6 py-4 text-left text-gray-400 text-sm font-semibold">
+                      <th className="px-3 py-3 text-left text-gray-400 text-xs font-semibold uppercase tracking-wide">
                         Booking ID
                       </th>
-                      <th className="px-6 py-4 text-left text-gray-400 text-sm font-semibold">
+                      <th className="px-3 py-3 text-left text-gray-400 text-xs font-semibold uppercase tracking-wide">
                         Guest
                       </th>
-                      <th className="px-6 py-4 text-left text-gray-400 text-sm font-semibold">
+                      <th className="px-3 py-3 text-left text-gray-400 text-xs font-semibold uppercase tracking-wide">
                         Check-In / Check-Out
                       </th>
-                      <th className="px-6 py-4 text-left text-gray-400 text-sm font-semibold">
+                      <th className="px-3 py-3 text-left text-gray-400 text-xs font-semibold uppercase tracking-wide">
                         Nights
                       </th>
-                      <th className="px-6 py-4 text-left text-gray-400 text-sm font-semibold">
+                      <th className="px-3 py-3 text-left text-gray-400 text-xs font-semibold uppercase tracking-wide">
                         Amount
                       </th>
-                      <th className="px-6 py-4 text-left text-gray-400 text-sm font-semibold">
+                      <th className="px-3 py-3 text-left text-gray-400 text-xs font-semibold uppercase tracking-wide">
                         Status
                       </th>
-                      <th className="px-6 py-4 text-left text-gray-400 text-sm font-semibold">
+                      <th className="px-3 py-3 text-left text-gray-400 text-xs font-semibold uppercase tracking-wide">
                         Guests
                       </th>
-                      <th className="px-6 py-4 text-left text-gray-400 text-sm font-semibold">
+                      <th className="px-3 py-3 text-left text-gray-400 text-xs font-semibold uppercase tracking-wide">
                         Actions
                       </th>
                     </tr>
@@ -1187,7 +1187,7 @@ export default function BookingsManagement() {
                         key={booking.id}
                         className="border-b border-gray-700 hover:bg-gray-700/50 transition-all duration-300 hover:shadow-lg cursor-pointer hover:translate-x-1"
                       >
-                        <td className="px-6 py-4">
+                        <td className="px-3 py-3">
                           <input
                             type="checkbox"
                             checked={selectedRoomBookings.includes(booking.id)}
@@ -1208,12 +1208,12 @@ export default function BookingsManagement() {
                             className="rounded"
                           />
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 py-3">
                           <span className="text-white font-semibold text-sm">
                             {booking.booking_reference_code}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 py-3">
                           <div
                             onClick={() => handleOpenRoomModal(booking)}
                             className="cursor-pointer hover:opacity-80 transition"
@@ -1226,7 +1226,7 @@ export default function BookingsManagement() {
                             </p>
                           </div>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 py-3">
                           <div>
                             <p className="text-white text-sm">
                               {formatDate(booking.check_in_date)}
@@ -1236,25 +1236,25 @@ export default function BookingsManagement() {
                             </p>
                           </div>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 py-3">
                           <p className="text-white text-sm">
                             {booking.number_of_nights}
                           </p>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 py-3">
                           <p className="text-white font-semibold text-sm">
                             ₦{booking.total_amount_ngn.toLocaleString()}
                           </p>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 py-3">
                           <StatusBadge status={booking.payment_status} />
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 py-3">
                           <p className="text-white text-sm">
                             {booking.number_of_guests}
                           </p>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 py-3">
                           <div className="flex items-center gap-2">
                             <button className="p-2 hover:bg-blue-900/30 rounded-lg transition text-blue-400">
                               <Eye size={18} />

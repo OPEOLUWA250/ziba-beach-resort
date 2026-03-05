@@ -9,6 +9,7 @@ import { Menu, X, ShoppingCart, MoonStar, Sun } from "lucide-react";
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Bookings", href: "/bookings" },
+  { label: "Day Pass", href: "/day-pass" },
   { label: "Our Story", href: "/our-story" },
   { label: "Experience", href: "/experience" },
   { label: "Menu", href: "/menu" },
@@ -100,7 +101,7 @@ export default function Header() {
         {/* Logo */}
         <Link
           href="/"
-          className="transition-opacity hover:opacity-80 w-28 sm:w-24 md:w-28 flex-shrink-0"
+          className="transition-opacity hover:opacity-80 w-28 sm:w-24 md:w-28 shrink-0"
         >
           <Image
             src="/ZIBA-LOGO-WHITE.png"

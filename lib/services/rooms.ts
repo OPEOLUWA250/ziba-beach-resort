@@ -2,13 +2,15 @@ import { supabase } from "@/lib/supabase/client";
 
 export async function getAllRooms() {
   try {
+    // Fetch ALL rooms including fully-booked (for customer display with badge)
     const { data, error } = await supabase
       .from("rooms")
       .select("*")
-      .eq("status", "AVAILABLE");
+      .order("id", { ascending: true });
 
     if (error) throw error;
 
+    console.log("Fetched all rooms from Supabase:", data);
     return data || [];
   } catch (error) {
     console.error("Error fetching rooms:", error);
@@ -41,7 +43,7 @@ export async function getRoomById(roomId: string) {
 export async function createRoom(roomData: {
   title: string;
   description?: string;
-  priceNGN: number;
+  pricengn: number;
   capacity: number;
   amenities?: string[];
   images?: string[];
@@ -53,18 +55,18 @@ export async function createRoom(roomData: {
       id: roomId,
       title: roomData.title,
       description: roomData.description || "",
-      priceNGN: roomData.priceNGN,
+      pricengn: roomData.pricengn,
       capacity: roomData.capacity,
       amenities: roomData.amenities || [],
       images: roomData.images || [],
-      status: "AVAILABLE",
+      status: "available",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
 
     if (error) throw error;
 
-    return { id: roomId, ...roomData, status: "AVAILABLE" };
+    return { id: roomId, ...roomData, status: "available" };
   } catch (error) {
     console.error("Error creating room:", error);
     throw error;
@@ -76,7 +78,7 @@ export async function updateRoom(
   updates: Partial<{
     title: string;
     description: string;
-    priceNGN: number;
+    pricengn: number;
     capacity: number;
     amenities: string[];
     images: string[];
@@ -84,12 +86,16 @@ export async function updateRoom(
   }>,
 ) {
   try {
+    // Normalize status to lowercase if provided
+    const updateData = {
+      ...updates,
+      status: updates.status?.toLowerCase(),
+      updatedAt: new Date().toISOString(),
+    };
+
     const { data, error } = await supabase
       .from("rooms")
-      .update({
-        ...updates,
-        updatedAt: new Date().toISOString(),
-      })
+      .update(updateData)
       .eq("id", roomId);
 
     if (error) throw error;
@@ -107,7 +113,8 @@ export async function getRoomsByCapacity(capacity: number) {
       .from("rooms")
       .select("*")
       .gte("capacity", capacity)
-      .eq("status", "AVAILABLE");
+      .neq("status", "fully-booked")
+      .order("id", { ascending: true });
 
     if (error) throw error;
 

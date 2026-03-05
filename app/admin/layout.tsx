@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Calendar,
@@ -16,16 +16,18 @@ import {
   UtensilsCrossed,
   BookOpen,
   Zap,
+  Ticket,
 } from "lucide-react";
 
 const adminNavItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "Operations", href: "/admin/operations", icon: Wrench },
   { label: "Bookings", href: "/admin/bookings", icon: Calendar },
   { label: "Rooms", href: "/admin/rooms", icon: DoorOpen },
+  { label: "Experiences", href: "/admin/experiences", icon: Ticket },
   { label: "Menus", href: "/admin/menus", icon: UtensilsCrossed },
   { label: "Blog", href: "/admin/blog", icon: BookOpen },
   { label: "Popups", href: "/admin/popups", icon: Zap },
-  { label: "Operations", href: "/admin/operations", icon: Wrench },
   { label: "Admin System", href: "/admin/users", icon: ShieldCheck },
 ];
 
@@ -35,19 +37,69 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [adminProfile, setAdminProfile] = useState<{
+    username: string;
+    email: string;
+    role: "SUPER_ADMIN" | "ADMIN";
+  } | null>(null);
+
+  React.useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("/api/admin/auth/me", {
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          router.replace("/admin-login");
+          return;
+        }
+
+        const data = await response.json();
+        setAdminProfile(data.admin || null);
+      } catch {
+        router.replace("/admin-login");
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
     return pathname.startsWith(href);
   };
 
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      router.replace("/admin-login");
+    }
+  };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <p className="text-gray-300">Checking admin session...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-900">
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-linear-to-b from-gray-950 via-gray-900 to-gray-950 border-r border-gray-800 transition-transform duration-300 md:sticky md:top-0 md:h-screen md:translate-x-0 overflow-y-auto ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-linear-to-b from-gray-950 via-gray-900 to-gray-950 border-r border-gray-800 transition-transform duration-300 md:sticky md:top-0 md:h-screen md:translate-x-0 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -71,7 +123,7 @@ export default function AdminLayout({
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto pb-4">
+        <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {adminNavItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
@@ -106,12 +158,19 @@ export default function AdminLayout({
                 A
               </div>
               <div>
-                <p className="text-white text-sm font-medium">Admin Owner</p>
-                <p className="text-gray-500 text-xs">system@ziba.local</p>
+                <p className="text-white text-sm font-medium">
+                  {adminProfile?.username || "Admin"}
+                </p>
+                <p className="text-gray-500 text-xs">
+                  {adminProfile?.email || "system@ziba.local"}
+                </p>
               </div>
             </div>
           </div>
-          <button className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-gray-300 hover:text-red-400 hover:bg-red-900/20 border border-transparent hover:border-red-900/50 transition-all duration-200 font-medium text-sm">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-gray-300 hover:text-red-400 hover:bg-red-900/20 border border-transparent hover:border-red-900/50 transition-all duration-200 font-medium text-sm"
+          >
             <LogOut size={18} />
             <span>Logout</span>
           </button>
@@ -142,8 +201,12 @@ export default function AdminLayout({
                 A
               </div>
               <div className="hidden sm:block text-sm">
-                <p className="text-white font-medium">Admin</p>
-                <p className="text-gray-400 text-xs">Owner</p>
+                <p className="text-white font-medium">
+                  {adminProfile?.username || "Admin"}
+                </p>
+                <p className="text-gray-400 text-xs">
+                  {adminProfile?.role || "ADMIN"}
+                </p>
               </div>
             </div>
           </div>

@@ -2,13 +2,14 @@
 
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Lock } from "lucide-react";
 import Link from "next/link";
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AvailabilityModal from "@/components/availability-modal";
 import RoomGalleryCarousel from "@/components/room-gallery-carousel";
 import { getRoomImages } from "@/lib/room-images";
+import { getRoomById } from "@/lib/services/rooms";
 
 interface Room {
   id: string;
@@ -305,11 +306,61 @@ export default function RoomDetail({
 }) {
   const resolvedParams = use(params);
   const roomId = resolvedParams.roomId;
-  const room = rooms[roomId];
+  const staticRoom = rooms[roomId];
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showFullyBookedMessage, setShowFullyBookedMessage] = useState(false);
+  const [livePrice, setLivePrice] = useState<number | null>(null);
+  const [roomStatus, setRoomStatus] = useState<string>("available");
+  const [loading, setLoading] = useState(true);
+
+  // Fetch live price from Supabase
+  useEffect(() => {
+    const fetchRoomData = async () => {
+      try {
+        const dbRoom = await getRoomById(roomId);
+        if (dbRoom) {
+          setLivePrice(dbRoom.pricengn || null);
+          setRoomStatus(dbRoom.status || "available");
+        }
+      } catch (error) {
+        console.error("Error fetching room data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRoomData();
+  }, [roomId]);
+
+  const room = staticRoom;
+  if (!room) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 text-lg mb-4">Room not found</p>
+          <Link href="/bookings" className="text-blue-600 hover:underline">
+            Back to rooms
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if room is fully booked
+  const isFullyBooked = roomStatus === "fully-booked";
+
+  // Handle booking attempt
+  const handleBookNow = () => {
+    if (isFullyBooked) {
+      setShowFullyBookedMessage(true);
+    } else {
+      setIsModalOpen(true);
+    }
+  };
 
   const handleBooking = (checkInDate: Date, checkOutDate: Date) => {
+    if (isFullyBooked) return;
     const checkInStr = checkInDate.toISOString().split("T")[0];
     const checkOutStr = checkOutDate.toISOString().split("T")[0];
     setIsModalOpen(false);
@@ -320,26 +371,57 @@ export default function RoomDetail({
     );
   };
 
-  if (!room) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-3xl font-light text-gray-900 mb-4">
-            Room Not Found
-          </h1>
-          <Link
-            href="/bookings"
-            className="text-gray-600 hover:text-gray-900 font-light"
-          >
-            Back to Rooms →
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
+      {/* Fully Booked Modal */}
+      {showFullyBookedMessage && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
+            <div className="bg-linear-to-r from-red-500 to-red-600 px-6 py-8">
+              <div className="flex justify-between items-start mb-3">
+                <Lock size={40} className="text-white" />
+                <button
+                  onClick={() => setShowFullyBookedMessage(false)}
+                  className="text-white hover:bg-white/20 p-1 rounded transition"
+                >
+                  ✕
+                </button>
+              </div>
+              <h2 className="text-3xl font-bold text-white">Fully Booked</h2>
+            </div>
+            <div className="p-6 space-y-4">
+              <p className="text-gray-700 font-light text-center">
+                This wonderful room is currently fully booked. We're sure you'll
+                love it! Please check back soon or contact our team.
+              </p>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-gray-600 font-light">
+                  <strong className="font-semibold text-gray-900">
+                    Other Options:
+                  </strong>
+                  <br />
+                  Browse our other beautiful rooms and accommodations.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowFullyBookedMessage(false)}
+                  className="flex-1 px-4 py-3 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition font-light"
+                >
+                  Close
+                </button>
+                <Link
+                  href="/bookings"
+                  className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-light text-center"
+                >
+                  View All Rooms
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="bg-white">
         {/* HERO IMAGE SECTION */}
         <section className="relative w-full h-screen bg-gray-900 overflow-hidden">
@@ -439,16 +521,23 @@ export default function RoomDetail({
                   Starting from
                 </p>
                 <p className="text-4xl font-light text-gray-900">
-                  {room.price}
+                  {loading
+                    ? "Loading..."
+                    : `₦${(livePrice || 0).toLocaleString()} / night`}
                 </p>
               </div>
 
               <div className="flex gap-3">
                 <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="flex-1 bg-linear-to-r from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light"
+                  onClick={handleBookNow}
+                  disabled={loading}
+                  className={`flex-1 py-4 rounded-lg transition font-light disabled:opacity-50 ${
+                    isFullyBooked
+                      ? "bg-gray-500 hover:bg-gray-600 text-white"
+                      : "bg-linear-to-r from-blue-900 to-blue-800 text-white hover:from-blue-800 hover:to-blue-700"
+                  }`}
                 >
-                  Book Now
+                  {isFullyBooked ? "Fully Booked" : "Book Now"}
                 </button>
                 <button className="flex-1 border-2 border-gray-900 text-gray-900 py-4 rounded-lg hover:bg-gray-50 transition font-light">
                   Inquiry
@@ -595,16 +684,23 @@ export default function RoomDetail({
                       Starting from
                     </p>
                     <p className="text-4xl font-light text-gray-900">
-                      {room.price}
+                      {loading
+                        ? "Loading..."
+                        : `₦${(livePrice || 0).toLocaleString()} / night`}
                     </p>
                   </div>
 
                   <div className="flex gap-3">
                     <button
-                      onClick={() => setIsModalOpen(true)}
-                      className="flex-1 bg-linear-to-r from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light"
+                      onClick={handleBookNow}
+                      disabled={loading}
+                      className={`flex-1 py-4 rounded-lg transition font-light disabled:opacity-50 ${
+                        isFullyBooked
+                          ? "bg-gray-500 hover:bg-gray-600 text-white"
+                          : "bg-linear-to-r from-blue-900 to-blue-800 text-white hover:from-blue-800 hover:to-blue-700"
+                      }`}
                     >
-                      Book Now
+                      {isFullyBooked ? "Fully Booked" : "Book Now"}
                     </button>
                     <button className="flex-1 border-2 border-gray-900 text-gray-900 py-4 rounded-lg hover:bg-gray-50 transition font-light">
                       Inquiry
@@ -639,7 +735,7 @@ export default function RoomDetail({
         </section>
 
         {/* More Rooms CTA */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-r from-gray-900 to-gray-800">
+        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-r from-blue-900 to-blue-800">
           <div className="max-w-4xl mx-auto text-center">
             <h2
               className="text-5xl font-light text-white mb-6"
@@ -672,7 +768,7 @@ export default function RoomDetail({
         onClose={() => setIsModalOpen(false)}
         roomId={room.id}
         roomName={room.name}
-        pricePerNight={parseInt(room.price.replace(/[^0-9]/g, ""))}
+        pricePerNight={livePrice || 0}
         onProceedToBooking={handleBooking}
       />
     </>

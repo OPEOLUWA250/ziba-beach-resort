@@ -97,6 +97,7 @@ const rooms = [
 
 export default function Rooms() {
   const [isVisible, setIsVisible] = useState(false);
+  const [roomStatuses, setRoomStatuses] = useState<Record<string, string>>({});
   const sectionRef = useRef(null);
 
   useEffect(() => {
@@ -115,6 +116,32 @@ export default function Rooms() {
     }
 
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const fetchRoomStatuses = async () => {
+      try {
+        const response = await fetch("/api/rooms");
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const statusMap: Record<string, string> = {};
+
+        if (data?.rooms && Array.isArray(data.rooms)) {
+          data.rooms.forEach((room: any) => {
+            if (room?.id) {
+              statusMap[room.id] = String(room.status || "available").toLowerCase();
+            }
+          });
+        }
+
+        setRoomStatuses(statusMap);
+      } catch (error) {
+        console.error("Failed to load room statuses:", error);
+      }
+    };
+
+    fetchRoomStatuses();
   }, []);
 
   return (
@@ -145,6 +172,7 @@ export default function Rooms() {
         {/* Rooms Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {rooms.map((room, idx) => (
+            
             <div
               key={room.id}
               className={`group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 ease-out transform hover:-translate-y-2 flex flex-col h-full ${
@@ -169,6 +197,14 @@ export default function Rooms() {
                 />
                 {/* Overlay with subtle brightness on hover */}
                 <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent group-hover:from-black/50 transition-all duration-500" />
+
+                {roomStatuses[room.id] === "fully-booked" && (
+                  <div className="absolute top-4 left-4 z-10">
+                    <span className="inline-block px-3 py-1.5 bg-red-600 text-white text-xs font-semibold uppercase tracking-wide rounded-full shadow-lg border border-red-500">
+                      Fully Booked
+                    </span>
+                  </div>
+                )}
 
                 {/* Room Type Badge - Smooth scale and glow */}
                 <div className="absolute top-4 right-4 z-10 transition-all duration-500 ease-out group-hover:scale-105">

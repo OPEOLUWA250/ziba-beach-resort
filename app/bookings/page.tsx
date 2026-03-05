@@ -6,7 +6,8 @@ import PageHero from "@/components/page-hero";
 import Link from "next/link";
 import { getRoomHeroImage } from "@/lib/room-images";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAllRooms } from "@/lib/services/rooms";
 
 function PoliciesSection() {
   const [expandedPolicy, setExpandedPolicy] = useState<string | null>(
@@ -144,98 +145,216 @@ function PoliciesSection() {
 }
 
 export default function Stay() {
-  const rooms = [
-    {
+  // Static room configuration data
+  const roomConfig = {
+    room01: {
       number: "01",
       name: "Beach Facing Room",
       size: "19m²",
       capacity: "Up to 3 guests",
       bedding: "1 King size bed",
       view: "Balcony with partial pool view",
-      price: "from ₦202,000",
-      roomId: "room01",
     },
-    {
+    room02: {
       number: "02",
       name: "Beach Facing Family Room",
       size: "26m²",
       capacity: "Up to 6 guests",
       bedding: "1 King + 1 Bunk with pull-out",
       view: "Partial pool view",
-      price: "from ₦225,000",
-      roomId: "room02",
     },
-    {
+    room03: {
       number: "03",
       name: "Beach Facing Family Room",
       size: "26m²",
       capacity: "Up to 6 guests",
       bedding: "1 King + 1 Bunk with pull-out",
       view: "Full pool view",
-      price: "from ₦247,500",
-      roomId: "room03",
     },
-    {
+    room04: {
       number: "04",
       name: "Beach Facing Connecting Room",
       size: "32m²",
       capacity: "Up to 3 guests",
       bedding: "1 King or Twin (2 units)",
       view: "Pool view overlooking beach",
-      price: "from ₦202,500",
-      roomId: "room04",
     },
-    {
+    room05: {
       number: "05",
       name: "Beach Facing Suite",
       size: "Living room",
       capacity: "Up to 3 guests",
       bedding: "1 King + 1 Sofa bed",
       view: "Full view overlooking beach",
-      price: "from ₦231,750",
-      roomId: "room05",
     },
-    {
+    room06: {
       number: "06",
       name: "Two Bedroom Apartment",
       size: "Open Living Area",
       capacity: "Up to 6 guests",
       bedding: "2 King + 1 Sofa bed",
       view: "Private pool & ocean view",
-      price: "from ₦450,000",
-      roomId: "room06",
     },
-    {
+    room07: {
       number: "07",
       name: "Overwater Terrace Room",
       size: "24m²",
       capacity: "2 adults",
       bedding: "1 King size bed",
       view: "Direct water access",
-      price: "from ₦213,750",
-      roomId: "room07",
     },
-    {
+    room08: {
       number: "08",
       name: "Overwater Terrace Suite",
       size: "32m²",
       capacity: "Up to 3 guests",
       bedding: "1 King size bed",
       view: "Wooden deck with pool access",
-      price: "from ₦258,750",
-      roomId: "room08",
     },
-    {
+    room09: {
       number: "09",
       name: "Ziba Black",
       size: "19m²",
       capacity: "Up to 3 guests",
       bedding: "1 King size bed",
       view: "Pool view overlooking beach",
-      price: "from ₦202,500",
-      roomId: "room09",
     },
-  ];
+  };
+
+  // State for live data
+  const [allRooms, setAllRooms] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch live rooms data
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        console.log("📍 Starting to fetch rooms from Supabase...");
+        const rooms = await getAllRooms();
+        console.log("📍 Fetched rooms:", rooms);
+
+        if (!rooms || rooms.length === 0) {
+          console.warn("⚠️ No rooms returned from Supabase, using fallback");
+          setAllRooms([
+            {
+              ...roomConfig.room01,
+              roomId: "room01",
+              price: "from ₦202,000",
+              status: "available",
+            },
+            {
+              ...roomConfig.room02,
+              roomId: "room02",
+              price: "from ₦225,000",
+              status: "available",
+            },
+            {
+              ...roomConfig.room03,
+              roomId: "room03",
+              price: "from ₦247,500",
+              status: "available",
+            },
+            {
+              ...roomConfig.room04,
+              roomId: "room04",
+              price: "from ₦202,500",
+              status: "available",
+            },
+            {
+              ...roomConfig.room05,
+              roomId: "room05",
+              price: "from ₦231,750",
+              status: "available",
+            },
+            {
+              ...roomConfig.room06,
+              roomId: "room06",
+              price: "from ₦450,000",
+              status: "available",
+            },
+            {
+              ...roomConfig.room07,
+              roomId: "room07",
+              price: "from ₦213,750",
+              status: "available",
+            },
+            {
+              ...roomConfig.room08,
+              roomId: "room08",
+              price: "from ₦258,750",
+              status: "available",
+            },
+            {
+              ...roomConfig.room09,
+              roomId: "room09",
+              price: "from ₦202,500",
+              status: "available",
+            },
+          ]);
+          setLoading(false);
+          return;
+        }
+
+        const allRoomsData = [];
+
+        // Map Supabase data with room config
+        rooms.forEach((dbRoom: any) => {
+          const roomId = dbRoom.id;
+          const config = roomConfig[roomId as keyof typeof roomConfig];
+          console.log(`Processing room ${roomId}:`, {
+            config: !!config,
+            status: dbRoom.status,
+            price: dbRoom.pricengan,
+          });
+
+          if (config) {
+            const room = {
+              roomId,
+              ...config,
+              price: `from ₦${(dbRoom.pricengn || 0).toLocaleString()}`,
+              status: dbRoom.status,
+              originalPrice: dbRoom.pricengn || 0,
+              isFullyBooked: dbRoom.status === "fully-booked",
+            };
+
+            allRoomsData.push(room);
+            console.log(`✓ Added room: ${roomId} (status: ${dbRoom.status})`);
+          } else {
+            console.warn(`⚠️ No config found for room ${roomId}`);
+          }
+        });
+
+        console.log(`📊 Total rooms: ${allRoomsData.length}`);
+        setAllRooms(allRoomsData);
+      } catch (error) {
+        console.error("❌ Error fetching rooms:", error);
+        // Fallback to static prices if fetch fails
+        const fallbackRooms = [
+          { ...roomConfig.room01, roomId: "room01", price: "from ₦202,000" },
+          { ...roomConfig.room02, roomId: "room02", price: "from ₦225,000" },
+          { ...roomConfig.room03, roomId: "room03", price: "from ₦247,500" },
+          { ...roomConfig.room04, roomId: "room04", price: "from ₦202,500" },
+          { ...roomConfig.room05, roomId: "room05", price: "from ₦231,750" },
+          { ...roomConfig.room06, roomId: "room06", price: "from ₦450,000" },
+          { ...roomConfig.room07, roomId: "room07", price: "from ₦213,750" },
+          { ...roomConfig.room08, roomId: "room08", price: "from ₦258,750" },
+          { ...roomConfig.room09, roomId: "room09", price: "from ₦202,500" },
+        ];
+        console.log("Using fallback rooms (error occured)");
+        setAllRooms(
+          fallbackRooms.map((r) => ({
+            ...r,
+            status: "available",
+            isFullyBooked: false,
+          })),
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRooms();
+  }, []);
 
   const specialPackagesMessage = `Hi Ziba Beach Resort,
 
@@ -276,73 +395,91 @@ Thank you!`;
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {rooms.map((room) => (
-                <Link
-                  key={room.roomId}
-                  href={`/bookings/rooms/${room.roomId}`}
-                  className="group bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-gray-400 hover:shadow-2xl transition-all duration-300"
-                >
-                  {/* Image Container */}
-                  <div className="relative h-56 sm:h-64 md:h-72 overflow-hidden bg-gray-200">
-                    <Image
-                      src={getRoomHeroImage(room.roomId)}
-                      alt={room.name}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      quality={85}
-                    />
-                    <div className="absolute top-4 left-4 bg-blue-900 text-white px-4 py-2 rounded-full font-light">
-                      {room.number}
+              {loading ? (
+                <div className="col-span-full text-center py-12">
+                  <p className="text-gray-600">Loading rooms...</p>
+                </div>
+              ) : allRooms.length === 0 ? (
+                <div className="col-span-full text-center py-12">
+                  <p className="text-gray-600">
+                    No rooms available at the moment.
+                  </p>
+                </div>
+              ) : (
+                allRooms.map((room) => (
+                  <Link
+                    key={room.roomId}
+                    href={`/bookings/rooms/${room.roomId}`}
+                    className="group bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-gray-400 hover:shadow-2xl transition-all duration-300"
+                  >
+                    {/* Image Container */}
+                    <div className="relative h-56 sm:h-64 md:h-72 overflow-hidden bg-gray-200">
+                      <Image
+                        src={getRoomHeroImage(room.roomId)}
+                        alt={room.name}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        quality={85}
+                      />
+                      <div className="absolute top-4 left-4 bg-blue-900 text-white px-4 py-2 rounded-full font-light">
+                        {room.number}
+                      </div>
+                      {/* Subtle fully booked indicator - no big badge */}
+                      {room.isFullyBooked && (
+                        <div className="absolute top-4 right-4 bg-red-600/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold">
+                          Fully Booked
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
                     </div>
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
-                  </div>
 
-                  {/* Content */}
-                  <div className="p-6 space-y-4">
-                    <div>
-                      <h3
-                        className="text-2xl font-light text-gray-900 mb-2 group-hover:text-gray-700 transition-colors"
-                        style={{ fontFamily: "Cormorant Garamond, serif" }}
-                      >
-                        {room.name}
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        <span className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-light">
-                          {room.size}
+                    {/* Content */}
+                    <div className="p-6 space-y-4">
+                      <div>
+                        <h3
+                          className="text-2xl font-light text-gray-900 mb-2 group-hover:text-gray-700 transition-colors"
+                          style={{ fontFamily: "Cormorant Garamond, serif" }}
+                        >
+                          {room.name}
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                          <span className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-light">
+                            {room.size}
+                          </span>
+                          <span className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-light">
+                            {room.capacity}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 border-t border-gray-200 pt-4">
+                        <p className="text-sm text-gray-600 font-light">
+                          <span className="font-semibold text-gray-900">
+                            Bed:
+                          </span>{" "}
+                          {room.bedding}
+                        </p>
+                        <p className="text-sm text-gray-600 font-light">
+                          <span className="font-semibold text-gray-900">
+                            View:
+                          </span>{" "}
+                          {room.view}
+                        </p>
+                      </div>
+
+                      <div className="flex justify-between items-center pt-2 border-t border-gray-200">
+                        <span className="text-2xl font-light text-gray-900">
+                          {room.price}
                         </span>
-                        <span className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-light">
-                          {room.capacity}
+                        <span className="text-gray-600 group-hover:text-gray-900 transition-colors font-light">
+                          ⟶
                         </span>
                       </div>
                     </div>
-
-                    <div className="space-y-2 border-t border-gray-200 pt-4">
-                      <p className="text-sm text-gray-600 font-light">
-                        <span className="font-semibold text-gray-900">
-                          Bed:
-                        </span>{" "}
-                        {room.bedding}
-                      </p>
-                      <p className="text-sm text-gray-600 font-light">
-                        <span className="font-semibold text-gray-900">
-                          View:
-                        </span>{" "}
-                        {room.view}
-                      </p>
-                    </div>
-
-                    <div className="flex justify-between items-center pt-2 border-t border-gray-200">
-                      <span className="text-2xl font-light text-gray-900">
-                        {room.price}
-                      </span>
-                      <span className="text-gray-600 group-hover:text-gray-900 transition-colors font-light">
-                        ⟶
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))
+              )}
             </div>
           </div>
         </section>

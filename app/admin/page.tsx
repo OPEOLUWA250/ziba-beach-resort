@@ -7,7 +7,7 @@ export default function AdminDashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace("/admin/bookings");
+    router.replace("/admin/operations");
   }, [router]);
 
   return null;

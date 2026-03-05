@@ -3,6 +3,7 @@
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 import PageHero from "../../components/page-hero";
+import Ratings from "../../components/ratings";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
@@ -217,6 +218,8 @@ export default function OurStory() {
             </div>
           </div>
         </section>
+
+        <Ratings />
 
         {/* Featured Room Types */}
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-linear-to-br from-blue-900 via-blue-800 to-blue-900">

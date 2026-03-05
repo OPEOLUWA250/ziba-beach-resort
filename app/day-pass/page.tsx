@@ -13,9 +13,57 @@ interface CartItem {
   quantity: number;
 }
 
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+  description?: string;
+  age_group?: string;
+}
+
 export default function DayPass() {
   const router = useRouter();
   const [cart, setCart] = useState<Record<string, number>>({});
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch products from database
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("/api/day-pass/experiences");
+        if (!response.ok) throw new Error("Failed to fetch products");
+
+        const data = await response.json();
+
+        // Map database fields to product format
+        const mappedProducts = data.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          price: item.price_per_person,
+          category:
+            item.name.toLowerCase().includes("massage") ||
+            item.name.toLowerCase().includes("paint") ||
+            item.name.toLowerCase().includes("horse") ||
+            item.name.toLowerCase().includes("lunch") ||
+            item.name.toLowerCase().includes("picnic")
+              ? "experiences"
+              : "tickets",
+          description: item.description || "Description coming soon.",
+          age_group: item.age_group,
+        }));
+
+        setProducts(mappedProducts);
+      } catch (error) {
+        console.error("Error loading products:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -59,111 +107,6 @@ export default function DayPass() {
     window.addEventListener("cart-updated", loadCart);
     return () => window.removeEventListener("cart-updated", loadCart);
   }, []);
-
-  const products = [
-    {
-      id: "infant-ticket",
-      name: "Infant Ticket",
-      price: 0,
-      category: "tickets",
-    },
-    {
-      id: "kids-ticket",
-      name: "Kids Ticket",
-      price: 10000,
-      category: "tickets",
-    },
-    {
-      id: "kids-plus",
-      name: "Kids Ticket Plus",
-      price: 25000,
-      category: "tickets",
-    },
-    {
-      id: "teens-ticket",
-      name: "Teens Ticket",
-      price: 15000,
-      category: "tickets",
-    },
-    {
-      id: "teens-plus",
-      name: "Teens Ticket Plus",
-      price: 30000,
-      category: "tickets",
-    },
-    {
-      id: "adult-ticket",
-      name: "Adult Ticket",
-      price: 20000,
-      category: "tickets",
-    },
-    {
-      id: "adult-plus",
-      name: "Adult Ticket Plus",
-      price: 35000,
-      category: "tickets",
-    },
-    {
-      id: "deep-massage",
-      name: "Deep Tissue Massage",
-      price: 35000,
-      category: "experiences",
-    },
-    {
-      id: "swedish-massage",
-      name: "Swedish Massage",
-      price: 25000,
-      category: "experiences",
-    },
-    {
-      id: "kids-massage",
-      name: "Kids Massage",
-      price: 11250,
-      category: "experiences",
-    },
-    {
-      id: "horse-riding",
-      name: "Horse riding",
-      price: 5062,
-      category: "experiences",
-    },
-    {
-      id: "paint-pool",
-      name: "Paint & Chill in the pool with floating snacks [For 2]",
-      price: 50000,
-      category: "experiences",
-    },
-    {
-      id: "paint-canvas",
-      name: "Paint & Chill with Canvas",
-      price: 15000,
-      category: "experiences",
-    },
-    {
-      id: "family-lunch",
-      name: "Family/Group Beachside Lunch",
-      price: 22500,
-      category: "experiences",
-    },
-    {
-      id: "beachfront-picnic",
-      name: "Beachfront Picnic",
-      price: 28125,
-      category: "experiences",
-    },
-    {
-      id: "paint-tote",
-      name: "Paint & Chill with Tote Bag",
-      price: 13000,
-      category: "experiences",
-    },
-    {
-      id: "paint-kids",
-      name: "Paint & Chill for Children",
-      price: 10000,
-      category: "experiences",
-    },
-  ];
 
   const saveCartToLocalStorage = (cartData: Record<string, number>) => {
     if (typeof window === "undefined") return;
@@ -288,75 +231,84 @@ export default function DayPass() {
         {/* PRODUCTS SECTION */}
         <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
           <div className="max-w-7xl mx-auto">
-            {/* REGULAR TICKETS SECTION */}
-            <div className="mb-20" id="regular-tickets">
-              <h2 className="h2 text-blue-900 mb-12">Day Pass Tickets</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12">
-                {regularTickets.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    quantity={getQuantity(product.id)}
-                    onIncrease={() => updateQuantity(product.id, 1)}
-                    onDecrease={() => updateQuantity(product.id, -1)}
-                  />
-                ))}
+            {isLoading ? (
+              <div className="text-center py-20">
+                <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent mb-4"></div>
+                <p className="text-gray-600">Loading experiences...</p>
               </div>
-            </div>
+            ) : (
+              <>
+                {/* REGULAR TICKETS SECTION */}
+                <div className="mb-20" id="regular-tickets">
+                  <h2 className="h2 text-blue-900 mb-12">Day Pass Tickets</h2>
 
-            {/* PREMIUM PLUS TICKETS SECTION */}
-            {plusTickets.length > 0 && (
-              <div className="mb-20" id="premium-tickets">
-                <div className="mb-12">
-                  <div className="flex items-center gap-3 mb-4">
-                    <h2 className="h2 text-blue-900">Premium Tickets</h2>
-                    <span className="inline-block px-3 py-1 bg-blue-100 text-blue-900 text-xs font-semibold rounded-full">
-                      PLUS BENEFITS
-                    </span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12">
+                    {regularTickets.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        quantity={getQuantity(product.id)}
+                        onIncrease={() => updateQuantity(product.id, 1)}
+                        onDecrease={() => updateQuantity(product.id, -1)}
+                      />
+                    ))}
                   </div>
-                  <p className="text-gray-600 font-light mb-6">
-                    Upgrade your day pass with complimentary meals and premium
-                    experiences
-                  </p>
-                  <a
-                    href="/menu#ticket-plus-meals"
-                    className="inline-block bg-blue-900 hover:bg-blue-800 text-white text-sm font-medium py-2.5 px-6 rounded-lg transition-colors"
-                  >
-                    View Meal Options
-                  </a>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                  {plusTickets.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      quantity={getQuantity(product.id)}
-                      onIncrease={() => updateQuantity(product.id, 1)}
-                      onDecrease={() => updateQuantity(product.id, -1)}
-                    />
-                  ))}
+                {/* PREMIUM PLUS TICKETS SECTION */}
+                {plusTickets.length > 0 && (
+                  <div className="mb-20" id="premium-tickets">
+                    <div className="mb-12">
+                      <div className="flex items-center gap-3 mb-4">
+                        <h2 className="h2 text-blue-900">Premium Tickets</h2>
+                        <span className="inline-block px-3 py-1 bg-blue-100 text-blue-900 text-xs font-semibold rounded-full">
+                          PLUS BENEFITS
+                        </span>
+                      </div>
+                      <p className="text-gray-600 font-light mb-6">
+                        Upgrade your day pass with complimentary meals and
+                        premium experiences
+                      </p>
+                      <a
+                        href="/menu#ticket-plus-meals"
+                        className="inline-block bg-blue-900 hover:bg-blue-800 text-white text-sm font-medium py-2.5 px-6 rounded-lg transition-colors"
+                      >
+                        View Meal Options
+                      </a>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                      {plusTickets.map((product) => (
+                        <ProductCard
+                          key={product.id}
+                          product={product}
+                          quantity={getQuantity(product.id)}
+                          onIncrease={() => updateQuantity(product.id, 1)}
+                          onDecrease={() => updateQuantity(product.id, -1)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* EXPERIENCES SECTION */}
+                <div className="mb-20">
+                  <h2 className="h2 text-blue-900 mb-12">Add-On Experiences</h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    {experienceProducts.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        quantity={getQuantity(product.id)}
+                        onIncrease={() => updateQuantity(product.id, 1)}
+                        onDecrease={() => updateQuantity(product.id, -1)}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
+              </>
             )}
-
-            {/* EXPERIENCES SECTION */}
-            <div className="mb-20">
-              <h2 className="h2 text-blue-900 mb-12">Add-On Experiences</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {experienceProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    quantity={getQuantity(product.id)}
-                    onIncrease={() => updateQuantity(product.id, 1)}
-                    onDecrease={() => updateQuantity(product.id, -1)}
-                  />
-                ))}
-              </div>
-            </div>
 
             {/* ORDER SUMMARY - REMOVED - Use header cart icon instead */}
           </div>
@@ -470,6 +422,7 @@ interface ProductCardProps {
     id: string;
     name: string;
     price: number;
+    description?: string;
   };
   quantity: number;
   onIncrease: () => void;
@@ -487,6 +440,10 @@ function ProductCard({
       <h4 className="font-light text-gray-900 mb-3 min-h-12 flex items-center">
         {product.name}
       </h4>
+
+      <p className="text-sm text-gray-600 font-light mb-4 min-h-12">
+        {product.description || "Description coming soon."}
+      </p>
 
       <p className="text-3xl font-light text-gray-900 mb-6">
         ₦{product.price.toLocaleString()}

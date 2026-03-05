@@ -91,7 +91,7 @@ export function PopupModal() {
       {/* Modal Overlay */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white max-w-sm w-full overflow-hidden rounded-lg border border-blue-900/20">
+          <div className="relative bg-white max-w-sm lg:max-w-4xl w-full overflow-hidden rounded-xl border border-blue-900/20 shadow-2xl">
             {/* Close Button - Top Right */}
             <button
               onClick={() => setIsOpen(false)}
@@ -100,43 +100,48 @@ export function PopupModal() {
               <X size={20} />
             </button>
 
-            {/* Image Section - On Top */}
-            {popup.featured_image && (
-              <div className="relative overflow-hidden w-full h-80">
-                <img
-                  src={popup.featured_image}
-                  alt={popup.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
+            <div className="lg:grid lg:grid-cols-2 lg:min-h-130">
+              {/* Image Section - Mobile top, Desktop left */}
+              {popup.featured_image && (
+                <div className="relative overflow-hidden w-full h-80 lg:h-full bg-gray-100">
+                  <img
+                    src={popup.featured_image}
+                    alt={popup.title}
+                    className="w-full h-full object-cover object-center"
+                  />
+                </div>
+              )}
 
-            {/* Text Content Section */}
-            <div className="p-6 space-y-5">
-              {/* Title */}
-              <h3 className="text-2xl font-light text-gray-900 cormorant leading-tight">
-                {popup.title}
-              </h3>
-
-              {/* Excerpt */}
-              <p className="text-base text-gray-600 leading-relaxed font-light">
-                {popup.excerpt}
-              </p>
-
-              {/* Buttons */}
-              <div className="flex flex-col gap-3 pt-2">
-                <a
-                  href={`/popups/${popup.slug}`}
-                  className="w-full px-4 py-3 bg-blue-900 hover:bg-blue-800 text-white font-light text-center transition border border-blue-900 rounded-2xl inline-block"
+              {/* Text Content Section */}
+              <div className="p-6 lg:p-10 space-y-5 lg:space-y-6 flex flex-col justify-center">
+                {/* Title */}
+                <h3
+                  className="text-2xl lg:text-4xl font-light text-gray-900 cormorant leading-tight"
+                  style={{ fontFamily: "Cormorant Garamond, serif" }}
                 >
-                  {popup.modal_cta_text || "Learn More"}
-                </a>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="w-full px-4 py-3 bg-white hover:bg-gray-50 text-blue-900 font-light text-center transition border border-blue-900/20 rounded-2xl"
-                >
-                  Cancel
-                </button>
+                  {popup.title}
+                </h3>
+
+                {/* Excerpt */}
+                <p className="text-base lg:text-lg text-gray-600 leading-relaxed font-light">
+                  {popup.excerpt}
+                </p>
+
+                {/* Buttons */}
+                <div className="flex flex-col gap-3 pt-2 lg:pt-4">
+                  <a
+                    href={`/popups/${popup.slug}`}
+                    className="w-full px-4 py-3 lg:py-3.5 bg-blue-900 hover:bg-blue-800 text-white font-light text-center transition border border-blue-900 rounded-2xl inline-block"
+                  >
+                    {popup.modal_cta_text || "Learn More"}
+                  </a>
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="w-full px-4 py-3 lg:py-3.5 bg-white hover:bg-gray-50 text-blue-900 font-light text-center transition border border-blue-900/20 rounded-2xl"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
           </div>
