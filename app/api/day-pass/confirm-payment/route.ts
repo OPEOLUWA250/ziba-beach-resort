@@ -4,9 +4,9 @@ import { createClient } from "@supabase/supabase-js";
 export const dynamic = "force-dynamic";
 
 /**
- * Confirm payment and update day-pass booking status to PENDING
+ * Confirm payment and update day-pass booking payment reference
  * Called immediately after successful Paystack payment
- * Status: PENDING means payment confirmed, awaiting admin activation
+ * Status stays PENDING until admin reviews and clicks "Approve" button
  */
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(
-      `[Day-Pass Confirm Payment] Updating booking ${bookingId} to PENDING (payment confirmed, awaiting activation)`,
+      `[Day-Pass Confirm Payment] Updating booking ${bookingId} with Paystack reference (status remains PENDING until admin approves)`,
     );
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -49,13 +49,64 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    // Update day-pass booking status to CONFIRMED (payment confirmed)
+    // Verify payment with Paystack when possible before exposing booking to admin.
+    const normalizedReference =
+      typeof reference === "string" ? reference.trim() : "";
+    const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;
+
+    if (normalizedReference && paystackSecretKey) {
+      const verifyRes = await fetch(
+        `https://api.paystack.co/transaction/verify/${normalizedReference}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${paystackSecretKey}`,
+          },
+        },
+      );
+
+      const verifyData = await verifyRes.json();
+      const transactionStatus = verifyData?.data?.status;
+      const isSuccessful =
+        verifyData?.status && transactionStatus === "success";
+
+      if (!isSuccessful) {
+        console.warn(
+          "[Day-Pass Confirm Payment] Paystack verification failed",
+          {
+            bookingId,
+            reference: normalizedReference,
+            paystackStatus: transactionStatus,
+          },
+        );
+
+        return NextResponse.json(
+          {
+            error: "Payment not verified yet",
+            paystackStatus: transactionStatus || "unknown",
+          },
+          { status: 400 },
+        );
+      }
+    }
+
+    // Build update object - include reference if provided
+    const updateData: any = {
+      // Keep status as PENDING - admin must approve before next action
+      // Once Approve button is clicked, admin will change to CONFIRMED
+      payment_status: "PENDING",
+      updated_at: new Date().toISOString(),
+    };
+
+    // Update paystack_reference if reference is provided (actual Paystack transaction ref)
+    if (reference) {
+      updateData.paystack_reference = reference;
+    }
+
+    // Update day-pass booking with payment confirmation (but keep status as PENDING until admin approves)
     const { data, error } = await supabase
       .from("day_pass_bookings")
-      .update({
-        payment_status: "CONFIRMED",
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData)
       .eq("id", bookingId)
       .select();
 
@@ -75,7 +126,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Payment confirmed and booking updated",
+      message: "Payment confirmed and booking left pending for admin approval",
       booking: data?.[0] || null,
     });
   } catch (error: any) {

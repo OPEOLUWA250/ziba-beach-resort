@@ -35,7 +35,8 @@ export async function POST(request: NextRequest) {
     // Generate Paystack reference
     const paystackReference = `dp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    // Save to database
+    // Save to database with RESERVED while payment is in progress.
+    // Booking should appear to admin only after real payment confirmation.
     const { data, error } = await supabase
       .from("day_pass_bookings")
       .insert([
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
           visit_date: visitDate,
           items: items,
           total_amount: totalAmount,
-          payment_status: "PENDING",
+          payment_status: "RESERVED",
           paystack_reference: paystackReference,
         },
       ])

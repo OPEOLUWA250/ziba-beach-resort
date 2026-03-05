@@ -54,13 +54,14 @@ export default function Hero() {
         {/* Background with Image Slider - Enhanced Parallax */}
         <div className="absolute inset-0 w-full h-full">
           {/* Image Slider Container with Zoom Effect */}
-          <div className="absolute inset-0 w-full h-full scale-110">
+          <div className="absolute inset-0 w-full h-full">
             {heroImages.map((image, index) => (
               <div
                 key={index}
-                className="absolute inset-0 transition-opacity duration-1000"
+                className="absolute inset-0"
                 style={{
                   opacity: currentImageIndex === index ? 1 : 0,
+                  transition: "opacity 1000ms ease-in-out",
                 }}
               >
                 <Image
@@ -69,17 +70,23 @@ export default function Hero() {
                   fill
                   priority={index === 0}
                   quality={95}
-                  className="object-cover transition-transform duration-100 ease-out"
+                  className="object-cover"
                   style={{
-                    transform: `translateY(${scrollPos * 0.4}px) scale(${1 + scrollPos * 0.0003})`,
+                    transform: `translateY(${scrollPos * 0.4}px) scale(${
+                      currentImageIndex === index ? 1 : 1.15
+                    })`,
+                    transition:
+                      currentImageIndex === index
+                        ? "transform 3500ms cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+                        : "none",
                   }}
                 />
               </div>
             ))}
           </div>
 
-          {/* Subtle Overlay - Minimal to show images */}
-          <div className="absolute inset-0 bg-black/10" />
+          {/* Subtle Overlay - tuned for readability without hiding details */}
+          <div className="absolute inset-0 bg-linear-to-b from-black/6 via-black/10 to-black/16" />
 
           {/* Dynamic Color Gradient */}
           <div
@@ -115,6 +122,7 @@ export default function Hero() {
             <div style={{ animation: "slideUp 0.8s ease-out both" }}>
               <h1
                 className={`${cormorant.className} text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-tight`}
+                style={{ textShadow: "0 3px 14px rgba(0, 0, 0, 0.42)" }}
               >
                 <span className="text-white block">Nigeria's first</span>
                 <span className="text-white block font-bold mt-1 sm:mt-2 md:mt-3 lg:mt-4">
@@ -126,7 +134,10 @@ export default function Hero() {
             {/* Subtitle */}
             <p
               className="text-base sm:text-lg md:text-xl lg:text-2xl text-white max-w-3xl mx-auto font-light leading-relaxed px-2 sm:px-0"
-              style={{ animation: "slideUp 0.8s ease-out 0.1s both" }}
+              style={{
+                animation: "slideUp 0.8s ease-out 0.1s both",
+                textShadow: "0 2px 10px rgba(0, 0, 0, 0.36)",
+              }}
             >
               World-class, experience-led beach side holidays in Nigeria
             </p>

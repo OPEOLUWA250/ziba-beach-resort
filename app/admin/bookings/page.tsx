@@ -7,6 +7,8 @@ import {
   getAllDayPassBookings,
   updateBookingStatus,
   updateDayPassBookingStatus,
+  deleteBooking,
+  deleteDayPassBooking,
 } from "@/lib/services/booking";
 import { getRoomById, getAllRooms } from "@/lib/services/rooms";
 
@@ -26,6 +28,8 @@ interface Booking {
   total_amount_ngn: number;
   payment_status: string;
   paystack_reference?: string;
+  paid_at?: string;
+  updated_at?: string;
   created_at: string;
 }
 
@@ -56,6 +60,7 @@ const StatusBadge = ({ status }: { status: string }) => {
   const colors: Record<string, string> = {
     PENDING: "bg-yellow-900/30 text-yellow-400 border-yellow-900/50",
     CONFIRMED: "bg-green-900/30 text-green-400 border-green-900/50",
+    ACTIVATED: "bg-blue-900/30 text-blue-400 border-blue-900/50",
     PAID: "bg-green-900/30 text-green-400 border-green-900/50",
     CHECKED_IN: "bg-blue-900/30 text-blue-400 border-blue-900/50",
     COMPLETED: "bg-gray-900/30 text-gray-400 border-gray-900/50",
@@ -308,11 +313,7 @@ const RoomBookingModal = ({
           <button
             onClick={onApprove}
             className="px-6 py-2 bg-green-900/30 hover:bg-green-900/50 text-green-400 rounded-lg transition-all duration-300 hover:scale-105 disabled:opacity-50"
-            disabled={
-              isUpdating ||
-              booking.payment_status === "COMPLETED" ||
-              booking.payment_status === "CANCELLED"
-            }
+            disabled={isUpdating || booking.payment_status !== "PENDING"}
           >
             {isUpdating ? "Updating..." : "Approve"}
           </button>
@@ -323,6 +324,19 @@ const RoomBookingModal = ({
 };
 
 // Day Pass Booking Detail Modal
+const getButtonText = (status: string): string => {
+  switch (status) {
+    case "PENDING":
+      return "Approve";
+    case "CONFIRMED":
+      return "Activate Day Pass";
+    case "ACTIVATED":
+      return "Checkout";
+    default:
+      return "Approve";
+  }
+};
+
 const DayPassBookingModal = ({
   booking,
   isOpen,
@@ -342,6 +356,8 @@ const DayPassBookingModal = ({
 
   const statusMap: Record<string, string> = {
     PENDING: "Awaiting Confirmation",
+    CONFIRMED: "Approved",
+    ACTIVATED: "Day Pass Active",
     CHECKED_IN: "Guest Checked In",
     COMPLETED: "Completed",
     CANCELLED: "Cancelled",
@@ -523,11 +539,70 @@ const DayPassBookingModal = ({
               booking.payment_status === "COMPLETED"
             }
           >
-            {isUpdating
-              ? "Updating..."
-              : booking.payment_status === "CHECKED_IN"
-                ? "Check Out"
-                : "Activate Pass"}
+            {isUpdating ? "Updating..." : getButtonText(booking.payment_status)}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Delete Confirmation Modal
+const DeleteConfirmationModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  bookingType,
+  bookingReference,
+  isDeleting,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  bookingType: "room" | "daypass" | null;
+  bookingReference?: string;
+  isDeleting: boolean;
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-gray-800 rounded-2xl max-w-md w-full border border-gray-700">
+        <div className="p-6 space-y-4">
+          <div className="flex items-center gap-3">
+            <Trash2 size={24} className="text-red-400" />
+            <h2 className="text-xl font-semibold text-white cormorant">
+              Delete Booking
+            </h2>
+          </div>
+
+          <p className="text-gray-300">
+            Are you sure you want to delete this{" "}
+            {bookingType === "room" ? "room" : "day pass"} booking?
+            {bookingReference && (
+              <span className="block mt-2 font-mono text-sm text-gray-400">
+                Reference: {bookingReference}
+              </span>
+            )}
+          </p>
+
+          <p className="text-sm text-gray-400">This action cannot be undone.</p>
+        </div>
+
+        <div className="border-t border-gray-700 p-6 flex gap-3 justify-end">
+          <button
+            onClick={onClose}
+            className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition"
+            disabled={isDeleting}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-6 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg transition disabled:opacity-50"
+            disabled={isDeleting}
+          >
+            {isDeleting ? "Deleting..." : "Delete"}
           </button>
         </div>
       </div>
@@ -566,6 +641,14 @@ export default function BookingsManagement() {
     useState<DayPassBooking | null>(null);
   const [dayPassModalOpen, setDayPassModalOpen] = useState(false);
   const [isModalUpdating, setIsModalUpdating] = useState(false);
+
+  // Delete Confirmation Modal States
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const [bookingToDelete, setBookingToDelete] = useState<
+    Booking | DayPassBooking | null
+  >(null);
+  const [deleteType, setDeleteType] = useState<"room" | "daypass" | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // New Booking Modal States
   const [newBookingModalOpen, setNewBookingModalOpen] = useState(false);
@@ -699,26 +782,25 @@ export default function BookingsManagement() {
     if (!selectedRoomBooking) return;
     setIsModalUpdating(true);
     try {
-      const newStatus =
-        selectedRoomBooking.payment_status === "PENDING"
-          ? "CONFIRMED"
-          : "CHECKED_IN";
-      const updated = await updateBookingStatus(
-        selectedRoomBooking.id,
-        newStatus,
-      );
-      if (updated) {
-        setRoomBookings((prev) =>
-          prev.map((b) =>
-            b.id === selectedRoomBooking.id
-              ? { ...b, payment_status: newStatus }
-              : b,
-          ),
+      // Only approve PENDING bookings to CONFIRMED
+      if (selectedRoomBooking.payment_status === "PENDING") {
+        const updated = await updateBookingStatus(
+          selectedRoomBooking.id,
+          "CONFIRMED",
         );
-        setSelectedRoomBooking({
-          ...selectedRoomBooking,
-          payment_status: newStatus,
-        });
+        if (updated) {
+          setRoomBookings((prev) =>
+            prev.map((b) =>
+              b.id === selectedRoomBooking.id
+                ? { ...b, payment_status: "CONFIRMED" }
+                : b,
+            ),
+          );
+          setSelectedRoomBooking({
+            ...selectedRoomBooking,
+            payment_status: "CONFIRMED",
+          });
+        }
       }
     } catch (err) {
       console.error("Error approving booking:", err);
@@ -770,17 +852,19 @@ export default function BookingsManagement() {
     if (!selectedDayPassBooking) return;
     setIsModalUpdating(true);
     try {
-      // Allow activation from PENDING, CHECKED_IN, or COMPLETED (for legacy online payments)
-      let newStatus: string;
-      if (selectedDayPassBooking.payment_status === "COMPLETED") {
-        // Legacy: if payment was marked complete, treat as needing activation
-        newStatus = "CHECKED_IN";
-      } else if (selectedDayPassBooking.payment_status === "PENDING") {
-        newStatus = "CHECKED_IN";
-      } else if (selectedDayPassBooking.payment_status === "CHECKED_IN") {
-        newStatus = "COMPLETED";
+      // Handle state transitions:
+      // PENDING -> CONFIRMED (admin approves payment)
+      // CONFIRMED -> ACTIVATED (activate day pass when guest arrives)
+      // ACTIVATED -> COMPLETED (checkout when guest leaves)
+      const currentStatus = selectedDayPassBooking.payment_status;
+      let newStatus: "CONFIRMED" | "ACTIVATED" | "COMPLETED";
+
+      if (currentStatus === "PENDING") {
+        newStatus = "CONFIRMED";
+      } else if (currentStatus === "CONFIRMED") {
+        newStatus = "ACTIVATED";
       } else {
-        newStatus = "CHECKED_IN";
+        newStatus = "COMPLETED";
       }
 
       const updated = await updateDayPassBookingStatus(
@@ -801,7 +885,7 @@ export default function BookingsManagement() {
         });
       }
     } catch (err) {
-      console.error("Error approving day-pass booking:", err);
+      console.error("Error updating day-pass booking:", err);
     } finally {
       setIsModalUpdating(false);
     }
@@ -832,6 +916,125 @@ export default function BookingsManagement() {
       console.error("Error declining day-pass booking:", err);
     } finally {
       setIsModalUpdating(false);
+    }
+  };
+
+  // Delete Handlers
+  const handleDeleteRoomBooking = async () => {
+    if (!bookingToDelete || deleteType !== "room") return;
+    setIsDeleting(true);
+    try {
+      const success = await deleteBooking(bookingToDelete.id);
+      if (success) {
+        setRoomBookings((prev) =>
+          prev.filter((b) => b.id !== bookingToDelete.id),
+        );
+        setDeleteConfirmationOpen(false);
+        setBookingToDelete(null);
+        setDeleteType(null);
+      }
+    } catch (err) {
+      console.error("Error deleting room booking:", err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDeleteDayPassBooking = async () => {
+    if (!bookingToDelete || deleteType !== "daypass") return;
+    setIsDeleting(true);
+    try {
+      const success = await deleteDayPassBooking(bookingToDelete.id);
+      if (success) {
+        setDayPassBookings((prev) =>
+          prev.filter((b) => b.id !== bookingToDelete.id),
+        );
+        setDeleteConfirmationOpen(false);
+        setBookingToDelete(null);
+        setDeleteType(null);
+      }
+    } catch (err) {
+      console.error("Error deleting day-pass booking:", err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleBulkDeleteRoomBookings = async () => {
+    if (selectedRoomBookings.length === 0) return;
+
+    const shouldDelete = window.confirm(
+      `Delete ${selectedRoomBookings.length} selected room booking(s)? This cannot be undone.`,
+    );
+
+    if (!shouldDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const idsToDelete = [...selectedRoomBookings];
+      const results = await Promise.allSettled(
+        idsToDelete.map((id) => deleteBooking(id)),
+      );
+
+      const successfulIds = results
+        .map((result, index) =>
+          result.status === "fulfilled" && result.value
+            ? idsToDelete[index]
+            : null,
+        )
+        .filter((id): id is string => Boolean(id));
+
+      if (successfulIds.length > 0) {
+        setRoomBookings((prev) =>
+          prev.filter((booking) => !successfulIds.includes(booking.id)),
+        );
+        setSelectedRoomBookings((prev) =>
+          prev.filter((id) => !successfulIds.includes(id)),
+        );
+      }
+    } catch (err) {
+      console.error("Error deleting selected room bookings:", err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleBulkDeleteDayPassBookings = async () => {
+    if (selectedDayPassBookings.length === 0) return;
+
+    const shouldDelete = window.confirm(
+      `Delete ${selectedDayPassBookings.length} selected day-pass booking(s)? This cannot be undone.`,
+    );
+
+    if (!shouldDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const idsToDelete = [...selectedDayPassBookings];
+      const results = await Promise.allSettled(
+        idsToDelete.map((id) => deleteDayPassBooking(id)),
+      );
+
+      const successfulIds = results
+        .map((result, index) =>
+          result.status === "fulfilled" && result.value
+            ? idsToDelete[index]
+            : null,
+        )
+        .filter((id): id is string => Boolean(id));
+
+      if (successfulIds.length > 0) {
+        setDayPassBookings((prev) =>
+          prev.filter((booking) => !successfulIds.includes(booking.id)),
+        );
+        setSelectedDayPassBookings((prev) =>
+          prev.filter((id) => !successfulIds.includes(id)),
+        );
+      }
+    } catch (err) {
+      console.error("Error deleting selected day-pass bookings:", err);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -1144,6 +1347,12 @@ export default function BookingsManagement() {
                         <input
                           type="checkbox"
                           className="rounded"
+                          checked={
+                            filteredRoomBookings.length > 0 &&
+                            filteredRoomBookings.every((b) =>
+                              selectedRoomBookings.includes(b.id),
+                            )
+                          }
                           onChange={(e) => {
                             if (e.target.checked) {
                               setSelectedRoomBookings(
@@ -1193,15 +1402,14 @@ export default function BookingsManagement() {
                             checked={selectedRoomBookings.includes(booking.id)}
                             onChange={(e) => {
                               if (e.target.checked) {
-                                setSelectedRoomBookings([
-                                  ...selectedRoomBookings,
-                                  booking.id,
-                                ]);
+                                setSelectedRoomBookings((prev) =>
+                                  prev.includes(booking.id)
+                                    ? prev
+                                    : [...prev, booking.id],
+                                );
                               } else {
-                                setSelectedRoomBookings(
-                                  selectedRoomBookings.filter(
-                                    (id) => id !== booking.id,
-                                  ),
+                                setSelectedRoomBookings((prev) =>
+                                  prev.filter((id) => id !== booking.id),
                                 );
                               }
                             }}
@@ -1256,13 +1464,29 @@ export default function BookingsManagement() {
                         </td>
                         <td className="px-3 py-3">
                           <div className="flex items-center gap-2">
-                            <button className="p-2 hover:bg-blue-900/30 rounded-lg transition text-blue-400">
+                            <button
+                              onClick={() => handleOpenRoomModal(booking)}
+                              className="p-2 hover:bg-blue-900/30 rounded-lg transition text-blue-400 hover:text-blue-300"
+                              title="View booking details"
+                            >
                               <Eye size={18} />
                             </button>
-                            <button className="p-2 hover:bg-gray-700 rounded-lg transition text-gray-400">
+                            <button
+                              onClick={() => handleOpenRoomModal(booking)}
+                              className="p-2 hover:bg-blue-900/30 rounded-lg transition text-gray-400 hover:text-gray-300"
+                              title="Edit booking"
+                            >
                               <Edit size={18} />
                             </button>
-                            <button className="p-2 hover:bg-red-900/30 rounded-lg transition text-red-400">
+                            <button
+                              onClick={() => {
+                                setBookingToDelete(booking);
+                                setDeleteType("room");
+                                setDeleteConfirmationOpen(true);
+                              }}
+                              className="p-2 hover:bg-red-900/30 rounded-lg transition text-red-400 hover:text-red-300"
+                              title="Delete booking"
+                            >
                               <Trash2 size={18} />
                             </button>
                           </div>
@@ -1280,6 +1504,17 @@ export default function BookingsManagement() {
               Showing {filteredRoomBookings.length} of {roomBookings.length}{" "}
               room bookings
             </p>
+            {selectedRoomBookings.length > 0 && (
+              <button
+                onClick={handleBulkDeleteRoomBookings}
+                disabled={isDeleting}
+                className="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-300 rounded-lg text-sm transition disabled:opacity-50"
+              >
+                {isDeleting
+                  ? "Deleting..."
+                  : `Delete Selected (${selectedRoomBookings.length})`}
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -1348,6 +1583,12 @@ export default function BookingsManagement() {
                         <input
                           type="checkbox"
                           className="rounded"
+                          checked={
+                            filteredDayPassBookings.length > 0 &&
+                            filteredDayPassBookings.every((b) =>
+                              selectedDayPassBookings.includes(b.id),
+                            )
+                          }
                           onChange={(e) => {
                             if (e.target.checked) {
                               setSelectedDayPassBookings(
@@ -1396,15 +1637,14 @@ export default function BookingsManagement() {
                             )}
                             onChange={(e) => {
                               if (e.target.checked) {
-                                setSelectedDayPassBookings([
-                                  ...selectedDayPassBookings,
-                                  booking.id,
-                                ]);
+                                setSelectedDayPassBookings((prev) =>
+                                  prev.includes(booking.id)
+                                    ? prev
+                                    : [...prev, booking.id],
+                                );
                               } else {
-                                setSelectedDayPassBookings(
-                                  selectedDayPassBookings.filter(
-                                    (id) => id !== booking.id,
-                                  ),
+                                setSelectedDayPassBookings((prev) =>
+                                  prev.filter((id) => id !== booking.id),
                                 );
                               }
                             }}
@@ -1450,13 +1690,29 @@ export default function BookingsManagement() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <button className="p-2 hover:bg-blue-900/30 rounded-lg transition text-blue-400">
+                            <button
+                              onClick={() => handleOpenDayPassModal(booking)}
+                              className="p-2 hover:bg-blue-900/30 rounded-lg transition text-blue-400 hover:text-blue-300"
+                              title="View booking details"
+                            >
                               <Eye size={18} />
                             </button>
-                            <button className="p-2 hover:bg-gray-700 rounded-lg transition text-gray-400">
+                            <button
+                              onClick={() => handleOpenDayPassModal(booking)}
+                              className="p-2 hover:bg-blue-900/30 rounded-lg transition text-gray-400 hover:text-gray-300"
+                              title="Edit booking"
+                            >
                               <Edit size={18} />
                             </button>
-                            <button className="p-2 hover:bg-red-900/30 rounded-lg transition text-red-400">
+                            <button
+                              onClick={() => {
+                                setBookingToDelete(booking);
+                                setDeleteType("daypass");
+                                setDeleteConfirmationOpen(true);
+                              }}
+                              className="p-2 hover:bg-red-900/30 rounded-lg transition text-red-400 hover:text-red-300"
+                              title="Delete booking"
+                            >
                               <Trash2 size={18} />
                             </button>
                           </div>
@@ -1474,6 +1730,17 @@ export default function BookingsManagement() {
               Showing {filteredDayPassBookings.length} of{" "}
               {dayPassBookings.length} day-pass bookings
             </p>
+            {selectedDayPassBookings.length > 0 && (
+              <button
+                onClick={handleBulkDeleteDayPassBookings}
+                disabled={isDeleting}
+                className="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-300 rounded-lg text-sm transition disabled:opacity-50"
+              >
+                {isDeleting
+                  ? "Deleting..."
+                  : `Delete Selected (${selectedDayPassBookings.length})`}
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -2002,6 +2269,28 @@ export default function BookingsManagement() {
         onApprove={handleApproveDayPassBooking}
         onDecline={handleDeclineDayPassBooking}
         isUpdating={isModalUpdating}
+      />
+      <DeleteConfirmationModal
+        isOpen={deleteConfirmationOpen}
+        onClose={() => {
+          setDeleteConfirmationOpen(false);
+          setBookingToDelete(null);
+          setDeleteType(null);
+        }}
+        onConfirm={
+          deleteType === "room"
+            ? handleDeleteRoomBooking
+            : handleDeleteDayPassBooking
+        }
+        bookingType={deleteType}
+        bookingReference={
+          bookingToDelete && "booking_reference_code" in bookingToDelete
+            ? (bookingToDelete as Booking).booking_reference_code
+            : bookingToDelete && "reference_code" in bookingToDelete
+              ? (bookingToDelete as DayPassBooking).reference_code
+              : undefined
+        }
+        isDeleting={isDeleting}
       />
     </div>
   );

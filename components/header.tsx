@@ -19,25 +19,10 @@ const navItems = [
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isNearFooter, setIsNearFooter] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [showBookingChoiceModal, setShowBookingChoiceModal] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 600);
-      // Check if near footer (within 500px of bottom)
-      setIsNearFooter(
-        window.innerHeight + window.scrollY >= document.body.offsetHeight - 500,
-      );
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   // Load cart count from localStorage
   useEffect(() => {
@@ -87,12 +72,11 @@ export default function Header() {
 
   return (
     <header
-      className="fixed top-4 left-1/2 transform -translate-x-1/2 w-[90%] sm:w-[98%] max-w-7xl z-50 bg-white/20 sm:bg-white/10 backdrop-blur-3xl border border-white/30 sm:border-white/20 rounded-2xl sm:rounded-3xl transition-all duration-300 ring-1 ring-white/10 shadow-2xl"
+      className="fixed top-4 left-1/2 transform -translate-x-1/2 w-[90%] sm:w-[98%] max-w-7xl z-50 bg-white/72 backdrop-blur-3xl border border-white/55 rounded-2xl sm:rounded-3xl transition-all duration-300 ring-1 ring-slate-900/5 shadow-2xl"
       style={{
         boxShadow: `
-          0 8px 32px 0 rgba(31, 38, 135, 0.25),
-          inset 0 2px 2px 0 rgba(255, 255, 255, 0.3),
-          inset 0 -2px 2px 0 rgba(0, 0, 0, 0.02)
+          0 8px 24px 0 rgba(15, 23, 42, 0.16),
+          inset 0 1px 1px 0 rgba(255, 255, 255, 0.45)
         `,
         backdropFilter: "blur(40px) saturate(180%)",
       }}
@@ -110,11 +94,8 @@ export default function Header() {
             height={56}
             className="h-auto w-full transition-all duration-300"
             style={{
-              filter: isNearFooter
-                ? "brightness(1) saturate(100%) drop-shadow(0 2px 4px rgba(0,0,0,0.1))"
-                : isScrolled
-                  ? "brightness(0) saturate(100%) invert(20%) sepia(85%) saturate(3500%) hue-rotate(195deg) drop-shadow(0 2px 6px rgba(30,58,138,0.3))"
-                  : "brightness(1) saturate(100%) drop-shadow(0 2px 8px rgba(0,0,0,0.1))",
+              filter:
+                "brightness(0) saturate(100%) invert(20%) sepia(85%) saturate(3500%) hue-rotate(195deg) drop-shadow(0 2px 6px rgba(30,58,138,0.28))",
             }}
             priority
           />
@@ -130,24 +111,16 @@ export default function Header() {
                 href={item.href}
                 className={`px-4 py-2 transition-colors duration-200 relative group ${
                   isActive
-                    ? isScrolled
-                      ? "text-blue-900"
-                      : "text-white"
-                    : isScrolled
-                      ? "text-gray-900 hover:text-gray-700"
-                      : "text-white hover:text-white/70"
+                    ? "text-gray-900"
+                    : "text-gray-900 hover:text-blue-900"
                 }`}
               >
                 {item.label}
                 <span
                   className={`absolute bottom-0 left-0 h-0.5 transition-all duration-300 ${
                     isActive
-                      ? isScrolled
-                        ? "w-full bg-blue-900"
-                        : "w-full bg-white"
-                      : `w-0 group-hover:w-full ${
-                          isScrolled ? "bg-gray-900" : "bg-white"
-                        }`
+                      ? "w-full bg-gray-900"
+                      : "w-0 group-hover:w-full bg-gray-900"
                   }`}
                 />
               </Link>
@@ -163,13 +136,7 @@ export default function Header() {
           >
             <ShoppingCart
               size={20}
-              className={`transition-colors ${
-                isNearFooter
-                  ? "text-white"
-                  : isScrolled
-                    ? "text-gray-900 hover:text-blue-900"
-                    : "text-white"
-              }`}
+              className="text-gray-900 hover:text-blue-900 transition-colors"
             />
             {cartCount > 0 && (
               <span className="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
@@ -189,17 +156,11 @@ export default function Header() {
         <div className="md:hidden flex items-center gap-2">
           <Link
             href="/day-pass/cart"
-            className="relative p-2.5 rounded-lg hover:bg-white/20 transition-colors drop-shadow-lg"
+            className="relative p-2.5 rounded-lg hover:bg-slate-900/5 transition-colors"
           >
             <ShoppingCart
               size={22}
-              className={`transition-colors font-bold ${
-                isNearFooter
-                  ? "text-white drop-shadow-md"
-                  : isScrolled
-                    ? "text-blue-900 hover:text-blue-700 drop-shadow-md font-bold"
-                    : "text-white drop-shadow-lg font-bold"
-              }`}
+              className="text-gray-900 hover:text-blue-900 transition-colors"
             />
             {cartCount > 0 && (
               <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center drop-shadow-md">
@@ -209,13 +170,7 @@ export default function Header() {
           </Link>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`transition-colors duration-300 p-2 drop-shadow-lg ${
-              isNearFooter
-                ? "text-white"
-                : isScrolled
-                  ? "text-blue-900 hover:text-blue-700"
-                  : "text-white"
-            }`}
+            className="transition-colors duration-300 p-2 text-gray-900 hover:text-blue-900"
           >
             {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>

@@ -88,7 +88,7 @@ export default function BookingConfirmationContent() {
 
           if (verifyData.success || verifyData.status === "success") {
             console.log(
-              "✅ Payment verified - database status updated to CONFIRMED",
+              "✅ Payment verified - booking is pending admin approval",
             );
             setPaymentVerified(true);
           } else {
@@ -230,6 +230,13 @@ export default function BookingConfirmationContent() {
     day: "numeric",
   });
 
+  const isPaymentSuccessful = [
+    "PENDING",
+    "CONFIRMED",
+    "CHECKED_IN",
+    "COMPLETED",
+  ].includes(booking.payment_status);
+
   return (
     <>
       {/* Confetti Celebration */}
@@ -364,13 +371,13 @@ export default function BookingConfirmationContent() {
                   <span className="text-gray-600 font-medium">Status</span>
                   <span
                     className={`px-2 py-1 rounded text-xs font-bold ${
-                      booking.payment_status === "CONFIRMED"
+                      isPaymentSuccessful
                         ? "bg-emerald-600 text-white"
                         : "bg-yellow-600 text-white"
                     }`}
                   >
-                    {booking.payment_status === "CONFIRMED"
-                      ? "Payment Received"
+                    {isPaymentSuccessful
+                      ? "Payment Successful"
                       : booking.payment_status}
                   </span>
                 </div>

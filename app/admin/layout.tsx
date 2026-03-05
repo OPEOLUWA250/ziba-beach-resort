@@ -48,28 +48,102 @@ export default function AdminLayout({
   } | null>(null);
 
   React.useEffect(() => {
-    const checkAuth = async () => {
+    let mounted = true;
+    const IDLE_TIMEOUT_MS = 45 * 60 * 1000;
+    const SESSION_CHECK_INTERVAL_MS = 60 * 1000;
+    let lastActivityAt = Date.now();
+
+    const redirectToLogin = () => {
+      if (!mounted) return;
+      const next = encodeURIComponent(pathname || "/admin");
+      router.replace(`/admin-login?next=${next}`);
+    };
+
+    const validateSession = async (isInitial = false) => {
       try {
         const response = await fetch("/api/admin/auth/me", {
           credentials: "include",
+          cache: "no-store",
         });
 
         if (!response.ok) {
-          router.replace("/admin-login");
-          return;
+          redirectToLogin();
+          return false;
         }
 
         const data = await response.json();
-        setAdminProfile(data.admin || null);
+        if (mounted) {
+          setAdminProfile(data.admin || null);
+        }
+
+        return true;
       } catch {
-        router.replace("/admin-login");
+        redirectToLogin();
+        return false;
       } finally {
-        setAuthLoading(false);
+        if (isInitial && mounted) {
+          setAuthLoading(false);
+        }
       }
     };
 
-    checkAuth();
-  }, [router]);
+    const markActivity = () => {
+      lastActivityAt = Date.now();
+    };
+
+    const checkIdleTimeout = async () => {
+      const idleDuration = Date.now() - lastActivityAt;
+      if (idleDuration < IDLE_TIMEOUT_MS) return;
+
+      try {
+        await fetch("/api/admin/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        });
+      } finally {
+        redirectToLogin();
+      }
+    };
+
+    const handleVisibilityOrFocus = async () => {
+      if (document.visibilityState === "visible") {
+        markActivity();
+        await validateSession();
+      }
+    };
+
+    validateSession(true);
+
+    const sessionInterval = window.setInterval(() => {
+      void validateSession();
+      void checkIdleTimeout();
+    }, SESSION_CHECK_INTERVAL_MS);
+
+    const activityEvents: Array<keyof WindowEventMap> = [
+      "mousemove",
+      "mousedown",
+      "keydown",
+      "touchstart",
+      "scroll",
+    ];
+
+    activityEvents.forEach((eventName) => {
+      window.addEventListener(eventName, markActivity, { passive: true });
+    });
+
+    window.addEventListener("focus", handleVisibilityOrFocus);
+    document.addEventListener("visibilitychange", handleVisibilityOrFocus);
+
+    return () => {
+      mounted = false;
+      window.clearInterval(sessionInterval);
+      activityEvents.forEach((eventName) => {
+        window.removeEventListener(eventName, markActivity);
+      });
+      window.removeEventListener("focus", handleVisibilityOrFocus);
+      document.removeEventListener("visibilitychange", handleVisibilityOrFocus);
+    };
+  }, [pathname, router]);
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";

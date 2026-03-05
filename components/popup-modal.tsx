@@ -90,60 +90,68 @@ export function PopupModal() {
     <>
       {/* Modal Overlay */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="relative bg-white max-w-sm lg:max-w-4xl w-full overflow-hidden rounded-xl border border-blue-900/20 shadow-2xl">
-            {/* Close Button - Top Right */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm">
+          <div className="relative bg-white max-w-md lg:max-w-5xl w-full h-[80vh] max-h-160 min-h-136 overflow-hidden rounded-2xl border border-blue-900/20 shadow-2xl">
+            {/* Close Button - Top Right of Modal */}
             <button
               onClick={() => setIsOpen(false)}
-              className="absolute top-4 right-4 z-10 p-1 hover:bg-gray-100 rounded-full transition text-gray-400 hover:text-gray-600"
+              className="absolute top-2 right-2 sm:top-3 sm:right-3 z-20 p-2 sm:p-2.5 bg-white hover:bg-gray-100 rounded-full transition text-gray-900 hover:text-black shadow-2xl hover:shadow-xl hover:scale-110 active:scale-95"
             >
-              <X size={20} />
+              <X size={32} strokeWidth={2.5} />
             </button>
 
-            <div className="lg:grid lg:grid-cols-2 lg:min-h-130">
-              {/* Image Section - Mobile top, Desktop left */}
-              {popup.featured_image && (
-                <div className="relative overflow-hidden w-full h-80 lg:h-full bg-gray-100">
+            {popup.featured_image ? (
+              <div className="h-full grid grid-rows-[7fr_3fr] lg:grid-cols-2 lg:grid-rows-1">
+                {/* Image Section - 70% mobile emphasis, full-height desktop */}
+                <div className="relative overflow-hidden bg-linear-to-b from-slate-100 to-slate-200">
                   <img
                     src={popup.featured_image}
                     alt={popup.title}
-                    className="w-full h-full object-cover object-center"
+                    className="w-full h-full object-cover lg:object-contain object-center"
                   />
                 </div>
-              )}
 
-              {/* Text Content Section */}
-              <div className="p-6 lg:p-10 space-y-5 lg:space-y-6 flex flex-col justify-center">
-                {/* Title */}
-                <h3
-                  className="text-2xl lg:text-4xl font-light text-gray-900 cormorant leading-tight"
-                  style={{ fontFamily: "Cormorant Garamond, serif" }}
-                >
-                  {popup.title}
-                </h3>
+                {/* Text + CTA Section - 30% on mobile */}
+                <div className="p-5 sm:p-6 lg:p-10 flex flex-col justify-between gap-3 lg:gap-5">
+                  <div className="space-y-2 lg:space-y-4">
+                    <h3
+                      className="text-2xl lg:text-4xl font-light text-gray-900 cormorant leading-tight"
+                      style={{ fontFamily: "Cormorant Garamond, serif" }}
+                    >
+                      {popup.title}
+                    </h3>
+                    <p className="text-sm sm:text-base lg:text-lg text-gray-600 leading-relaxed font-light line-clamp-3 lg:line-clamp-6">
+                      {popup.excerpt}
+                    </p>
+                  </div>
 
-                {/* Excerpt */}
-                <p className="text-base lg:text-lg text-gray-600 leading-relaxed font-light">
-                  {popup.excerpt}
-                </p>
-
-                {/* Buttons */}
-                <div className="flex flex-col gap-3 pt-2 lg:pt-4">
                   <a
                     href={`/popups/${popup.slug}`}
                     className="w-full px-4 py-3 lg:py-3.5 bg-blue-900 hover:bg-blue-800 text-white font-light text-center transition border border-blue-900 rounded-2xl inline-block"
                   >
                     {popup.modal_cta_text || "Learn More"}
                   </a>
-                  <button
-                    onClick={() => setIsOpen(false)}
-                    className="w-full px-4 py-3 lg:py-3.5 bg-white hover:bg-gray-50 text-blue-900 font-light text-center transition border border-blue-900/20 rounded-2xl"
-                  >
-                    Cancel
-                  </button>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="h-full p-6 lg:p-10 flex flex-col justify-center gap-5">
+                <h3
+                  className="text-2xl lg:text-4xl font-light text-gray-900 cormorant leading-tight"
+                  style={{ fontFamily: "Cormorant Garamond, serif" }}
+                >
+                  {popup.title}
+                </h3>
+                <p className="text-base lg:text-lg text-gray-600 leading-relaxed font-light">
+                  {popup.excerpt}
+                </p>
+                <a
+                  href={`/popups/${popup.slug}`}
+                  className="w-full px-4 py-3 lg:py-3.5 bg-blue-900 hover:bg-blue-800 text-white font-light text-center transition border border-blue-900 rounded-2xl inline-block"
+                >
+                  {popup.modal_cta_text || "Learn More"}
+                </a>
+              </div>
+            )}
           </div>
         </div>
       )}

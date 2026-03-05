@@ -46,7 +46,6 @@ export default function AdminSystemPage() {
     email: "",
     password: "",
     role: "ADMIN",
-    status: "active",
   });
 
   const [editForm, setEditForm] = useState({
@@ -54,7 +53,6 @@ export default function AdminSystemPage() {
     email: "",
     password: "",
     role: "ADMIN",
-    status: "active",
   });
 
   const [showCreatePassword, setShowCreatePassword] = useState(false);
@@ -135,7 +133,6 @@ export default function AdminSystemPage() {
         email: "",
         password: "",
         role: "ADMIN",
-        status: "active",
       });
       await fetchData();
       showSuccess("Admin created successfully");
@@ -153,7 +150,6 @@ export default function AdminSystemPage() {
       email: user.email,
       password: "",
       role: user.role,
-      status: user.status,
     });
   };
 
@@ -411,7 +407,7 @@ export default function AdminSystemPage() {
                 {showCreatePassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div>
               <select
                 className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white"
                 value={createForm.role}
@@ -421,17 +417,6 @@ export default function AdminSystemPage() {
               >
                 <option value="ADMIN">ADMIN</option>
                 <option value="SUPER_ADMIN">SUPER_ADMIN</option>
-              </select>
-              <select
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white"
-                value={createForm.status}
-                onChange={(e) =>
-                  setCreateForm((p) => ({ ...p, status: e.target.value }))
-                }
-              >
-                <option value="active">active</option>
-                <option value="inactive">inactive</option>
-                <option value="locked">locked</option>
               </select>
             </div>
             <div className="flex justify-end gap-3 pt-2">
@@ -498,12 +483,13 @@ export default function AdminSystemPage() {
                 {showEditPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div>
               <div>
                 {editingUser?.role === "SUPER_ADMIN" ? (
                   <div className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 text-white flex items-center cursor-not-allowed opacity-60">
-                    <span className="text-blue-300 font-medium">SUPER_ADMIN</span>
-                    <span className="text-xs text-gray-500 ml-auto">(Immutable)</span>
+                    <span className="text-blue-300 font-medium">
+                      SUPER_ADMIN
+                    </span>
                   </div>
                 ) : (
                   <select
@@ -518,17 +504,6 @@ export default function AdminSystemPage() {
                   </select>
                 )}
               </div>
-              <select
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white"
-                value={editForm.status}
-                onChange={(e) =>
-                  setEditForm((p) => ({ ...p, status: e.target.value }))
-                }
-              >
-                <option value="active">active</option>
-                <option value="inactive">inactive</option>
-                <option value="locked">locked</option>
-              </select>
             </div>
             <div className="flex justify-end gap-3 pt-2">
               <button

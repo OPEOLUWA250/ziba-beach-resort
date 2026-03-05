@@ -86,12 +86,7 @@ export default function BlogPost({
         <main className="bg-white">
           <section className="px-4 sm:px-6 lg:px-8 py-20">
             <div className="max-w-3xl mx-auto text-center">
-              <h1
-                className="text-5xl font-light text-gray-900 mb-4"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
-              >
-                Post Not Found
-              </h1>
+              <h1 className="h1 text-gray-900 mb-4">Post Not Found</h1>
               <p className="text-gray-600 font-light mb-8">
                 The blog post you're looking for doesn't exist.
               </p>
@@ -145,12 +140,9 @@ export default function BlogPost({
         {/* Post Header */}
         <section className="px-4 sm:px-6 lg:px-8 py-12">
           <div className="max-w-4xl mx-auto">
-            <h1
-              className="text-5xl font-light text-gray-900 mb-6"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
-            >
+            <h2 className="h2 font-light text-gray-900 mb-6 text-center">
               {post.title}
-            </h1>
+            </h2>
 
             {/* Meta Info */}
             <div className="flex flex-wrap items-center gap-6 pb-8 border-b border-gray-200">
@@ -230,10 +222,7 @@ export default function BlogPost({
         {/* CTA Section */}
         <section className="px-4 sm:px-6 lg:px-8 py-16 bg-blue-50">
           <div className="max-w-4xl mx-auto text-center">
-            <h2
-              className="text-3xl font-light text-blue-900 mb-4"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
-            >
+            <h2 className="h2 font-light text-blue-900 mb-4 text-center">
               Ready to Experience It?
             </h2>
             <p className="text-gray-600 font-light mb-8 max-w-2xl mx-auto">
@@ -261,10 +250,7 @@ export default function BlogPost({
         {relatedPosts.length > 0 && (
           <section className="px-4 sm:px-6 lg:px-8 py-20">
             <div className="max-w-6xl mx-auto">
-              <h2
-                className="text-4xl font-light text-blue-900 mb-12 text-center"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
-              >
+              <h2 className="h2 font-light text-blue-900 mb-12 text-center">
                 Related Posts
               </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -283,10 +269,7 @@ export default function BlogPost({
                         />
                       </div>
                       <div className="flex-1 p-6 flex flex-col">
-                        <h3
-                          className="text-lg font-light text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-900 transition-colors"
-                          style={{ fontFamily: "Cormorant Garamond, serif" }}
-                        >
+                        <h3 className="h5 text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-900 transition-colors">
                           {relatedPost.title}
                         </h3>
                         <p className="text-gray-600 font-light text-sm mb-4 line-clamp-2 flex-1">
@@ -315,10 +298,7 @@ export default function BlogPost({
         {/* Newsletter CTA */}
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-blue-50">
           <div className="max-w-2xl mx-auto text-center">
-            <h2
-              className="text-3xl font-light text-blue-900 mb-4"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
-            >
+            <h2 className="h2 font-light text-blue-900 mb-4 text-center">
               Get More Stories Like This
             </h2>
             <p className="text-gray-600 font-light mb-8">

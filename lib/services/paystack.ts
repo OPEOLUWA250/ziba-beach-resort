@@ -116,7 +116,8 @@ export async function verifyPayment(reference: string) {
       const { data: updateData, error: updateError } = await supabase
         .from("bookings")
         .update({
-          payment_status: "CONFIRMED",
+          payment_status: "PENDING",
+          paid_at: new Date().toISOString(),
         })
         .eq("paystack_reference", reference);
 
@@ -178,12 +179,15 @@ export async function handlePaystackWebhook(
         await supabase
           .from("bookings")
           .update({
-            payment_status: "CONFIRMED",
+            payment_status: "PENDING",
             paid_at: new Date().toISOString(),
           })
           .eq("paystack_reference", data.reference);
 
-        return { success: true, message: "Booking payment confirmed" };
+        return {
+          success: true,
+          message: "Payment confirmed and awaiting admin approval",
+        };
 
       case "charge.failed":
         await supabase

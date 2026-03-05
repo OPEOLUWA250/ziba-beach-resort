@@ -20,24 +20,24 @@ export async function isRoomAvailable(
       Date.now() - reservationHoldMinutes * 60 * 1000,
     );
 
-    // Check for CONFIRMED bookings (always blocking)
-    const { data: confirmedBookings, error: confirmedError } = await supabase
+    // Check for CONFIRMED and paid PENDING bookings (always blocking)
+    const { data: blockingBookings, error: blockingError } = await supabase
       .from("bookings")
-      .select("id")
+      .select("id, payment_status")
       .eq("room_id", roomId)
-      .eq("payment_status", "CONFIRMED")
+      .in("payment_status", ["CONFIRMED", "PENDING"])
       .gt("check_out_date", checkInDate.toISOString())
       .lt("check_in_date", checkOutDate.toISOString());
 
-    if (confirmedError) throw confirmedError;
-    if (confirmedBookings && confirmedBookings.length > 0) {
+    if (blockingError) throw blockingError;
+    if (blockingBookings && blockingBookings.length > 0) {
       console.log(
-        `[Availability] Room ${roomId} has CONFIRMED booking blocking dates`,
+        `[Availability] Room ${roomId} has CONFIRMED/PENDING booking blocking dates`,
       );
       return false;
     }
 
-    // Check for non-expired RESERVED bookings (hold period still active)
+    // Check for non-expired RESERVED bookings (temporary hold while payment is in progress)
     const { data: reservedBookings, error: reservedError } = await supabase
       .from("bookings")
       .select("id, created_at")
@@ -76,16 +76,16 @@ export async function getRoomBookings(
       Date.now() - reservationHoldMinutes * 60 * 1000,
     );
 
-    // Get all CONFIRMED bookings
-    const { data: confirmedBookings, error: confirmedError } = await supabase
+    // Get all CONFIRMED and paid PENDING bookings
+    const { data: blockingBookings, error: blockingError } = await supabase
       .from("bookings")
       .select("*")
       .eq("room_id", roomId)
-      .eq("payment_status", "CONFIRMED")
+      .in("payment_status", ["CONFIRMED", "PENDING"])
       .gt("check_out_date", startDate.toISOString())
       .lt("check_in_date", endDate.toISOString());
 
-    if (confirmedError) throw confirmedError;
+    if (blockingError) throw blockingError;
 
     // Get non-expired RESERVED bookings
     const { data: reservedBookings, error: reservedError } = await supabase
@@ -101,7 +101,7 @@ export async function getRoomBookings(
 
     // Combine both arrays
     const allBookings = [
-      ...(confirmedBookings || []),
+      ...(blockingBookings || []),
       ...(reservedBookings || []),
     ];
     return allBookings;
@@ -325,7 +325,7 @@ export async function getBookingByReference(
  */
 export async function getAllBookings() {
   try {
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("bookings")
       .select(
         `
@@ -344,10 +344,61 @@ export async function getAllBookings() {
         total_amount_ngn,
         payment_status,
         paystack_reference,
+        paid_at,
+        updated_at,
         created_at
       `,
       )
+      .neq("payment_status", "RESERVED")
       .order("created_at", { ascending: false });
+
+    // Some deployments may not yet have paid_at/updated_at columns.
+    // Fall back to a compatible select so the admin dashboard keeps working.
+    const missingColumns =
+      !!error &&
+      (error.code === "42703" ||
+        String(error.message || "")
+          .toLowerCase()
+          .includes("paid_at") ||
+        String(error.message || "")
+          .toLowerCase()
+          .includes("updated_at") ||
+        String(error.details || "")
+          .toLowerCase()
+          .includes("paid_at") ||
+        String(error.details || "")
+          .toLowerCase()
+          .includes("updated_at"));
+
+    if (missingColumns) {
+      const fallback = await supabase
+        .from("bookings")
+        .select(
+          `
+          id,
+          booking_reference_code,
+          guest_name,
+          guest_email,
+          guest_phone,
+          room_id,
+          check_in_date,
+          check_out_date,
+          number_of_guests,
+          special_requests,
+          room_price_ngn,
+          number_of_nights,
+          total_amount_ngn,
+          payment_status,
+          paystack_reference,
+          created_at
+        `,
+        )
+        .neq("payment_status", "RESERVED")
+        .order("created_at", { ascending: false });
+
+      data = fallback.data;
+      error = fallback.error;
+    }
 
     if (error) {
       console.error("Error fetching all bookings:", error);
@@ -380,6 +431,7 @@ export async function getAllDayPassBookings() {
         created_at
       `,
       )
+      .neq("payment_status", "RESERVED")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -428,7 +480,7 @@ export async function updateBookingStatus(
 
 export async function updateDayPassBookingStatus(
   bookingId: string,
-  status: "PENDING" | "COMPLETED" | "CANCELLED",
+  status: "PENDING" | "CONFIRMED" | "ACTIVATED" | "COMPLETED" | "CANCELLED",
 ) {
   try {
     const { data, error } = await supabase
@@ -449,5 +501,43 @@ export async function updateDayPassBookingStatus(
   } catch (error) {
     console.error("Error in updateDayPassBookingStatus:", error);
     return null;
+  }
+}
+
+export async function deleteBooking(bookingId: string) {
+  try {
+    const { error } = await supabase
+      .from("bookings")
+      .delete()
+      .eq("id", bookingId);
+
+    if (error) {
+      console.error("Error deleting booking:", error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error in deleteBooking:", error);
+    return false;
+  }
+}
+
+export async function deleteDayPassBooking(bookingId: string) {
+  try {
+    const { error } = await supabase
+      .from("day_pass_bookings")
+      .delete()
+      .eq("id", bookingId);
+
+    if (error) {
+      console.error("Error deleting day-pass booking:", error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error in deleteDayPassBooking:", error);
+    return false;
   }
 }

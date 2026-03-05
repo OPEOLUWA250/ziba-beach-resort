@@ -130,23 +130,23 @@ async function handleChargeSuccess(data: any) {
     const booking = bookings[0];
     console.log(`[Paystack Webhook] Found booking: ${booking.id}`);
 
-    // Check if already completed
-    if (booking.payment_status === "COMPLETED") {
-      console.log(`[Paystack Webhook] Booking already completed, skipping`);
+    // If already in a post-payment state, skip duplicate webhook handling
+    if (["PENDING", "CONFIRMED", "CHECKED_IN", "COMPLETED"].includes(booking.payment_status)) {
+      console.log(
+        `[Paystack Webhook] Booking already in post-payment state (${booking.payment_status}), skipping`,
+      );
       return NextResponse.json({
         success: true,
-        message: "Booking already confirmed",
+        message: "Booking already processed",
       });
     }
 
-    // Update booking status
-    console.log(
-      `[Paystack Webhook] Updating booking ${booking.id} to COMPLETED`,
-    );
+    // Update booking to PENDING so admin can verify and approve to CONFIRMED
+    console.log(`[Paystack Webhook] Updating booking ${booking.id} to PENDING`);
     const { data: updated, error: updateError } = await supabase
       .from("bookings")
       .update({
-        payment_status: "COMPLETED",
+        payment_status: "PENDING",
         paid_at: new Date().toISOString(),
       })
       .eq("id", booking.id)
@@ -165,7 +165,7 @@ async function handleChargeSuccess(data: any) {
     }
 
     console.log(
-      `[Paystack Webhook] ✅ SUCCESS - Booking ${booking.id} updated to COMPLETED`,
+      `[Paystack Webhook] ✅ SUCCESS - Booking ${booking.id} updated to PENDING`,
     );
 
     return NextResponse.json({

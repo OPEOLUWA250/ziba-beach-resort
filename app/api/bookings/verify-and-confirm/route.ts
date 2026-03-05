@@ -3,7 +3,8 @@ import { createClient } from "@supabase/supabase-js";
 
 /**
  * Server-side payment verification endpoint
- * Verifies payment with Paystack and updates booking status if successful
+ * Verifies payment with Paystack and records payment time/reference
+ * Booking remains PENDING until admin approves to CONFIRMED
  * Used when user lands on /booking-confirmation page
  */
 export async function POST(request: NextRequest) {
@@ -117,13 +118,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Payment is successful - update database from RESERVED to CONFIRMED
-    console.log("[Verify And Confirm] Payment verified! Updating database...");
+    // Payment is successful - keep booking as PENDING and only store payment metadata.
+    console.log(
+      "[Verify And Confirm] Payment verified! Recording payment metadata while keeping status PENDING...",
+    );
 
     const { data: updatedBooking, error: updateError } = await supabase
       .from("bookings")
       .update({
-        payment_status: "CONFIRMED",
+        payment_status: "PENDING",
         paid_at: new Date().toISOString(),
       })
       .eq("id", bookingId)
@@ -145,7 +148,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Payment verified and booking confirmed",
+      message: "Payment verified and booking left pending for admin approval",
       booking: updatedBooking,
     });
   } catch (error: any) {

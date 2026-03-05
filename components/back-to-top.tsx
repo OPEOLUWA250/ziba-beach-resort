@@ -1,10 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronUp, MapPin } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { ChevronUp } from "lucide-react";
 
 export default function BackToTop() {
   const [isVisible, setIsVisible] = useState(false);
+  const pathname = usePathname();
+
+  // Don't show on admin routes
+  const isAdminRoute = pathname?.startsWith("/admin");
 
   useEffect(() => {
     const toggleVisibility = () => {
@@ -27,27 +32,12 @@ export default function BackToTop() {
     });
   };
 
-  const openLocation = () => {
-    window.open(
-      "https://www.google.com/maps?q=Ziba+Beach+Close+Okun+Ajah+Lagos+Nigeria",
-      "_blank",
-    );
-  };
+  if (isAdminRoute) return null;
 
   return (
     <>
       {isVisible && (
         <div className="fixed bottom-8 right-4 sm:right-6 md:right-8 z-50 flex flex-col gap-2 animate-fadeIn">
-          {/* Location Navigation Icon */}
-          <button
-            onClick={openLocation}
-            className="p-3 rounded-full bg-blue-900 hover:bg-blue-800 text-white transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl"
-            aria-label="Navigate to Ziba Beach Resort"
-            title="Ziba Beach Close, Okun Ajah, Lagos, Nigeria"
-          >
-            <MapPin size={24} strokeWidth={1.5} />
-          </button>
-
           {/* Back to Top Button */}
           <button
             onClick={scrollToTop}

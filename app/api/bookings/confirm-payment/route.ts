@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 /**
- * Confirm payment and update booking status to CONFIRMED
+ * Confirm payment and update booking with Paystack reference
  * Called immediately after successful Paystack payment
+ * Status stays PENDING until admin reviews payment and clicks "Approve" button
  */
 export async function POST(request: NextRequest) {
   try {
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(
-      `[Confirm Payment] Updating booking ${normalizedBookingId} to CONFIRMED`,
+      `[Confirm Payment] Updating booking ${normalizedBookingId} with Paystack reference (status remains PENDING until admin approves)`,
     );
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -44,14 +45,63 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    // Try full update first. If paid_at column doesn't exist, fall back to status-only update.
+    // Verify payment with Paystack when possible before exposing booking to admin.
+    const normalizedReference =
+      typeof reference === "string" ? reference.trim() : "";
+    const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;
+
+    if (normalizedReference && paystackSecretKey) {
+      const verifyRes = await fetch(
+        `https://api.paystack.co/transaction/verify/${normalizedReference}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${paystackSecretKey}`,
+          },
+        },
+      );
+
+      const verifyData = await verifyRes.json();
+      const transactionStatus = verifyData?.data?.status;
+      const isSuccessful =
+        verifyData?.status && transactionStatus === "success";
+
+      if (!isSuccessful) {
+        console.warn("[Confirm Payment] Paystack verification failed", {
+          bookingId: normalizedBookingId,
+          reference: normalizedReference,
+          paystackStatus: transactionStatus,
+        });
+
+        return NextResponse.json(
+          {
+            error: "Payment not verified yet",
+            paystackStatus: transactionStatus || "unknown",
+          },
+          { status: 400 },
+        );
+      }
+    }
+
+    // Build update object - payment confirmed, now await admin verification/approval
+    const updateData: any = {
+      payment_status: "PENDING",
+      updated_at: new Date().toISOString(),
+    };
+
+    // Update paystack_reference if reference is provided (actual Paystack transaction ref)
+    if (reference) {
+      updateData.paystack_reference = reference;
+    }
+
+    // Try full update first. If paid_at column exists, add it
     let data: any[] | null = null;
     let error: any = null;
 
     const fullUpdate = await supabase
       .from("bookings")
       .update({
-        payment_status: "CONFIRMED",
+        ...updateData,
         paid_at: new Date().toISOString(),
       })
       .eq("id", normalizedBookingId)
@@ -72,14 +122,12 @@ export async function POST(request: NextRequest) {
 
     if (missingPaidAtColumn) {
       console.warn(
-        "[Confirm Payment] paid_at column missing. Falling back to payment_status-only update.",
+        "[Confirm Payment] paid_at column missing. Falling back to reference-only update.",
       );
 
       const fallbackUpdate = await supabase
         .from("bookings")
-        .update({
-          payment_status: "CONFIRMED",
-        })
+        .update(updateData)
         .eq("id", normalizedBookingId)
         .select();
 
@@ -136,7 +184,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Payment confirmed and booking updated",
+      message: "Payment confirmed and booking left pending for admin approval",
       booking: data?.[0] || null,
     });
   } catch (error: any) {

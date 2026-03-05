@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, KeyRound } from "lucide-react";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -11,6 +11,43 @@ export default function AdminLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [showRecoveryForm, setShowRecoveryForm] = useState(false);
+  const [recoveryIdentifier, setRecoveryIdentifier] = useState("");
+  const [recoveryKey, setRecoveryKey] = useState("");
+  const [newRecoveryPassword, setNewRecoveryPassword] = useState("");
+  const [isRecovering, setIsRecovering] = useState(false);
+  const [recoveryError, setRecoveryError] = useState<string | null>(null);
+  const [recoveryMessage, setRecoveryMessage] = useState<string | null>(null);
+  const [recoveryUiEnabled, setRecoveryUiEnabled] = useState(false);
+  const [failedLoginAttempts, setFailedLoginAttempts] = useState(0);
+
+  useEffect(() => {
+    const fromEnv = process.env.NEXT_PUBLIC_SHOW_ADMIN_RECOVERY_UI === "true";
+    const fromQuery =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("recover") === "1";
+
+    if (fromEnv || fromQuery) {
+      setRecoveryUiEnabled(true);
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      // Stealth reveal shortcut for trusted operators only.
+      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "r") {
+        event.preventDefault();
+        setRecoveryUiEnabled(true);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    if (failedLoginAttempts > 0) {
+      setRecoveryUiEnabled(true);
+    }
+  }, [failedLoginAttempts]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,14 +66,55 @@ export default function AdminLoginPage() {
 
       if (!response.ok) {
         setError(data.error || "Login failed");
+        setFailedLoginAttempts((prev) => prev + 1);
         return;
       }
 
       router.push("/admin/operations");
     } catch {
       setError("Unable to login. Please try again.");
+      setFailedLoginAttempts((prev) => prev + 1);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleRecovery = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRecoveryError(null);
+    setRecoveryMessage(null);
+    setIsRecovering(true);
+
+    try {
+      const response = await fetch("/api/admin/auth/recover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          identifier: recoveryIdentifier.trim() || undefined,
+          recoveryKey,
+          newPassword: newRecoveryPassword,
+        }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        setRecoveryError(payload.error || "Recovery failed");
+        return;
+      }
+
+      setRecoveryMessage(
+        "Recovery successful. You are now signed in as SUPER_ADMIN.",
+      );
+      setRecoveryKey("");
+      setNewRecoveryPassword("");
+      setRecoveryIdentifier("");
+      router.push("/admin/operations");
+    } catch {
+      setRecoveryError("Unable to recover account. Please try again.");
+    } finally {
+      setIsRecovering(false);
     }
   };
 
@@ -96,10 +174,75 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        <p className="text-xs text-gray-500 mt-6">
-          First-time setup: call POST /api/admin/auth/bootstrap to create the
-          immutable SUPER_ADMIN.
-        </p>
+        {recoveryUiEnabled && (
+          <div className="mt-6 border-t border-gray-800 pt-5">
+            <button
+              type="button"
+              onClick={() => {
+                setShowRecoveryForm((prev) => !prev);
+                setRecoveryError(null);
+                setRecoveryMessage(null);
+              }}
+              className="w-full text-left flex items-center gap-2 text-amber-300 hover:text-amber-200 text-sm"
+            >
+              <KeyRound size={16} /> Emergency SUPER_ADMIN recovery
+            </button>
+
+            {showRecoveryForm && (
+              <form onSubmit={handleRecovery} className="mt-4 space-y-3">
+                {recoveryError && (
+                  <div className="p-3 rounded-lg bg-red-900/30 border border-red-900/50 text-red-300 text-xs">
+                    {recoveryError}
+                  </div>
+                )}
+
+                {recoveryMessage && (
+                  <div className="p-3 rounded-lg bg-green-900/30 border border-green-900/50 text-green-300 text-xs">
+                    {recoveryMessage}
+                  </div>
+                )}
+
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  Use this only when SUPER_ADMIN access is lost. Requires the
+                  server-side recovery key from your deployment secrets.
+                </p>
+
+                <input
+                  value={recoveryIdentifier}
+                  onChange={(e) => setRecoveryIdentifier(e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 text-sm"
+                  placeholder="SUPER_ADMIN email or username (optional)"
+                />
+
+                <input
+                  value={newRecoveryPassword}
+                  onChange={(e) => setNewRecoveryPassword(e.target.value)}
+                  type="password"
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 text-sm"
+                  placeholder="New password"
+                  required
+                />
+
+                <input
+                  value={recoveryKey}
+                  onChange={(e) => setRecoveryKey(e.target.value)}
+                  type="password"
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 text-sm"
+                  placeholder="Recovery key"
+                  required
+                />
+
+                <button
+                  type="submit"
+                  disabled={isRecovering}
+                  className="w-full bg-amber-700 hover:bg-amber-600 text-white rounded-lg py-2.5 text-sm font-semibold disabled:opacity-60"
+                >
+                  {isRecovering ? "Recovering..." : "Recover SUPER_ADMIN"}
+                </button>
+              </form>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
