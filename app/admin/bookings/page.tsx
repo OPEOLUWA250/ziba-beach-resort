@@ -1339,7 +1339,7 @@ export default function BookingsManagement() {
                 <p className="text-gray-400">No room bookings found</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div>
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-gray-700 bg-gray-950/50">
@@ -1575,7 +1575,7 @@ export default function BookingsManagement() {
                 <p className="text-gray-400">No day-pass bookings found</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div>
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-700 bg-gray-950/50">
@@ -1636,6 +1636,7 @@ export default function BookingsManagement() {
                               booking.id,
                             )}
                             onChange={(e) => {
+                              e.stopPropagation();
                               if (e.target.checked) {
                                 setSelectedDayPassBookings((prev) =>
                                   prev.includes(booking.id)
@@ -1691,21 +1692,28 @@ export default function BookingsManagement() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => handleOpenDayPassModal(booking)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenDayPassModal(booking);
+                              }}
                               className="p-2 hover:bg-blue-900/30 rounded-lg transition text-blue-400 hover:text-blue-300"
                               title="View booking details"
                             >
                               <Eye size={18} />
                             </button>
                             <button
-                              onClick={() => handleOpenDayPassModal(booking)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenDayPassModal(booking);
+                              }}
                               className="p-2 hover:bg-blue-900/30 rounded-lg transition text-gray-400 hover:text-gray-300"
                               title="Edit booking"
                             >
                               <Edit size={18} />
                             </button>
                             <button
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setBookingToDelete(booking);
                                 setDeleteType("daypass");
                                 setDeleteConfirmationOpen(true);

@@ -107,7 +107,7 @@ export function PopupModal() {
                   <img
                     src={popup.featured_image}
                     alt={popup.title}
-                    className="w-full h-full object-cover lg:object-contain object-center"
+                    className="w-full h-full object-cover object-center"
                   />
                 </div>
 

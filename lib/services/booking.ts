@@ -525,13 +525,24 @@ export async function deleteBooking(bookingId: string) {
 
 export async function deleteDayPassBooking(bookingId: string) {
   try {
-    const { error } = await supabase
-      .from("day_pass_bookings")
-      .delete()
-      .eq("id", bookingId);
+    const response = await fetch(`/api/day-pass/${bookingId}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+      },
+    });
 
-    if (error) {
-      console.error("Error deleting day-pass booking:", error);
+    if (!response.ok) {
+      let errorMessage = `Failed to delete day-pass booking (${response.status})`;
+      try {
+        const body = await response.json();
+        if (body?.error) {
+          errorMessage = body.error;
+        }
+      } catch {
+        // Ignore JSON parsing failures and use fallback message.
+      }
+      console.error("Error deleting day-pass booking:", errorMessage);
       return false;
     }
 

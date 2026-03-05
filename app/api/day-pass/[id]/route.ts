@@ -1,7 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { supabaseServer } from "@/lib/supabase/server";
+import { getSessionCookieName, verifyAdminSession } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
+
+async function getSessionAdmin(request: NextRequest) {
+  const token = request.cookies.get(getSessionCookieName())?.value;
+  if (!token) return null;
+
+  const session = verifyAdminSession(token);
+  if (!session) return null;
+
+  const { data: admin } = await supabaseServer
+    .from("admin_users")
+    .select("id, status")
+    .eq("id", session.adminId)
+    .maybeSingle();
+
+  if (!admin || admin.status !== "active") return null;
+  return admin;
+}
 
 export async function GET(
   request: NextRequest,
@@ -74,6 +93,47 @@ export async function GET(
     return NextResponse.json(transformedData);
   } catch (err: any) {
     console.error("[Day-Pass GET] Unexpected error:", err);
+    return NextResponse.json(
+      { error: `Server error: ${err.message}` },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const actor = await getSessionAdmin(request);
+    if (!actor) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+    if (!id) {
+      return NextResponse.json(
+        { error: "Booking ID required" },
+        { status: 400 },
+      );
+    }
+
+    const { error } = await supabaseServer
+      .from("day_pass_bookings")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      console.error("[Day-Pass DELETE] Supabase error:", error);
+      return NextResponse.json(
+        { error: `Failed to delete booking: ${error.message}` },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err: any) {
+    console.error("[Day-Pass DELETE] Unexpected error:", err);
     return NextResponse.json(
       { error: `Server error: ${err.message}` },
       { status: 500 },
