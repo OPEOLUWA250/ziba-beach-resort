@@ -1,8 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
+import { getSessionCookieName, verifyAdminSession } from "@/lib/admin-auth";
 
 export async function GET(request: NextRequest) {
   try {
+    if (process.env.NODE_ENV === "production") {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    const token = request.cookies.get(getSessionCookieName())?.value;
+    const session = token ? verifyAdminSession(token) : null;
+
+    if (!session || session.role !== "SUPER_ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const diagnostics: any = {
       timestamp: new Date().toISOString(),
       checks: {},
@@ -154,7 +166,6 @@ export async function GET(request: NextRequest) {
       {
         error: "Diagnostic failed",
         message: error.message,
-        stack: error.stack,
       },
       { status: 500 },
     );

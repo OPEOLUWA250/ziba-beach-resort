@@ -36,15 +36,18 @@ export default function BookingConfirmationContent() {
   const hasProcessedRef = useRef(false);
 
   const copyReceiptLink = async () => {
+    const lookupUrl = booking?.booking_reference_code
+      ? `${window.location.origin}/view-booking?ref=${encodeURIComponent(booking.booking_reference_code)}${booking.guest_email ? `&email=${encodeURIComponent(booking.guest_email)}` : ""}`
+      : window.location.href;
+
     try {
-      const url = window.location.href;
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(lookupUrl);
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2000);
     } catch {
       try {
         const textArea = document.createElement("textarea");
-        textArea.value = window.location.href;
+        textArea.value = lookupUrl;
         document.body.appendChild(textArea);
         textArea.select();
         document.execCommand("copy");

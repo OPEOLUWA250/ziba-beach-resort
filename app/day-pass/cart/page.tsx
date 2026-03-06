@@ -106,9 +106,22 @@ export default function DayPassCart() {
       return;
     }
 
+    // Check if cart has at least one valid ticket (any ticket except Infant alone)
+    // Valid tickets: Items with "Ticket" in the name, excluding Infant Ticket
+    const hasValidTicket = cart.items.some(
+      (item) => item.name.includes("Ticket") && !item.name.includes("Infant"),
+    );
+
+    if (!hasValidTicket) {
+      alert(
+        "You must select at least one ticket (Day Pass or Premium ticket) before checkout. Add-on experiences alone cannot be booked. Please select a ticket type first.",
+      );
+      return;
+    }
+
     // Check if only infant tickets in cart
-    const hasOnlyInfant = cart.items.every(
-      (item) => item.id === "infant-ticket",
+    const hasOnlyInfant = cart.items.every((item) =>
+      item.name.includes("Infant Ticket"),
     );
     if (hasOnlyInfant) {
       alert(
@@ -117,15 +130,11 @@ export default function DayPassCart() {
       return;
     }
 
-    // Check if cart has infant tickets but no paying tickets
-    const hasInfant = cart.items.some((item) => item.id === "infant-ticket");
-    const hasPayingTickets = cart.items.some(
-      (item) =>
-        item.id !== "infant-ticket" &&
-        (item.id.includes("ticket") || item.id.includes("plus")),
+    // Check if cart has infant tickets but no pay-per-guest tickets
+    const hasInfant = cart.items.some((item) =>
+      item.name.includes("Infant Ticket"),
     );
-
-    if (hasInfant && !hasPayingTickets) {
+    if (hasInfant && !hasValidTicket) {
       alert(
         "Infant tickets must be accompanied by at least one ticketed guest (Kids, Teens, or Adult).",
       );

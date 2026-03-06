@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimitByIp } from "@/lib/security/rate-limit";
+import { userLoginSchema } from "@/lib/security/validators";
 
 export const dynamic = "force-dynamic";
 
@@ -8,16 +10,28 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const rate = rateLimitByIp(request.headers, "api:user:login", 20, 60_000);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { error: "Too many login attempts. Try again shortly." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rate.retryAfterSeconds) },
+        },
+      );
+    }
+
     const body = await request.json();
     const { loginUser } = await import("@/lib/services/auth");
-    const { email, password } = body;
-
-    if (!email || !password) {
+    const parsed = userLoginSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { error: "Invalid login payload" },
         { status: 400 },
       );
     }
+
+    const { email, password } = parsed.data;
 
     const user = await loginUser(email, password);
 

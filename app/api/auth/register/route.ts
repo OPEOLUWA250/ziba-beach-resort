@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimitByIp } from "@/lib/security/rate-limit";
+import { userRegisterSchema } from "@/lib/security/validators";
 
 export const dynamic = "force-dynamic";
 
@@ -8,34 +10,37 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const rate = rateLimitByIp(
+      request.headers,
+      "api:user:register",
+      15,
+      60_000,
+    );
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { error: "Too many registration attempts. Try again shortly." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rate.retryAfterSeconds) },
+        },
+      );
+    }
+
     const body = await request.json();
     const { registerUser } = await import("@/lib/services/auth");
+    const parsed = userRegisterSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid registration payload",
+          details: parsed.error.flatten(),
+        },
+        { status: 400 },
+      );
+    }
+
     const { email, password, firstName, lastName, phone, country, currency } =
-      body;
-
-    // Validation
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: "Email and password are required" },
-        { status: 400 },
-      );
-    }
-
-    if (password.length < 6) {
-      return NextResponse.json(
-        { error: "Password must be at least 6 characters" },
-        { status: 400 },
-      );
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: "Invalid email format" },
-        { status: 400 },
-      );
-    }
+      parsed.data;
 
     const user = await registerUser({
       email,

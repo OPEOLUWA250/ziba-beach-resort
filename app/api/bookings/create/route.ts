@@ -1,12 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { isRoomAvailable } from "@/lib/services/booking";
+import { rateLimitByIp } from "@/lib/security/rate-limit";
+import { roomBookingCreateSchema } from "@/lib/security/validators";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
+    const rate = rateLimitByIp(
+      request.headers,
+      "api:bookings:create",
+      30,
+      60_000,
+    );
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { error: "Too many booking attempts. Please retry shortly." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rate.retryAfterSeconds) },
+        },
+      );
+    }
+
     const body = await request.json();
+    const parsed = roomBookingCreateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid booking payload", details: parsed.error.flatten() },
+        { status: 400 },
+      );
+    }
 
     const {
       guestEmail,
@@ -20,25 +45,7 @@ export async function POST(request: NextRequest) {
       roomPriceNGN,
       numberOfNights,
       paymentStatus,
-    } = body;
-
-    // Validation
-    if (
-      !guestEmail ||
-      !guestName ||
-      !guestPhone ||
-      !roomId ||
-      !checkInDate ||
-      !checkOutDate ||
-      !numberOfGuests ||
-      !roomPriceNGN ||
-      !numberOfNights
-    ) {
-      return NextResponse.json(
-        { error: "Missing required booking fields" },
-        { status: 400 },
-      );
-    }
+    } = parsed.data;
 
     const checkIn = new Date(checkInDate);
     const checkOut = new Date(checkOutDate);

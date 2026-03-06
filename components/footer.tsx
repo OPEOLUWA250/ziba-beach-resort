@@ -73,13 +73,15 @@ export default function Footer() {
             {/* Social Links */}
             <div className="flex gap-4 pt-6 justify-center md:justify-start">
               {[
-                { Icon: Facebook, delay: 0 },
-                { Icon: Instagram, delay: 50 },
-                { Icon: Twitter, delay: 100 },
-              ].map(({ Icon, delay }, index) => (
+                { Icon: Facebook, delay: 0, href: "https://web.facebook.com/p/Ziba-Beach-Resort-100082712688250/?_rdc=1&_rdr#" },
+                { Icon: Instagram, delay: 50, href: "https://www.instagram.com/zibabeachresorts/" },
+                { Icon: Twitter, delay: 100, href: "https://x.com/zibabeachresort" },
+              ].map(({ Icon, delay, href }, index) => (
                 <a
                   key={index}
-                  href="#"
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="relative group text-blue-200 hover:text-white transition-all duration-300 transform hover:scale-125"
                   style={{
                     animation: isVisible
@@ -178,13 +180,13 @@ export default function Footer() {
             <ul className="space-y-3 text-sm font-light text-blue-100">
               {[
                 { href: "/day-pass", label: "Day Pass" },
-                { href: "/stay", label: "Overnight Stay" },
                 { href: "/booking", label: "Rooms" },
                 { href: "/menu", label: "Menu" },
                 { href: "/our-story", label: "Our Story" },
                 { href: "/experience", label: "Experience" },
                 { href: "/blog", label: "Blog" },
                 { href: "/contact", label: "Contact" },
+                { href: "/view-booking", label: "Receipt Lookup" },
               ].map((link, index) => (
                 <li
                   key={index}
@@ -274,7 +276,10 @@ export default function Footer() {
           className={`border-t border-gray-800 my-8 transition-all duration-1000 ease-out ${
             isVisible ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"
           }`}
-          style={{ transformOrigin: "left", transitionDelay: isVisible ? "400ms" : "0ms" }}
+          style={{
+            transformOrigin: "left",
+            transitionDelay: isVisible ? "400ms" : "0ms",
+          }}
         />
 
         {/* Bottom Footer */}

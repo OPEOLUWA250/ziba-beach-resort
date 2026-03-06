@@ -1,11 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { rateLimitByIp } from "@/lib/security/rate-limit";
+import { dayPassCreateSchema } from "@/lib/security/validators";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
+    const rate = rateLimitByIp(
+      request.headers,
+      "api:daypass:create",
+      30,
+      60_000,
+    );
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { error: "Too many booking attempts. Please retry shortly." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rate.retryAfterSeconds) },
+        },
+      );
+    }
+
     const body = await request.json();
+    const parsed = dayPassCreateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid day-pass payload", details: parsed.error.flatten() },
+        { status: 400 },
+      );
+    }
+
     const {
       fullName,
       email,
@@ -14,11 +40,49 @@ export async function POST(request: NextRequest) {
       items,
       totalAmount,
       paymentStatus,
-    } = body;
+    } = parsed.data;
 
-    if (!fullName || !email || !phone || !visitDate || !items || !totalAmount) {
+    // Validate that user has at least one valid ticket (any ticket except Infant alone)
+    // Valid tickets: Items with "Ticket" in the name, excluding Infant Ticket
+    const hasValidTicket = items.some(
+      (item: any) =>
+        item.name.includes("Ticket") && !item.name.includes("Infant"),
+    );
+
+    if (!hasValidTicket) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        {
+          error:
+            "Invalid booking: You must select at least one ticket (Day Pass or Premium ticket). Add-on experiences alone cannot be booked.",
+        },
+        { status: 400 },
+      );
+    }
+
+    // Validate that infant tickets are not booked alone
+    const hasInfant = items.some((item: any) =>
+      item.name.includes("Infant Ticket"),
+    );
+    const hasOnlyInfant = items.every((item: any) =>
+      item.name.includes("Infant Ticket"),
+    );
+
+    if (hasOnlyInfant) {
+      return NextResponse.json(
+        {
+          error:
+            "Invalid booking: Infant tickets cannot be booked alone. Please add at least one ticketed guest (Kids, Teens, or Adult).",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (hasInfant && !hasValidTicket) {
+      return NextResponse.json(
+        {
+          error:
+            "Invalid booking: Infant tickets must be accompanied by at least one ticketed guest (Kids, Teens, or Adult).",
+        },
         { status: 400 },
       );
     }

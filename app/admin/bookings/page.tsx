@@ -99,6 +99,7 @@ const PaymentTypeBadge = ({ type }: { type?: string }) => {
 
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString("en-US", {
+    timeZone: "Africa/Lagos",
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -107,12 +108,20 @@ const formatDate = (dateString: string) => {
 
 const formatDateTime = (dateString: string) => {
   return new Date(dateString).toLocaleString("en-US", {
+    timeZone: "Africa/Lagos",
     month: "short",
     day: "numeric",
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",
+    hour12: true,
   });
+};
+
+const parseNairaInput = (value: string) => {
+  const digitsOnly = value.replace(/[^\d]/g, "");
+  if (!digitsOnly) return 0;
+  return Number(digitsOnly);
 };
 
 // Room Booking Detail Modal
@@ -315,7 +324,9 @@ const RoomBookingModal = ({
               <div>
                 <p className="text-gray-400 text-sm">Date of Booking</p>
                 <p className="text-white font-medium">
-                  {formatDateTime(booking.date_of_booking || booking.created_at)}
+                  {formatDateTime(
+                    booking.date_of_booking || booking.created_at,
+                  )}
                 </p>
               </div>
             </div>
@@ -535,7 +546,9 @@ const DayPassBookingModal = ({
               <div>
                 <p className="text-gray-400 text-sm">Date of Booking</p>
                 <p className="text-white font-medium">
-                  {formatDateTime(booking.date_of_booking || booking.created_at)}
+                  {formatDateTime(
+                    booking.date_of_booking || booking.created_at,
+                  )}
                 </p>
               </div>
             </div>
@@ -1197,7 +1210,7 @@ export default function BookingsManagement() {
     e.preventDefault();
     setDayPassFormError(null);
 
-    // Validation
+    // Validation - Admin can create flexible bookings (add-ons only allowed for support scenarios)
     if (
       !dayPassForm.fullName ||
       !dayPassForm.email ||
@@ -1210,6 +1223,8 @@ export default function BookingsManagement() {
       );
       return;
     }
+
+    // No ticket validation for admin - staff can create add-on-only bookings for customer support
 
     try {
       setDayPassFormLoading(true);
@@ -1373,8 +1388,8 @@ export default function BookingsManagement() {
                 <p className="text-gray-400">No room bookings found</p>
               </div>
             ) : (
-              <div>
-                <table className="w-full text-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm min-w-245">
                   <thead>
                     <tr className="border-b border-gray-700 bg-gray-950/50">
                       <th className="px-3 py-3 text-left">
@@ -1418,9 +1433,6 @@ export default function BookingsManagement() {
                       </th>
                       <th className="px-3 py-3 text-left text-gray-400 text-xs font-semibold uppercase tracking-wide">
                         Payment Type
-                      </th>
-                      <th className="px-3 py-3 text-left text-gray-400 text-xs font-semibold uppercase tracking-wide">
-                        Guests
                       </th>
                       <th className="px-3 py-3 text-left text-gray-400 text-xs font-semibold uppercase tracking-wide">
                         Date of Booking
@@ -1472,6 +1484,9 @@ export default function BookingsManagement() {
                             <p className="text-gray-400 text-xs">
                               {booking.guest_email}
                             </p>
+                            <p className="text-gray-500 text-xs mt-1">
+                              Guests: {booking.number_of_guests}
+                            </p>
                           </div>
                         </td>
                         <td className="px-3 py-3">
@@ -1499,11 +1514,6 @@ export default function BookingsManagement() {
                         </td>
                         <td className="px-3 py-3">
                           <PaymentTypeBadge type={booking.payment_type} />
-                        </td>
-                        <td className="px-3 py-3">
-                          <p className="text-white text-sm">
-                            {booking.number_of_guests}
-                          </p>
                         </td>
                         <td className="px-3 py-3">
                           <p className="text-white text-xs whitespace-nowrap">
@@ -1625,8 +1635,8 @@ export default function BookingsManagement() {
                 <p className="text-gray-400">No day-pass bookings found</p>
               </div>
             ) : (
-              <div>
-                <table className="w-full">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-235">
                   <thead>
                     <tr className="border-b border-gray-700 bg-gray-950/50">
                       <th className="px-6 py-4 text-left">
@@ -1658,9 +1668,6 @@ export default function BookingsManagement() {
                       </th>
                       <th className="px-6 py-4 text-left text-gray-400 text-sm font-semibold">
                         Visit Date
-                      </th>
-                      <th className="px-6 py-4 text-left text-gray-400 text-sm font-semibold">
-                        Items
                       </th>
                       <th className="px-6 py-4 text-left text-gray-400 text-sm font-semibold">
                         Amount
@@ -1724,17 +1731,14 @@ export default function BookingsManagement() {
                             <p className="text-gray-400 text-xs">
                               {booking.email}
                             </p>
+                            <p className="text-gray-500 text-xs mt-1">
+                              Items: {booking.items?.length || 0}
+                            </p>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <p className="text-white text-sm">
                             {formatDate(booking.visit_date)}
-                          </p>
-                        </td>
-                        <td className="px-6 py-4">
-                          <p className="text-white text-sm">
-                            {booking.items?.length || 0} item
-                            {(booking.items?.length || 0) !== 1 ? "s" : ""}
                           </p>
                         </td>
                         <td className="px-6 py-4">
@@ -1919,6 +1923,7 @@ export default function BookingsManagement() {
                   <input
                     type="text"
                     placeholder="Full Name"
+                    maxLength={80}
                     value={roomForm.guestName}
                     onChange={(e) =>
                       setRoomForm((prev) => ({
@@ -1931,6 +1936,7 @@ export default function BookingsManagement() {
                   <input
                     type="email"
                     placeholder="Email"
+                    maxLength={254}
                     value={roomForm.guestEmail}
                     onChange={(e) =>
                       setRoomForm((prev) => ({
@@ -1943,6 +1949,7 @@ export default function BookingsManagement() {
                   <input
                     type="tel"
                     placeholder="Phone"
+                    maxLength={20}
                     value={roomForm.guestPhone}
                     onChange={(e) =>
                       setRoomForm((prev) => ({
@@ -1987,15 +1994,21 @@ export default function BookingsManagement() {
                 <div className="flex items-center gap-2">
                   <span className="text-white font-medium">₦</span>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     placeholder="Enter price per night"
-                    min="1000"
-                    step="1000"
-                    value={roomForm.pricePerNight || ""}
+                    value={
+                      roomForm.pricePerNight > 0
+                        ? roomForm.pricePerNight.toLocaleString("en-NG")
+                        : ""
+                    }
+                    onWheel={(e) =>
+                      (e.currentTarget as HTMLInputElement).blur()
+                    }
                     onChange={(e) =>
                       setRoomForm((prev) => ({
                         ...prev,
-                        pricePerNight: parseFloat(e.target.value) || 0,
+                        pricePerNight: parseNairaInput(e.target.value),
                       }))
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
@@ -2117,6 +2130,7 @@ export default function BookingsManagement() {
                 <input
                   type="text"
                   placeholder="Full Name"
+                  maxLength={80}
                   value={dayPassForm.fullName}
                   onChange={(e) =>
                     setDayPassForm((prev) => ({
@@ -2130,6 +2144,7 @@ export default function BookingsManagement() {
                   <input
                     type="email"
                     placeholder="Email"
+                    maxLength={254}
                     value={dayPassForm.email}
                     onChange={(e) =>
                       setDayPassForm((prev) => ({
@@ -2142,6 +2157,7 @@ export default function BookingsManagement() {
                   <input
                     type="tel"
                     placeholder="Phone"
+                    maxLength={20}
                     value={dayPassForm.phone}
                     onChange={(e) =>
                       setDayPassForm((prev) => ({

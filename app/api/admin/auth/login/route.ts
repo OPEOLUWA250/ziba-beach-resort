@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
+import { rateLimitByIp } from "@/lib/security/rate-limit";
+import { adminLoginSchema } from "@/lib/security/validators";
 import {
   verifyAdminPassword,
   signAdminSession,
@@ -13,22 +15,36 @@ const LOCKOUT_DURATION_MINUTES = 15;
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { identifier, password } = body;
-
-    if (!identifier || !password) {
+    const rate = rateLimitByIp(request.headers, "api:admin:login", 15, 60_000);
+    if (!rate.allowed) {
       return NextResponse.json(
-        { error: "identifier and password are required" },
+        { error: "Too many login attempts. Try again shortly." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rate.retryAfterSeconds) },
+        },
+      );
+    }
+
+    const body = await request.json();
+    const parsed = adminLoginSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid login payload" },
         { status: 400 },
       );
     }
+
+    const { identifier, password } = parsed.data;
 
     const normalizedIdentifier = String(identifier).trim().toLowerCase();
 
     // Lookup admin by email or username
     const { data: byEmail } = await supabaseServer
       .from("admin_users")
-      .select("id, username, email, role, status, password_hash, failed_login_attempts, locked_until")
+      .select(
+        "id, username, email, role, status, password_hash, failed_login_attempts, locked_until",
+      )
       .eq("email", normalizedIdentifier)
       .maybeSingle();
 
@@ -37,7 +53,9 @@ export async function POST(request: NextRequest) {
     if (!admin) {
       const { data: byUsername } = await supabaseServer
         .from("admin_users")
-        .select("id, username, email, role, status, password_hash, failed_login_attempts, locked_until")
+        .select(
+          "id, username, email, role, status, password_hash, failed_login_attempts, locked_until",
+        )
         .eq("username", identifier)
         .maybeSingle();
       admin = byUsername;

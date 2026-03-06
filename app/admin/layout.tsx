@@ -262,7 +262,7 @@ export default function AdminLayout({
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 min-w-0 flex flex-col min-h-screen">
         {/* TopBar */}
         <div className="h-20 bg-linear-to-r from-gray-800 to-gray-900 border-b border-gray-700 flex items-center justify-between px-6">
           <div className="flex items-center gap-4">
@@ -297,8 +297,8 @@ export default function AdminLayout({
         </div>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-auto bg-gray-950">
-          <div className="p-6 md:p-8 max-w-full min-h-full bg-gray-950">
+        <div className="flex-1 min-w-0 overflow-auto bg-gray-950">
+          <div className="p-6 md:p-8 max-w-full min-h-full bg-gray-950 overflow-x-hidden">
             {children}
           </div>
         </div>

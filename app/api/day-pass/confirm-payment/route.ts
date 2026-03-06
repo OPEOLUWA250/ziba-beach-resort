@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { rateLimitByIp } from "@/lib/security/rate-limit";
+import { confirmPaymentSchema } from "@/lib/security/validators";
 
 export const dynamic = "force-dynamic";
 
@@ -10,8 +12,35 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(request: NextRequest) {
   try {
+    const rate = rateLimitByIp(
+      request.headers,
+      "api:daypass:confirm-payment",
+      60,
+      60_000,
+    );
+    if (!rate.allowed) {
+      return NextResponse.json(
+        {
+          error:
+            "Too many payment confirmation attempts. Please retry shortly.",
+        },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rate.retryAfterSeconds) },
+        },
+      );
+    }
+
     const body = await request.json();
-    const { bookingId, reference } = body;
+    const parsed = confirmPaymentSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid payload", details: parsed.error.flatten() },
+        { status: 400 },
+      );
+    }
+
+    const { bookingId, reference } = parsed.data;
 
     if (!bookingId) {
       return NextResponse.json({ error: "Missing bookingId" }, { status: 400 });

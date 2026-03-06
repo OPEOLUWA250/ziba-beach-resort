@@ -86,14 +86,14 @@ export default function DateRangePicker({
     if (!date) return false;
     if (minDate && isBefore(date, minDate)) return true;
     if (maxDate && isAfter(date, maxDate)) return true;
-    
+
     // For check-in: disable booked dates (can't arrive on occupied night)
     // For check-out: allow booked dates (checkout is when you leave; room frees after you leave)
     if (isCheckIn) {
       const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
       if (bookedDates.includes(dateStr)) return true;
     }
-    
+
     return false;
   };
 

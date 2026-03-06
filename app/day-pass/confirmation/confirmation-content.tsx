@@ -123,15 +123,18 @@ export default function DayPassConfirmationContent() {
   }, [bookingId]);
 
   const copyReceiptLink = async () => {
+    const lookupUrl = booking?.referenceCode
+      ? `${window.location.origin}/view-booking?ref=${encodeURIComponent(booking.referenceCode)}${booking.email ? `&email=${encodeURIComponent(booking.email)}` : ""}`
+      : window.location.href;
+
     try {
-      const url = window.location.href;
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(lookupUrl);
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2000);
     } catch {
       try {
         const textArea = document.createElement("textarea");
-        textArea.value = window.location.href;
+        textArea.value = lookupUrl;
         document.body.appendChild(textArea);
         textArea.select();
         document.execCommand("copy");
