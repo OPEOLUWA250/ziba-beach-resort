@@ -26,6 +26,18 @@ export default function Footer() {
     return () => observer.disconnect();
   }, []);
 
+  const getListItemClass = (index: number) => {
+    const baseDelay = 100;
+    const delay = baseDelay + index * 30;
+    return {
+      transition: isVisible
+        ? `all 0.6s ease-out ${delay}ms`
+        : "all 0.6s ease-out 0ms",
+      opacity: isVisible ? 1 : 0,
+      transform: isVisible ? "translateY(0)" : "translateY(10px)",
+    };
+  };
+
   return (
     <footer ref={footerRef} className="bg-gray-900 text-white overflow-hidden">
       {/* Main Footer Content */}
@@ -47,6 +59,9 @@ export default function Footer() {
                   width={80}
                   height={80}
                   className="h-auto w-auto hover:scale-110 transition-transform duration-500"
+                  style={{
+                    animation: isVisible ? "none" : "none",
+                  }}
                 />
               </a>
             </div>
@@ -57,24 +72,26 @@ export default function Footer() {
             </p>
             {/* Social Links */}
             <div className="flex gap-4 pt-6 justify-center md:justify-start">
-              <a
-                href="#"
-                className="text-blue-200 hover:text-white transition-all duration-300 transform hover:scale-125"
-              >
-                <Facebook size={20} />
-              </a>
-              <a
-                href="#"
-                className="text-blue-200 hover:text-white transition-all duration-300 transform hover:scale-125"
-              >
-                <Instagram size={20} />
-              </a>
-              <a
-                href="#"
-                className="text-blue-200 hover:text-white transition-all duration-300 transform hover:scale-125"
-              >
-                <Twitter size={20} />
-              </a>
+              {[
+                { Icon: Facebook, delay: 0 },
+                { Icon: Instagram, delay: 50 },
+                { Icon: Twitter, delay: 100 },
+              ].map(({ Icon, delay }, index) => (
+                <a
+                  key={index}
+                  href="#"
+                  className="relative group text-blue-200 hover:text-white transition-all duration-300 transform hover:scale-125"
+                  style={{
+                    animation: isVisible
+                      ? `slideInUp 0.6s ease-out ${delay}ms forwards`
+                      : "none",
+                    opacity: isVisible ? 1 : 0,
+                  }}
+                >
+                  <Icon size={20} />
+                  <span className="absolute inset-0 rounded-full bg-blue-300 opacity-0 group-hover:opacity-20 blur-lg transition-opacity duration-300 -z-10 scale-0 group-hover:scale-100" />
+                </a>
+              ))}
             </div>
           </div>
 
@@ -94,78 +111,52 @@ export default function Footer() {
               Our Rooms
             </h4>
             <ul className="space-y-3 text-sm font-light text-blue-100">
-              <li>
-                <a
-                  href="/bookings/rooms/room01"
-                  className="hover:text-blue-200 transition-colors duration-300"
+              {[
+                { href: "/bookings/rooms/room01", label: "Beach Facing Room" },
+                {
+                  href: "/bookings/rooms/room02",
+                  label: "Beach Facing Family Room",
+                },
+                {
+                  href: "/bookings/rooms/room03",
+                  label: "Beach Facing Family Room (Full View)",
+                },
+                {
+                  href: "/bookings/rooms/room04",
+                  label: "Beach Facing Connecting Room",
+                },
+                {
+                  href: "/bookings/rooms/room05",
+                  label: "Beach Facing Suite",
+                },
+                {
+                  href: "/bookings/rooms/room06",
+                  label: "Two Bedroom Apartment",
+                },
+                {
+                  href: "/bookings/rooms/room07",
+                  label: "Overwater Terrace Room",
+                },
+                {
+                  href: "/bookings/rooms/room08",
+                  label: "Overwater Terrace Suite",
+                },
+                { href: "/bookings/rooms/room09", label: "Ziba Black" },
+              ].map((room, index) => (
+                <li
+                  key={index}
+                  style={getListItemClass(index)}
+                  className="group inline-block w-full"
                 >
-                  Beach Facing Room
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/bookings/rooms/room02"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Beach Facing Family Room
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/bookings/rooms/room03"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Beach Facing Family Room (Full View)
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/bookings/rooms/room04"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Beach Facing Connecting Room
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/bookings/rooms/room05"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Beach Facing Suite
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/bookings/rooms/room06"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Two Bedroom Apartment
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/bookings/rooms/room07"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Overwater Terrace Room
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/bookings/rooms/room08"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Overwater Terrace Suite
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/bookings/rooms/room09"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Ziba Black
-                </a>
-              </li>
+                  <a
+                    href={room.href}
+                    className="relative pb-1 inline-block text-blue-100 group-hover:text-blue-200 transition-colors duration-300"
+                  >
+                    {room.label}
+                    <span className="absolute bottom-0 left-0 w-0 h-px bg-gradient-to-r from-blue-300 to-blue-200 group-hover:w-full transition-all duration-500 ease-out" />
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -185,70 +176,30 @@ export default function Footer() {
               Quick Links
             </h4>
             <ul className="space-y-3 text-sm font-light text-blue-100">
-              <li>
-                <a
-                  href="/day-pass"
-                  className="hover:text-blue-200 transition-colors duration-300"
+              {[
+                { href: "/day-pass", label: "Day Pass" },
+                { href: "/stay", label: "Overnight Stay" },
+                { href: "/booking", label: "Rooms" },
+                { href: "/menu", label: "Menu" },
+                { href: "/our-story", label: "Our Story" },
+                { href: "/experience", label: "Experience" },
+                { href: "/blog", label: "Blog" },
+                { href: "/contact", label: "Contact" },
+              ].map((link, index) => (
+                <li
+                  key={index}
+                  style={getListItemClass(index)}
+                  className="group inline-block w-full"
                 >
-                  Day Pass
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/stay"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Overnight Stay
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/booking"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Rooms
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/menu"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Menu
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/our-story"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Our Story
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/experience"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Experience
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/blog"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Blog
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/contact"
-                  className="hover:text-blue-200 transition-colors duration-300"
-                >
-                  Contact
-                </a>
-              </li>
+                  <a
+                    href={link.href}
+                    className="relative pb-1 inline-block text-blue-100 group-hover:text-blue-200 transition-colors duration-300"
+                  >
+                    {link.label}
+                    <span className="absolute bottom-0 left-0 w-0 h-px bg-gradient-to-r from-blue-300 to-blue-200 group-hover:w-full transition-all duration-500 ease-out" />
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -268,38 +219,49 @@ export default function Footer() {
               Contact Us
             </h4>
             <div className="space-y-4 text-sm font-light text-blue-100">
-              <div>
-                <p className="text-blue-50 font-light mb-1">Location</p>
+              <div
+                style={getListItemClass(0)}
+                className="pb-4 border-b border-gray-800"
+              >
+                <p className="text-blue-50 font-light mb-1 transition-colors duration-300 group-hover:text-blue-200">
+                  Location
+                </p>
                 <p>Ziba Beach Close, Okun Ajah</p>
                 <p>Lagos, Nigeria</p>
               </div>
-              <div>
+              <div
+                style={getListItemClass(1)}
+                className="pb-4 border-b border-gray-800"
+              >
                 <p className="text-blue-50 font-light mb-2">Phone</p>
-                <p>
+                <p className="group mb-2">
                   <a
                     href="tel:+2347047300013"
-                    className="hover:text-blue-200 transition-colors"
+                    className="relative pb-1 inline-block text-blue-100 group-hover:text-blue-200 transition-colors duration-300 hover:text-blue-300"
                   >
                     +234 704 730 0013
+                    <span className="absolute bottom-0 left-0 w-0 h-px bg-gradient-to-r from-blue-300 to-blue-200 group-hover:w-full transition-all duration-500 ease-out" />
                   </a>
                 </p>
-                <p>
+                <p className="group">
                   <a
                     href="tel:+2348187444447"
-                    className="hover:text-blue-200 transition-colors"
+                    className="relative pb-1 inline-block text-blue-100 group-hover:text-blue-200 transition-colors duration-300 hover:text-blue-300"
                   >
                     +234 818 744 4447
+                    <span className="absolute bottom-0 left-0 w-0 h-px bg-gradient-to-r from-blue-300 to-blue-200 group-hover:w-full transition-all duration-500 ease-out" />
                   </a>
                 </p>
               </div>
-              <div>
+              <div style={getListItemClass(2)}>
                 <p className="text-blue-50 font-light mb-1">Email</p>
-                <p>
+                <p className="group">
                   <a
                     href="mailto:bookings@zibabeachresort.com"
-                    className="hover:text-blue-200 transition-colors"
+                    className="relative pb-1 inline-block text-blue-100 group-hover:text-blue-200 transition-colors duration-300 hover:text-blue-300"
                   >
                     bookings@zibabeachresort.com
+                    <span className="absolute bottom-0 left-0 w-0 h-px bg-gradient-to-r from-blue-300 to-blue-200 group-hover:w-full transition-all duration-500 ease-out" />
                   </a>
                 </p>
               </div>
@@ -308,10 +270,20 @@ export default function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-800 my-8" />
+        <div
+          className={`border-t border-gray-800 my-8 transition-all duration-1000 ease-out ${
+            isVisible ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"
+          }`}
+          style={{ transformOrigin: "left", transitionDelay: isVisible ? "400ms" : "0ms" }}
+        />
 
         {/* Bottom Footer */}
-        <div className="flex justify-center text-sm font-light text-blue-100">
+        <div
+          className={`flex justify-center text-sm font-light text-blue-100 transition-all duration-1000 ease-out ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
+          }`}
+          style={{ transitionDelay: isVisible ? "500ms" : "0ms" }}
+        >
           <p>&copy; 2026 Ziba Beach Resort - Privacy Policy</p>
         </div>
       </div>

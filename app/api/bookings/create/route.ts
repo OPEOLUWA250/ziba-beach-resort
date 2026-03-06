@@ -88,6 +88,9 @@ export async function POST(request: NextRequest) {
     // Determine if this is admin-created (PENDING) or customer booking (RESERVED)
     const isAdminCreated = paymentStatus === "PENDING";
 
+    // Set payment type based on creation source
+    const paymentType = isAdminCreated ? "manual" : "online";
+
     // Only generate Paystack reference for customer bookings, not for admin-created
     const paystackReference = isAdminCreated
       ? null
@@ -109,6 +112,8 @@ export async function POST(request: NextRequest) {
         number_of_nights: numberOfNights,
         total_amount_ngn: totalAmountNGN,
         payment_status: paymentStatus || "RESERVED",
+        payment_type: paymentType,
+        date_of_booking: new Date().toISOString(),
         paystack_reference: paystackReference,
         booking_reference_code: bookingReferenceCode,
       })

@@ -95,9 +95,9 @@ export default function AvailabilityModal({
 
     try {
       // Extract local date components to avoid timezone shifts
-      const checkInStr = `${checkIn.getFullYear()}-${String(checkIn.getMonth() + 1).padStart(2, '0')}-${String(checkIn.getDate()).padStart(2, '0')}`;
-      const checkOutStr = `${checkOut.getFullYear()}-${String(checkOut.getMonth() + 1).padStart(2, '0')}-${String(checkOut.getDate()).padStart(2, '0')}`;
-      
+      const checkInStr = `${checkIn.getFullYear()}-${String(checkIn.getMonth() + 1).padStart(2, "0")}-${String(checkIn.getDate()).padStart(2, "0")}`;
+      const checkOutStr = `${checkOut.getFullYear()}-${String(checkOut.getMonth() + 1).padStart(2, "0")}-${String(checkOut.getDate()).padStart(2, "0")}`;
+
       const response = await fetch("/api/bookings/check-availability", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -420,8 +420,8 @@ function PaymentContent() {
           guestPhone: guestPhone,
           roomId: room.id,
           // Extract LOCAL date components (calendar operates in local time) and format as UTC midnight
-          checkInDate: `${checkInDate.getFullYear()}-${String(checkInDate.getMonth() + 1).padStart(2, '0')}-${String(checkInDate.getDate()).padStart(2, '0')}T00:00:00.000Z`,
-          checkOutDate: `${checkOutDate.getFullYear()}-${String(checkOutDate.getMonth() + 1).padStart(2, '0')}-${String(checkOutDate.getDate()).padStart(2, '0')}T00:00:00.000Z`,
+          checkInDate: `${checkInDate.getFullYear()}-${String(checkInDate.getMonth() + 1).padStart(2, "0")}-${String(checkInDate.getDate()).padStart(2, "0")}T00:00:00.000Z`,
+          checkOutDate: `${checkOutDate.getFullYear()}-${String(checkOutDate.getMonth() + 1).padStart(2, "0")}-${String(checkOutDate.getDate()).padStart(2, "0")}T00:00:00.000Z`,
           numberOfGuests: 1,
           specialRequests,
           roomPriceNGN: room.priceNGN,

@@ -101,9 +101,22 @@ export default function BookingForm({
   const totalPrice = selectedRoom ? selectedRoom.priceNGN * nights : 0;
 
   // Helper function to check if a date is booked
+  // For check-in: return true (disabled) if booked
+  // For check-out: return false (allowed) even if booked (checkout is when you leave)
+  const isDateBookedForCheckIn = (date: Date): boolean => {
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    return bookedDates.includes(dateStr);
+  };
+
+  const isDateBookedForCheckOut = (date: Date): boolean => {
+    // Never disable checkout dates based on booked dates
+    // You can checkout on any day (checkout happens before next guest checks in)
+    return false;
+  };
+
+  // Helper function to check if a date is booked (legacy name, used for styling)
   const isDateBooked = (date: Date): boolean => {
-    // Use local date components since calendar operates in local time
-    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
     return bookedDates.includes(dateStr);
   };
 
@@ -191,7 +204,7 @@ export default function BookingForm({
                   minDate={new Date()}
                   maxDate={addDays(new Date(), 365)}
                   className="react-calendar-custom"
-                  tileDisabled={({ date }) => isDateBooked(date)}
+                  tileDisabled={({ date }) => isDateBookedForCheckIn(date)}
                   tileClassName={getTileClassName}
                   tileStyle={getTileStyle}
                 />
@@ -226,7 +239,7 @@ export default function BookingForm({
                   minDate={addDays(checkIn, 1)}
                   maxDate={addDays(new Date(), 365)}
                   className="react-calendar-custom"
-                  tileDisabled={({ date }) => isDateBooked(date)}
+                  tileDisabled={({ date }) => isDateBookedForCheckOut(date)}
                   tileClassName={getTileClassName}
                   tileStyle={getTileStyle}
                 />

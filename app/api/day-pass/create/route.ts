@@ -40,6 +40,9 @@ export async function POST(request: NextRequest) {
     // Determine if this is admin-created (PENDING) or customer booking (RESERVED)
     const isAdminCreated = paymentStatus === "PENDING";
 
+    // Set payment type based on creation source
+    const paymentType = isAdminCreated ? "manual" : "online";
+
     // Generate reference code (always generated for Ziba)
     const referenceCode = `ZB-DP-${Date.now()}`;
 
@@ -61,6 +64,8 @@ export async function POST(request: NextRequest) {
           items: items,
           total_amount: totalAmount,
           payment_status: paymentStatus || "RESERVED",
+          payment_type: paymentType,
+          date_of_booking: new Date().toISOString(),
           paystack_reference: paystackReference,
         },
       ])

@@ -362,8 +362,8 @@ export default function RoomDetail({
   const handleBooking = (checkInDate: Date, checkOutDate: Date) => {
     if (isFullyBooked) return;
     // Extract local date components to avoid timezone shifts
-    const checkInStr = `${checkInDate.getFullYear()}-${String(checkInDate.getMonth() + 1).padStart(2, '0')}-${String(checkInDate.getDate()).padStart(2, '0')}`;
-    const checkOutStr = `${checkOutDate.getFullYear()}-${String(checkOutDate.getMonth() + 1).padStart(2, '0')}-${String(checkOutDate.getDate()).padStart(2, '0')}`;
+    const checkInStr = `${checkInDate.getFullYear()}-${String(checkInDate.getMonth() + 1).padStart(2, "0")}-${String(checkInDate.getDate()).padStart(2, "0")}`;
+    const checkOutStr = `${checkOutDate.getFullYear()}-${String(checkOutDate.getMonth() + 1).padStart(2, "0")}-${String(checkOutDate.getDate()).padStart(2, "0")}`;
     setIsModalOpen(false);
     // Redirect to payment page with room pre-selected and dates
     const roomName = encodeURIComponent(room?.name || roomId);

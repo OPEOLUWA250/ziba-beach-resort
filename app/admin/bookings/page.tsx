@@ -27,6 +27,8 @@ interface Booking {
   number_of_nights: number;
   total_amount_ngn: number;
   payment_status: string;
+  payment_type?: string;
+  date_of_booking?: string;
   paystack_reference?: string;
   paid_at?: string;
   updated_at?: string;
@@ -43,6 +45,8 @@ interface DayPassBooking {
   items: any[];
   total_amount: number;
   payment_status: string;
+  payment_type?: string;
+  date_of_booking?: string;
   paystack_reference?: string;
   created_at: string;
 }
@@ -75,11 +79,39 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
+const PaymentTypeBadge = ({ type }: { type?: string }) => {
+  const isManual = type === "manual";
+  return (
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-semibold border ${
+        isManual
+          ? "bg-purple-900/30 text-purple-400 border-purple-900/50"
+          : "bg-cyan-900/30 text-cyan-400 border-cyan-900/50"
+      }`}
+      title={
+        isManual ? "Created manually by admin" : "Booked online by customer"
+      }
+    >
+      {isManual ? "Manual" : "Online"}
+    </span>
+  );
+};
+
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
+  });
+};
+
+const formatDateTime = (dateString: string) => {
+  return new Date(dateString).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
   });
 };
 
@@ -281,9 +313,9 @@ const RoomBookingModal = ({
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-gray-400 text-sm">Booked On</p>
+                <p className="text-gray-400 text-sm">Date of Booking</p>
                 <p className="text-white font-medium">
-                  {formatDate(booking.created_at)}
+                  {formatDateTime(booking.date_of_booking || booking.created_at)}
                 </p>
               </div>
             </div>
@@ -501,9 +533,9 @@ const DayPassBookingModal = ({
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-gray-400 text-sm">Booked On</p>
+                <p className="text-gray-400 text-sm">Date of Booking</p>
                 <p className="text-white font-medium">
-                  {formatDate(booking.created_at)}
+                  {formatDateTime(booking.date_of_booking || booking.created_at)}
                 </p>
               </div>
             </div>
@@ -1385,7 +1417,13 @@ export default function BookingsManagement() {
                         Status
                       </th>
                       <th className="px-3 py-3 text-left text-gray-400 text-xs font-semibold uppercase tracking-wide">
+                        Payment Type
+                      </th>
+                      <th className="px-3 py-3 text-left text-gray-400 text-xs font-semibold uppercase tracking-wide">
                         Guests
+                      </th>
+                      <th className="px-3 py-3 text-left text-gray-400 text-xs font-semibold uppercase tracking-wide">
+                        Date of Booking
                       </th>
                       <th className="px-3 py-3 text-left text-gray-400 text-xs font-semibold uppercase tracking-wide">
                         Actions
@@ -1460,8 +1498,18 @@ export default function BookingsManagement() {
                           <StatusBadge status={booking.payment_status} />
                         </td>
                         <td className="px-3 py-3">
+                          <PaymentTypeBadge type={booking.payment_type} />
+                        </td>
+                        <td className="px-3 py-3">
                           <p className="text-white text-sm">
                             {booking.number_of_guests}
+                          </p>
+                        </td>
+                        <td className="px-3 py-3">
+                          <p className="text-white text-xs whitespace-nowrap">
+                            {formatDateTime(
+                              booking.date_of_booking || booking.created_at,
+                            )}
                           </p>
                         </td>
                         <td className="px-3 py-3">
@@ -1621,6 +1669,12 @@ export default function BookingsManagement() {
                         Status
                       </th>
                       <th className="px-6 py-4 text-left text-gray-400 text-sm font-semibold">
+                        Payment Type
+                      </th>
+                      <th className="px-6 py-4 text-left text-gray-400 text-sm font-semibold">
+                        Date of Booking
+                      </th>
+                      <th className="px-6 py-4 text-left text-gray-400 text-sm font-semibold">
                         Actions
                       </th>
                     </tr>
@@ -1690,6 +1744,16 @@ export default function BookingsManagement() {
                         </td>
                         <td className="px-6 py-4">
                           <StatusBadge status={booking.payment_status} />
+                        </td>
+                        <td className="px-6 py-4">
+                          <PaymentTypeBadge type={booking.payment_type} />
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="text-white text-xs whitespace-nowrap">
+                            {formatDateTime(
+                              booking.date_of_booking || booking.created_at,
+                            )}
+                          </p>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">

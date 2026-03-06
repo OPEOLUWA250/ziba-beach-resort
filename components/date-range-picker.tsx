@@ -82,13 +82,18 @@ export default function DateRangePicker({
     );
   };
 
-  const isDateDisabled = (date: Date | null) => {
+  const isDateDisabled = (date: Date | null, isCheckIn: boolean = true) => {
     if (!date) return false;
     if (minDate && isBefore(date, minDate)) return true;
     if (maxDate && isAfter(date, maxDate)) return true;
-    // Disable if date is in bookedDates (use local date components since calendar operates in local time)
-    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    if (bookedDates.includes(dateStr)) return true;
+    
+    // For check-in: disable booked dates (can't arrive on occupied night)
+    // For check-out: allow booked dates (checkout is when you leave; room frees after you leave)
+    if (isCheckIn) {
+      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      if (bookedDates.includes(dateStr)) return true;
+    }
+    
     return false;
   };
 
@@ -143,7 +148,7 @@ export default function DateRangePicker({
       {/* Calendar Days */}
       <div className="grid grid-cols-7 gap-1">
         {days.map((date, idx) => {
-          const isDisabled = date && isDateDisabled(date);
+          const isDisabled = date && isDateDisabled(date, selectingStart);
           const isSelected = isDateSelected(date);
           const isInRange = isDateInRange(date);
           const isStart = startDate && date && isSameDay(date, startDate);

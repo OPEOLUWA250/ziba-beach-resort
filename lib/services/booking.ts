@@ -15,8 +15,10 @@ export async function isRoomAvailable(
   checkOutDate: Date,
 ): Promise<boolean> {
   try {
-    console.log(`[Availability Check] Room ${roomId}: Checking ${checkInDate.toISOString()} to ${checkOutDate.toISOString()}`);
-    
+    console.log(
+      `[Availability Check] Room ${roomId}: Checking ${checkInDate.toISOString()} to ${checkOutDate.toISOString()}`,
+    );
+
     const reservationHoldMinutes = 10;
     const reservedUntil = new Date(
       Date.now() - reservationHoldMinutes * 60 * 1000,
@@ -36,7 +38,7 @@ export async function isRoomAvailable(
     if (blockingBookings && blockingBookings.length > 0) {
       console.log(
         `[Availability] Room ${roomId} has CONFIRMED/PENDING booking blocking dates:`,
-        blockingBookings
+        blockingBookings,
       );
       return false;
     }
@@ -350,6 +352,8 @@ export async function getAllBookings() {
         number_of_nights,
         total_amount_ngn,
         payment_status,
+        payment_type,
+        date_of_booking,
         paystack_reference,
         paid_at,
         updated_at,
@@ -370,12 +374,18 @@ export async function getAllBookings() {
         String(error.message || "")
           .toLowerCase()
           .includes("updated_at") ||
+        String(error.message || "")
+          .toLowerCase()
+          .includes("date_of_booking") ||
         String(error.details || "")
           .toLowerCase()
           .includes("paid_at") ||
         String(error.details || "")
           .toLowerCase()
-          .includes("updated_at"));
+          .includes("updated_at") ||
+        String(error.details || "")
+          .toLowerCase()
+          .includes("date_of_booking"));
 
     if (missingColumns) {
       const fallback = await supabase
@@ -396,6 +406,7 @@ export async function getAllBookings() {
           number_of_nights,
           total_amount_ngn,
           payment_status,
+          payment_type,
           paystack_reference,
           created_at
         `,
@@ -421,7 +432,7 @@ export async function getAllBookings() {
 
 export async function getAllDayPassBookings() {
   try {
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("day_pass_bookings")
       .select(
         `
@@ -434,12 +445,50 @@ export async function getAllDayPassBookings() {
         items,
         total_amount,
         payment_status,
+        payment_type,
+        date_of_booking,
         paystack_reference,
         created_at
       `,
       )
       .neq("payment_status", "RESERVED")
       .order("created_at", { ascending: false });
+
+    const missingColumns =
+      !!error &&
+      (error.code === "42703" ||
+        String(error.message || "")
+          .toLowerCase()
+          .includes("date_of_booking") ||
+        String(error.details || "")
+          .toLowerCase()
+          .includes("date_of_booking"));
+
+    if (missingColumns) {
+      const fallback = await supabase
+        .from("day_pass_bookings")
+        .select(
+          `
+          id,
+          reference_code,
+          full_name,
+          email,
+          phone,
+          visit_date,
+          items,
+          total_amount,
+          payment_status,
+          payment_type,
+          paystack_reference,
+          created_at
+        `,
+        )
+        .neq("payment_status", "RESERVED")
+        .order("created_at", { ascending: false });
+
+      data = fallback.data;
+      error = fallback.error;
+    }
 
     if (error) {
       console.error("Error fetching all day-pass bookings:", error);
