@@ -79,7 +79,10 @@ export function ViewBookingContentNew() {
   // Auto-search if URL has parameters
   useEffect(() => {
     if (paramRef) {
-      console.log("[Lookup Component] Auto-searching with URL param:", paramRef);
+      console.log(
+        "[Lookup Component] Auto-searching with URL param:",
+        paramRef,
+      );
       handleSearch(paramRef, paramEmail || undefined);
     }
   }, [paramRef, paramEmail]);
@@ -116,8 +119,13 @@ export function ViewBookingContentNew() {
       }
 
       const data = await response.json();
-      console.log("[Lookup Component] Success! Booking type:", data.bookingType, "Booking:", data.booking);
-      
+      console.log(
+        "[Lookup Component] Success! Booking type:",
+        data.bookingType,
+        "Booking:",
+        data.booking,
+      );
+
       setBooking(data.booking);
       setBookingType(data.bookingType);
 
@@ -207,7 +215,11 @@ export function ViewBookingContentNew() {
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
             </div>
             <p className="mt-2 text-sm text-gray-500">
-              Format: <span className="font-mono font-semibold">ZB-XXXX-XXXXX</span> (room) or <span className="font-mono font-semibold">ZB-DP-XXXXXXXXX</span> (day pass)
+              Format:{" "}
+              <span className="font-mono font-semibold">ZB-XXXX-XXXXX</span>{" "}
+              (room) or{" "}
+              <span className="font-mono font-semibold">ZB-DP-XXXXXXXXX</span>{" "}
+              (day pass)
             </p>
           </div>
 
@@ -265,9 +277,13 @@ export function ViewBookingContentNew() {
         {/* Help Text */}
         <div className="mt-5 pt-5 border-t border-gray-200">
           <div className="bg-blue-50 rounded-xl p-3 mb-3">
-            <p className="text-sm text-blue-900 font-medium mb-2">📝 Need help?</p>
+            <p className="text-sm text-blue-900 font-medium mb-2">
+              📝 Need help?
+            </p>
             <p className="text-xs text-blue-800 mb-2">
-              Your booking reference starts with <span className="font-mono font-semibold">ZB-</span> and was sent in your confirmation email.
+              Your booking reference starts with{" "}
+              <span className="font-mono font-semibold">ZB-</span> and was sent
+              in your confirmation email.
             </p>
             <p className="text-xs text-blue-800">
               You can also search by your Paystack payment reference.

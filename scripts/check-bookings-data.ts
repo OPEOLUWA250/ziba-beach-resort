@@ -26,7 +26,9 @@ async function checkBookingsData() {
   console.log("=".repeat(80));
   const { data: roomBookings, error: roomError } = await supabase
     .from("bookings")
-    .select("id, booking_reference_code, guest_name, guest_email, payment_status, created_at")
+    .select(
+      "id, booking_reference_code, guest_name, guest_email, payment_status, created_at",
+    )
     .order("created_at", { ascending: false })
     .limit(10);
 
@@ -76,11 +78,18 @@ async function checkBookingsData() {
   console.log("=".repeat(80));
   console.log(`Total Room Bookings: ${roomBookings?.length || 0}`);
   console.log(`Total Day-Pass Bookings: ${dayPassBookings?.length || 0}`);
-  console.log(`Total Bookings: ${(roomBookings?.length || 0) + (dayPassBookings?.length || 0)}`);
+  console.log(
+    `Total Bookings: ${(roomBookings?.length || 0) + (dayPassBookings?.length || 0)}`,
+  );
 
-  if ((roomBookings?.length || 0) === 0 && (dayPassBookings?.length || 0) === 0) {
+  if (
+    (roomBookings?.length || 0) === 0 &&
+    (dayPassBookings?.length || 0) === 0
+  ) {
     console.log("\n⚠️  WARNING: No bookings found in database!");
-    console.log("You need to create some test bookings or check if you're connected to the right database.");
+    console.log(
+      "You need to create some test bookings or check if you're connected to the right database.",
+    );
   }
 }
 

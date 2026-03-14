@@ -6,7 +6,8 @@ const ADMIN_SESSION_COOKIE = "ziba_admin_session";
 export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
-  if (pathname.startsWith("/admin")) {
+  // Protect admin routes but allow /admin-login to be accessed without authentication
+  if (pathname.startsWith("/admin") && !pathname.startsWith("/admin-login")) {
     const token = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
 
     if (!token) {

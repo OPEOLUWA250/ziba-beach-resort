@@ -48,7 +48,12 @@ export async function GET(request: NextRequest) {
     // Search Room Bookings
     if (isZibaRef) {
       console.log("[Receipt Lookup] Searching room bookings for:", ref);
-      console.log("[Receipt Lookup] isZibaRef:", isZibaRef, "isPaystackRef:", isPaystackRef);
+      console.log(
+        "[Receipt Lookup] isZibaRef:",
+        isZibaRef,
+        "isPaystackRef:",
+        isPaystackRef,
+      );
       const { data, error } = await supabase
         .from("bookings")
         .select(
@@ -86,12 +91,23 @@ export async function GET(request: NextRequest) {
 
       console.log("[Receipt Lookup] Room booking data:", data);
       console.log("[Receipt Lookup] Room booking found:", !!data);
-      console.log("[Receipt Lookup] Email check - provided email:", email, "booking email:", data?.guest_email);
+      console.log(
+        "[Receipt Lookup] Email check - provided email:",
+        email,
+        "booking email:",
+        data?.guest_email,
+      );
 
       if (data) {
-        const emailMatches = !email || data.guest_email.toLowerCase() === email.toLowerCase();
-        console.log("[Receipt Lookup] Email matches:", emailMatches, "email required:", !!email);
-        
+        const emailMatches =
+          !email || data.guest_email.toLowerCase() === email.toLowerCase();
+        console.log(
+          "[Receipt Lookup] Email matches:",
+          emailMatches,
+          "email required:",
+          !!email,
+        );
+
         if (emailMatches) {
           console.log("[Receipt Lookup] Setting booking to room booking");
           booking = {
@@ -116,7 +132,9 @@ export async function GET(request: NextRequest) {
           };
           bookingType = "room";
         } else {
-          console.log("[Receipt Lookup] Email mismatch - booking found but email doesn't match");
+          console.log(
+            "[Receipt Lookup] Email mismatch - booking found but email doesn't match",
+          );
         }
       }
     }
@@ -192,7 +210,10 @@ export async function GET(request: NextRequest) {
         .maybeSingle();
 
       if (roomError) {
-        console.error("[Receipt Lookup] Room Paystack search error:", roomError);
+        console.error(
+          "[Receipt Lookup] Room Paystack search error:",
+          roomError,
+        );
         return NextResponse.json(
           { error: "Unable to query room bookings by payment reference" },
           { status: 500 },
@@ -239,7 +260,10 @@ export async function GET(request: NextRequest) {
           .maybeSingle();
 
         if (dpError) {
-          console.error("[Receipt Lookup] Day-pass Paystack search error:", dpError);
+          console.error(
+            "[Receipt Lookup] Day-pass Paystack search error:",
+            dpError,
+          );
           return NextResponse.json(
             { error: "Unable to query day-pass bookings by payment reference" },
             { status: 500 },
@@ -247,7 +271,9 @@ export async function GET(request: NextRequest) {
         }
 
         if (dayPassData) {
-          console.log("[Receipt Lookup] Found day-pass booking by Paystack ref");
+          console.log(
+            "[Receipt Lookup] Found day-pass booking by Paystack ref",
+          );
         }
 
         if (
@@ -283,7 +309,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log("[Receipt Lookup] Successfully found booking of type:", bookingType);
+    console.log(
+      "[Receipt Lookup] Successfully found booking of type:",
+      bookingType,
+    );
     return NextResponse.json(
       {
         success: true,

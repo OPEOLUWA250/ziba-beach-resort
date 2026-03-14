@@ -45,7 +45,9 @@ export async function GET() {
     const testRef = "ZB-2026-67171";
     const { data: testBooking, error: searchError } = await supabase
       .from("bookings")
-      .select("id, booking_reference_code, guest_name, guest_email, payment_status")
+      .select(
+        "id, booking_reference_code, guest_name, guest_email, payment_status",
+      )
       .eq("booking_reference_code", testRef)
       .maybeSingle();
 
@@ -76,7 +78,7 @@ export async function GET() {
         ...diagnostics,
         fatalError: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

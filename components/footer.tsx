@@ -73,9 +73,21 @@ export default function Footer() {
             {/* Social Links */}
             <div className="flex gap-4 pt-6 justify-center md:justify-start">
               {[
-                { Icon: Facebook, delay: 0, href: "https://web.facebook.com/p/Ziba-Beach-Resort-100082712688250/?_rdc=1&_rdr#" },
-                { Icon: Instagram, delay: 50, href: "https://www.instagram.com/zibabeachresorts/" },
-                { Icon: Twitter, delay: 100, href: "https://x.com/zibabeachresort" },
+                {
+                  Icon: Facebook,
+                  delay: 0,
+                  href: "https://web.facebook.com/p/Ziba-Beach-Resort-100082712688250/?_rdc=1&_rdr#",
+                },
+                {
+                  Icon: Instagram,
+                  delay: 50,
+                  href: "https://www.instagram.com/zibabeachresorts/",
+                },
+                {
+                  Icon: Twitter,
+                  delay: 100,
+                  href: "https://x.com/zibabeachresort",
+                },
               ].map(({ Icon, delay, href }, index) => (
                 <a
                   key={index}
