@@ -514,7 +514,9 @@ export default function Reviews() {
             fallen in love with Ziba Beach Resort.
           </p>
           <a
-            href="/bookings"
+            href="https://live.ipms247.com/booking/book-rooms-zibaresort"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-block bg-white text-blue-900 font-semibold px-6 sm:px-8 py-2 sm:py-3 rounded-lg hover:bg-blue-50 transition text-sm sm:text-base"
           >
             Explore Rooms & Book Now

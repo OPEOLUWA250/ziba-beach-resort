@@ -126,36 +126,36 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3 text-sm font-light text-blue-100">
               {[
-                { href: "/bookings/rooms/room01", label: "Beach Facing Room" },
+                { href: "https://live.ipms247.com/booking/book-rooms-zibaresort", label: "Beach Facing Room" },
                 {
-                  href: "/bookings/rooms/room02",
+                  href: "https://live.ipms247.com/booking/book-rooms-zibaresort",
                   label: "Beach Facing Family Room",
                 },
                 {
-                  href: "/bookings/rooms/room03",
+                  href: "https://live.ipms247.com/booking/book-rooms-zibaresort",
                   label: "Beach Facing Family Room (Full View)",
                 },
                 {
-                  href: "/bookings/rooms/room04",
+                  href: "https://live.ipms247.com/booking/book-rooms-zibaresort",
                   label: "Beach Facing Connecting Room",
                 },
                 {
-                  href: "/bookings/rooms/room05",
+                  href: "https://live.ipms247.com/booking/book-rooms-zibaresort",
                   label: "Beach Facing Suite",
                 },
                 {
-                  href: "/bookings/rooms/room06",
+                  href: "https://live.ipms247.com/booking/book-rooms-zibaresort",
                   label: "Two Bedroom Apartment",
                 },
                 {
-                  href: "/bookings/rooms/room07",
+                  href: "https://live.ipms247.com/booking/book-rooms-zibaresort",
                   label: "Overwater Terrace Room",
                 },
                 {
-                  href: "/bookings/rooms/room08",
+                  href: "https://live.ipms247.com/booking/book-rooms-zibaresort",
                   label: "Overwater Terrace Suite",
                 },
-                { href: "/bookings/rooms/room09", label: "Ziba Black" },
+                { href: "https://live.ipms247.com/booking/book-rooms-zibaresort", label: "Ziba Black" },
               ].map((room, index) => (
                 <li
                   key={index}

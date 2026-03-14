@@ -153,7 +153,7 @@ export default function Hero() {
             >
               {/* Primary Button - Brand Blue Gradient with Pulse */}
               <button
-                onClick={() => (window.location.href = "/bookings")}
+                onClick={() => (window.location.href = "https://live.ipms247.com/booking/book-rooms-zibaresort")}
                 className="group relative px-8 sm:px-10 md:px-12 py-4 sm:py-4 md:py-5 text-white font-semibold text-sm sm:text-base md:text-lg tracking-wide overflow-hidden rounded-lg transition-all duration-500 transform hover:scale-105 hover:shadow-2xl w-full sm:w-auto active:scale-95 bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700"
                 style={{
                   boxShadow:

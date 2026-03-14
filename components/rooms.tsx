@@ -255,12 +255,14 @@ export default function Rooms() {
                 </ul>
 
                 {/* CTA Button */}
-                <Link
-                  href={`/bookings/rooms/${room.id}`}
+                <a
+                  href="https://live.ipms247.com/booking/book-rooms-zibaresort"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-full block bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700 text-white font-light transition-all duration-500 rounded-lg text-center py-3 px-4 shadow-md hover:shadow-lg"
                 >
                   View & Book
-                </Link>
+                </a>
               </div>
             </div>
           ))}

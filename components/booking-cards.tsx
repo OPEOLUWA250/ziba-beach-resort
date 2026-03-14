@@ -256,7 +256,7 @@ export default function BookingCards() {
                 </ul>
 
                 {/* Button */}
-                <Link href="/bookings" className="block">
+                <a href="https://live.ipms247.com/booking/book-rooms-zibaresort" target="_blank" rel="noopener noreferrer" className="block">
                   <button
                     className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-3 sm:px-6 py-2.5 sm:py-3 lg:py-4 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn text-xs sm:text-sm"
                     style={{ boxShadow: "0 4px 15px rgba(15, 23, 42, 0.3)" }}
@@ -278,7 +278,7 @@ export default function BookingCards() {
                       </svg>
                     </span>
                   </button>
-                </Link>
+                </a>
               </div>
             </div>
           </div>

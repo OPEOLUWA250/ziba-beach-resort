@@ -8,7 +8,7 @@ import { Menu, X, ShoppingCart, MoonStar, Sun } from "lucide-react";
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "Bookings", href: "/bookings" },
+  { label: "Bookings", href: "https://live.ipms247.com/booking/book-rooms-zibaresort" },
   { label: "Day Pass", href: "/day-pass" },
   { label: "Our Story", href: "/our-story" },
   { label: "Experience", href: "/experience" },
@@ -64,7 +64,7 @@ export default function Header() {
   const handleBookingChoice = (type: "night" | "day") => {
     setShowBookingChoiceModal(false);
     if (type === "night") {
-      router.push("/bookings");
+      window.location.href = "https://live.ipms247.com/booking/book-rooms-zibaresort";
       return;
     }
     router.push("/day-pass");
