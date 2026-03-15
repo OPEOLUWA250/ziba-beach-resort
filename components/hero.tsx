@@ -86,11 +86,11 @@ export default function Hero() {
           </div>
 
           {/* Subtle Overlay - tuned for readability without hiding details */}
-          <div className="absolute inset-0 bg-linear-to-b from-black/6 via-black/10 to-black/16" />
+          <div className="absolute inset-0 bg-linear-to-b from-black/6 via-black/10 to-black/16 pointer-events-none" />
 
           {/* Dynamic Color Gradient */}
           <div
-            className="absolute inset-0 opacity-20 mix-blend-multiply transition-opacity duration-500"
+            className="absolute inset-0 opacity-20 mix-blend-multiply transition-opacity duration-500 pointer-events-none"
             style={{
               background:
                 "radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.3) 0%, transparent 50%)",
@@ -100,14 +100,14 @@ export default function Hero() {
 
           {/* Animated Accent Elements */}
           <div
-            className="absolute top-20 right-20 w-72 h-72 rounded-full blur-3xl opacity-20 mix-blend-screen"
+            className="absolute top-20 right-20 w-72 h-72 rounded-full blur-3xl opacity-20 mix-blend-screen pointer-events-none"
             style={{
               background: "linear-gradient(135deg, #1e3a8a, #06b6d4)",
               animation: "float 6s ease-in-out infinite",
             }}
           />
           <div
-            className="absolute bottom-32 -left-40 sm:left-10 w-60 sm:w-80 h-60 sm:h-80 rounded-full blur-3xl opacity-15 mix-blend-screen"
+            className="absolute bottom-32 -left-40 sm:left-10 w-60 sm:w-80 h-60 sm:h-80 rounded-full blur-3xl opacity-15 mix-blend-screen pointer-events-none"
             style={{
               background: "linear-gradient(135deg, #0ea5e9, #1e3a8a)",
               animation: "float 8s ease-in-out infinite 1s",

@@ -436,37 +436,51 @@ function ProductCard({
   onDecrease,
 }: ProductCardProps) {
   return (
-    <div className="bg-white border-2 border-gray-300 rounded-2xl p-6 hover:shadow-lg transition-all duration-300 flex flex-col h-full">
-      <h4 className="font-light text-gray-900 mb-3 min-h-12 flex items-center">
+    <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-300 flex flex-col h-full p-7">
+      {/* Title */}
+      <h4 className="font-light text-gray-900 mb-3 text-lg font-medium">
         {product.name}
       </h4>
 
-      <p className="text-sm text-gray-600 font-light mb-4 min-h-12">
-        {product.description || "Description coming soon."}
+      {/* Description */}
+      <p className="text-sm text-gray-600 font-light mb-6 flex-grow">
+        {product.description || "A premium experience at Ziba Beach Resort."}
       </p>
 
-      <p className="text-3xl font-light text-gray-900 mb-6">
-        ₦{product.price.toLocaleString()}
-      </p>
+      {/* Divider */}
+      <div className="w-full h-px bg-gray-200 mb-6"></div>
 
-      <div className="flex items-center gap-4 mt-auto">
-        <span className="text-sm text-gray-600 font-light">Quantity</span>
-        <div className="flex items-center gap-3 border-2 border-gray-300 rounded-lg">
+      {/* Price */}
+      <div className="mb-6">
+        <p className="text-xs text-gray-500 font-light uppercase tracking-wider mb-1">
+          Price per person
+        </p>
+        <p className="text-2xl font-light text-gray-900">
+          ₦{product.price.toLocaleString()}
+        </p>
+      </div>
+
+      {/* Quantity Selector */}
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-xs text-gray-600 font-light uppercase tracking-wider">
+          Qty
+        </span>
+        <div className="flex items-center gap-2 border border-gray-300 rounded-lg">
           <button
             onClick={onDecrease}
             disabled={quantity === 0}
             className="p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            <Minus size={20} className="text-gray-900" />
+            <Minus size={16} className="text-gray-900" />
           </button>
-          <span className="w-12 text-center font-light text-gray-900 text-lg">
+          <span className="w-8 text-center font-light text-gray-900 text-sm">
             {quantity}
           </span>
           <button
             onClick={onIncrease}
             className="p-2 hover:bg-gray-100 transition-colors"
           >
-            <Plus size={20} className="text-gray-900" />
+            <Plus size={16} className="text-gray-900" />
           </button>
         </div>
       </div>

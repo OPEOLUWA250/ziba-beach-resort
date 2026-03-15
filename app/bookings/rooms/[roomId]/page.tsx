@@ -2,11 +2,10 @@
 
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import { ChevronLeft, Lock } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { use, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import AvailabilityModal from "@/components/availability-modal";
 import RoomGalleryCarousel from "@/components/room-gallery-carousel";
 import { getRoomImages } from "@/lib/room-images";
 import { getRoomById } from "@/lib/services/rooms";
@@ -307,8 +306,6 @@ export default function RoomDetail({
   const resolvedParams = use(params);
   const roomId = resolvedParams.roomId;
   const staticRoom = rooms[roomId];
-  const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [showFullyBookedMessage, setShowFullyBookedMessage] = useState(false);
   const [livePrice, setLivePrice] = useState<number | null>(null);
   const [roomStatus, setRoomStatus] = useState<string>("available");
@@ -350,26 +347,9 @@ export default function RoomDetail({
   // Check if room is fully booked
   const isFullyBooked = roomStatus === "fully-booked";
 
-  // Handle booking attempt
+  // Handle direct redirect to IPMS247
   const handleBookNow = () => {
-    if (isFullyBooked) {
-      setShowFullyBookedMessage(true);
-    } else {
-      setIsModalOpen(true);
-    }
-  };
-
-  const handleBooking = (checkInDate: Date, checkOutDate: Date) => {
-    if (isFullyBooked) return;
-    // Extract local date components to avoid timezone shifts
-    const checkInStr = `${checkInDate.getFullYear()}-${String(checkInDate.getMonth() + 1).padStart(2, "0")}-${String(checkInDate.getDate()).padStart(2, "0")}`;
-    const checkOutStr = `${checkOutDate.getFullYear()}-${String(checkOutDate.getMonth() + 1).padStart(2, "0")}-${String(checkOutDate.getDate()).padStart(2, "0")}`;
-    setIsModalOpen(false);
-    // Redirect to payment page with room pre-selected and dates
-    const roomName = encodeURIComponent(room?.name || roomId);
-    router.push(
-      `/booking/payment?roomId=${roomId}&roomName=${roomName}&checkIn=${checkInStr}&checkOut=${checkOutStr}`,
-    );
+    window.location.href = "https://live.ipms247.com/booking/book-rooms-zibaresort";
   };
 
   return (
@@ -427,13 +407,13 @@ export default function RoomDetail({
         {/* HERO IMAGE SECTION */}
         <section className="relative w-full h-screen bg-gray-900 overflow-hidden">
           {/* Back Button */}
-          <button
-            onClick={() => router.back()}
+          <Link
+            href="/bookings"
             className="absolute top-6 left-6 z-50 flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg backdrop-blur-sm transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
             <span className="font-light">Back</span>
-          </button>
+          </Link>
           <div className="absolute inset-0">
             <img
               src={getRoomImages(room.id).hero}
@@ -456,11 +436,7 @@ export default function RoomDetail({
                 {room.name}
               </h1>
               <p className="text-2xl font-light text-gray-100">
-                {loading
-                  ? "Loading..."
-                  : livePrice
-                    ? `from ₦${livePrice.toLocaleString()} / night`
-                    : room.price}
+                Experience Luxury at Ziba Beach Resort
               </p>
             </div>
           </div>
@@ -524,27 +500,18 @@ export default function RoomDetail({
           <div className="max-w-6xl mx-auto">
             <div className="bg-linear-to-b from-blue-50 to-white border-2 border-blue-200 rounded-2xl p-8 space-y-6">
               <div>
-                <p className="text-sm text-gray-600 font-light mb-2">
-                  Starting from
-                </p>
-                <p className="text-4xl font-light text-gray-900">
-                  {loading
-                    ? "Loading..."
-                    : `₦${(livePrice || 0).toLocaleString()} / night`}
+                <p className="text-sm text-gray-600 font-light italic">
+                  Pricing available exclusively on IPMS247 for current rates
                 </p>
               </div>
 
               <div className="flex gap-3">
                 <button
                   onClick={handleBookNow}
-                  disabled={loading}
-                  className={`flex-1 py-4 rounded-lg transition font-light disabled:opacity-50 ${
-                    isFullyBooked
-                      ? "bg-gray-500 hover:bg-gray-600 text-white"
-                      : "bg-linear-to-r from-blue-900 to-blue-800 text-white hover:from-blue-800 hover:to-blue-700"
-                  }`}
+                  className="flex-1 py-4 rounded-lg transition font-light font-light flex items-center justify-center gap-2 bg-linear-to-r from-blue-900 to-blue-800 text-white hover:from-blue-800 hover:to-blue-700 hover:shadow-lg"
                 >
-                  {isFullyBooked ? "Fully Booked" : "Book Now"}
+                  Book Now
+                  <span>→</span>
                 </button>
                 <button className="flex-1 border-2 border-gray-900 text-gray-900 py-4 rounded-lg hover:bg-gray-50 transition font-light">
                   Inquiry
@@ -687,27 +654,18 @@ export default function RoomDetail({
               <div className="hidden md:block">
                 <div className="bg-linear-to-b from-blue-50 to-white border-2 border-blue-200 rounded-2xl p-8 sticky top-20 space-y-6">
                   <div>
-                    <p className="text-sm text-gray-600 font-light mb-2">
-                      Starting from
-                    </p>
-                    <p className="text-4xl font-light text-gray-900">
-                      {loading
-                        ? "Loading..."
-                        : `₦${(livePrice || 0).toLocaleString()} / night`}
+                    <p className="text-sm text-gray-600 font-light italic">
+                      Pricing available exclusively on IPMS247 for current rates
                     </p>
                   </div>
 
                   <div className="flex gap-3">
                     <button
                       onClick={handleBookNow}
-                      disabled={loading}
-                      className={`flex-1 py-4 rounded-lg transition font-light disabled:opacity-50 ${
-                        isFullyBooked
-                          ? "bg-gray-500 hover:bg-gray-600 text-white"
-                          : "bg-linear-to-r from-blue-900 to-blue-800 text-white hover:from-blue-800 hover:to-blue-700"
-                      }`}
+                      className="flex-1 py-4 rounded-lg transition font-light font-light flex items-center justify-center gap-2 bg-linear-to-r from-blue-900 to-blue-800 text-white hover:from-blue-800 hover:to-blue-700 hover:shadow-lg"
                     >
-                      {isFullyBooked ? "Fully Booked" : "Book Now"}
+                      Book Now
+                      <span>→</span>
                     </button>
                     <button className="flex-1 border-2 border-gray-900 text-gray-900 py-4 rounded-lg hover:bg-gray-50 transition font-light">
                       Inquiry
@@ -768,16 +726,6 @@ export default function RoomDetail({
         </section>
       </main>
       <Footer />
-
-      {/* Availability Check Modal */}
-      <AvailabilityModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        roomId={room.id}
-        roomName={room.name}
-        pricePerNight={livePrice || 0}
-        onProceedToBooking={handleBooking}
-      />
     </>
   );
 }

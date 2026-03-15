@@ -8,7 +8,7 @@ import { Menu, X, ShoppingCart, MoonStar, Sun } from "lucide-react";
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "Bookings", href: "https://live.ipms247.com/booking/book-rooms-zibaresort" },
+  { label: "Rooms", href: "/bookings" },
   { label: "Day Pass", href: "/day-pass" },
   { label: "Our Story", href: "/our-story" },
   { label: "Experience", href: "/experience" },

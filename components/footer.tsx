@@ -126,36 +126,36 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3 text-sm font-light text-blue-100">
               {[
-                { href: "https://live.ipms247.com/booking/book-rooms-zibaresort", label: "Beach Facing Room" },
+                { href: "/bookings", label: "Beach Facing Room" },
                 {
-                  href: "https://live.ipms247.com/booking/book-rooms-zibaresort",
+                  href: "/bookings",
                   label: "Beach Facing Family Room",
                 },
                 {
-                  href: "https://live.ipms247.com/booking/book-rooms-zibaresort",
+                  href: "/bookings",
                   label: "Beach Facing Family Room (Full View)",
                 },
                 {
-                  href: "https://live.ipms247.com/booking/book-rooms-zibaresort",
+                  href: "/bookings",
                   label: "Beach Facing Connecting Room",
                 },
                 {
-                  href: "https://live.ipms247.com/booking/book-rooms-zibaresort",
+                  href: "/bookings",
                   label: "Beach Facing Suite",
                 },
                 {
-                  href: "https://live.ipms247.com/booking/book-rooms-zibaresort",
+                  href: "/bookings",
                   label: "Two Bedroom Apartment",
                 },
                 {
-                  href: "https://live.ipms247.com/booking/book-rooms-zibaresort",
+                  href: "/bookings",
                   label: "Overwater Terrace Room",
                 },
                 {
-                  href: "https://live.ipms247.com/booking/book-rooms-zibaresort",
+                  href: "/bookings",
                   label: "Overwater Terrace Suite",
                 },
-                { href: "https://live.ipms247.com/booking/book-rooms-zibaresort", label: "Ziba Black" },
+                { href: "/bookings", label: "Ziba Black" },
               ].map((room, index) => (
                 <li
                   key={index}

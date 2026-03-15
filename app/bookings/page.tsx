@@ -394,7 +394,7 @@ Thank you!`;
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {loading ? (
                 <div className="col-span-full text-center py-12">
                   <p className="text-gray-600">Loading rooms...</p>
@@ -410,9 +410,9 @@ Thank you!`;
                   <Link
                     key={room.roomId}
                     href={`/bookings/rooms/${room.roomId}`}
-                    className="group bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-gray-400 hover:shadow-2xl transition-all duration-300"
+                    className="group bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-blue-300 hover:shadow-2xl transition-all duration-300 block"
                   >
-                    {/* Image Container */}
+                    {/* Image Container with Overlay */}
                     <div className="relative h-56 sm:h-64 md:h-72 overflow-hidden bg-gray-200">
                       <Image
                         src={getRoomHeroImage(room.roomId)}
@@ -422,60 +422,75 @@ Thank you!`;
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         quality={85}
                       />
-                      <div className="absolute top-4 left-4 bg-blue-900 text-white px-4 py-2 rounded-full font-light">
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300"></div>
+                      
+                      {/* Room Number Badge */}
+                      <div className="absolute top-4 left-4 bg-blue-900 text-white px-4 py-2 rounded-full font-light text-sm">
                         {room.number}
                       </div>
-                      {/* Subtle fully booked indicator - no big badge */}
+                      
+                      {/* Fully Booked Badge */}
                       {room.isFullyBooked && (
-                        <div className="absolute top-4 right-4 bg-red-600/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold">
+                        <div className="absolute top-4 right-4 bg-red-600/95 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow-lg">
                           Fully Booked
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
                     </div>
 
-                    {/* Content */}
-                    <div className="p-6 space-y-4">
-                      <div>
+                    {/* Content Section */}
+                    <div className="p-7 flex flex-col h-full">
+                      {/* Room Title */}
+                      <div className="mb-4">
                         <h3
-                          className="text-2xl font-light text-gray-900 mb-2 group-hover:text-gray-700 transition-colors"
+                          className="text-2xl font-light text-gray-900 mb-3 group-hover:text-blue-900 transition-colors"
                           style={{ fontFamily: "Cormorant Garamond, serif" }}
                         >
                           {room.name}
                         </h3>
+                        
+                        {/* Size & Capacity Tags */}
                         <div className="flex flex-wrap gap-2">
-                          <span className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-light">
-                            {room.size}
+                          <span className="inline-flex items-center text-xs bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full font-light border border-blue-200">
+                            📐 {room.size}
                           </span>
-                          <span className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-light">
-                            {room.capacity}
+                          <span className="inline-flex items-center text-xs bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full font-light border border-blue-200">
+                            👥 {room.capacity}
                           </span>
                         </div>
                       </div>
 
-                      <div className="space-y-2 border-t border-gray-200 pt-4">
-                        <p className="text-sm text-gray-600 font-light">
-                          <span className="font-semibold text-gray-900">
-                            Bed:
-                          </span>{" "}
-                          {room.bedding}
-                        </p>
-                        <p className="text-sm text-gray-600 font-light">
-                          <span className="font-semibold text-gray-900">
-                            View:
-                          </span>{" "}
-                          {room.view}
-                        </p>
+                      {/* Divider */}
+                      <div className="w-12 h-0.5 bg-gradient-to-r from-blue-300 to-transparent my-4"></div>
+
+                      {/* Room Details */}
+                      <div className="space-y-3 mb-6 flex-grow">
+                        <div className="flex items-start gap-3">
+                          <span className="text-gray-900 font-light">🛏️</span>
+                          <p className="text-sm text-gray-700 font-light">
+                            <span className="font-semibold text-gray-900">Bed:</span> {room.bedding}
+                          </p>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <span className="text-gray-900 font-light">🏝️</span>
+                          <p className="text-sm text-gray-700 font-light">
+                            <span className="font-semibold text-gray-900">View:</span> {room.view}
+                          </p>
+                        </div>
                       </div>
 
-                      <div className="flex justify-between items-center pt-2 border-t border-gray-200">
-                        <span className="text-2xl font-light text-gray-900">
-                          {room.price}
-                        </span>
-                        <span className="text-gray-600 group-hover:text-gray-900 transition-colors font-light">
-                          ⟶
-                        </span>
-                      </div>
+                      {/* Explore Room Button */}
+                      <button
+                        className={`w-full py-3 px-4 rounded-lg font-light text-center transition-all duration-300 flex items-center justify-center gap-2 group/btn ${
+                          room.isFullyBooked
+                            ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                            : "bg-linear-to-r from-blue-900 to-blue-800 text-white group-hover:from-blue-800 group-hover:to-blue-700 group-hover:shadow-lg active:scale-95"
+                        }`}
+                      >
+                        {room.isFullyBooked ? "Fully Booked" : "View Room Details"}
+                        {!room.isFullyBooked && (
+                          <span className="group-hover/btn:translate-x-0.5 transition-transform duration-300">→</span>
+                        )}
+                      </button>
                     </div>
                   </Link>
                 ))
