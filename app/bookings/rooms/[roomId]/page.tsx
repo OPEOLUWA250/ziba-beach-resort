@@ -718,9 +718,12 @@ export default function RoomDetail({
               >
                 View All Rooms
               </Link>
-              <button className="border-2 border-white text-white px-10 py-4 rounded-lg font-light hover:bg-white hover:text-gray-900 transition-all duration-300">
+              <Link
+                href="/contact"
+                className="border-2 border-white text-white px-10 py-4 rounded-lg font-light hover:bg-white hover:text-gray-900 transition-all duration-300 inline-block"
+              >
                 Contact Our Team
-              </button>
+              </Link>
             </div>
           </div>
         </section>

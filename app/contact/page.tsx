@@ -181,30 +181,33 @@ export default function Contact() {
           {/* Contact Form - Remove from here */}
         </section>
 
-        {/* FAQ & Contact Form Section - Side by Side */}
-        <section className="px-4 sm:px-6 lg:px-8 pt-16 sm:pt-28 pb-28 bg-white">
-          <div className="max-w-7xl mx-auto">
+        {/* Contact Form Section */}
+        <section className="px-4 sm:px-6 lg:px-8 pt-16 sm:pt-28 pb-20 bg-white">
+          <div className="max-w-3xl mx-auto">
             <h2
               style={headingFont}
               className="h2 font-light text-blue-900 mb-4 text-center"
             >
-              Questions? We're Here to Help
+              Send Us a Message
             </h2>
-            <div className="w-16 h-0.5 mx-auto mb-16 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
-            <div className="w-16 h-0.5 mx-auto mb-16 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
+            <div className="w-16 h-0.5 mx-auto mb-12 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
+            <div className="bg-linear-to-br from-blue-50 to-white border-2 border-blue-100 rounded-2xl p-8 sm:p-12">
+              <ContactForm />
+            </div>
+          </div>
+        </section>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
-              {/* FAQ Column */}
-              <div>
-                <h3 style={headingFont} className="h3 text-blue-900 mb-8">
-                  Frequently Asked Questions
-                </h3>
-                <p className="text-gray-600 font-light mb-8">
-                  Find answers to common questions about our resort, amenities,
-                  and services.
-                </p>
-
-                <div className="space-y-4">
+        {/* FAQ Section */}
+        <section className="px-4 sm:px-6 lg:px-8 py-20 bg-blue-50">
+          <div className="max-w-4xl mx-auto">
+            <h2
+              style={headingFont}
+              className="h2 font-light text-blue-900 mb-4 text-center"
+            >
+              Frequently Asked Questions
+            </h2>
+            <div className="w-16 h-0.5 mx-auto mb-12 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
+            <div className="space-y-4">
                   {faqItems.map((item, index) => (
                     <div
                       key={index}
@@ -245,14 +248,7 @@ export default function Contact() {
                     </div>
                   ))}
                 </div>
-              </div>
-
-              {/* Contact Form Column */}
-              <div>
-                <ContactForm />
-              </div>
             </div>
-          </div>
         </section>
 
         {/* Map Section */}
