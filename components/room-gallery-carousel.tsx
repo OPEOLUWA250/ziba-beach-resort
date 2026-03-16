@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 interface RoomGalleryProps {
   images: string[];
@@ -15,43 +14,22 @@ export default function RoomGalleryCarousel({
   roomName,
 }: RoomGalleryProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-  const [isHovering, setIsHovering] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
   const animationRef = useRef<number | null>(null);
-  const isMobile = useIsMobile();
 
-  const checkScroll = useCallback(() => {
+  const scroll = useCallback((direction: "left" | "right") => {
     if (scrollRef.current) {
-      setCanScrollLeft(scrollRef.current.scrollLeft > 0);
-      setCanScrollRight(
-        scrollRef.current.scrollLeft <
-          scrollRef.current.scrollWidth - scrollRef.current.clientWidth - 10,
-      );
+      const scrollAmount = 400;
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
     }
   }, []);
 
-  const scroll = useCallback(
-    (direction: "left" | "right") => {
-      if (scrollRef.current) {
-        const scrollAmount = 400;
-        scrollRef.current.scrollBy({
-          left: direction === "left" ? -scrollAmount : scrollAmount,
-          behavior: "smooth",
-        });
-        setTimeout(checkScroll, 100);
-      }
-    },
-    [checkScroll],
-  );
-
-  // Disabled on mobile to allow native touch scrolling
+  // Auto-scroll effect
   useEffect(() => {
-    if (isMobile) {
-      return;
-    }
-
     const animate = () => {
       if (!scrollRef.current || isHovering) {
         animationRef.current = requestAnimationFrame(animate);
@@ -69,7 +47,6 @@ export default function RoomGalleryCarousel({
         scrollRef.current.scrollLeft = 0;
       }
 
-      checkScroll();
       animationRef.current = requestAnimationFrame(animate);
     };
 
@@ -80,7 +57,7 @@ export default function RoomGalleryCarousel({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isHovering, checkScroll, isMobile]);
+  }, [isHovering]);
 
   // Update selected index based on scroll position
   useEffect(() => {
@@ -112,7 +89,6 @@ export default function RoomGalleryCarousel({
         {/* Carousel Container */}
         <div
           ref={scrollRef}
-          onScroll={checkScroll}
           className="flex gap-4 overflow-x-auto scroll-smooth"
           style={{
             scrollBehavior: "smooth",
@@ -123,7 +99,7 @@ export default function RoomGalleryCarousel({
           {images.map((image, index) => (
             <div
               key={`${roomName}-image-${index}`}
-              className="flex-shrink-0 w-5/6 lg:w-1/2 aspect-video rounded-xl overflow-hidden"
+              className="flex-shrink-0 w-4/5 lg:w-1/2 aspect-video rounded-xl overflow-hidden"
             >
               <Image
                 src={image}
@@ -141,8 +117,7 @@ export default function RoomGalleryCarousel({
         {/* Left Arrow */}
         <button
           onClick={() => scroll("left")}
-          disabled={!canScrollLeft}
-          className="absolute top-1/2 left-0 sm:left-2 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 touch-none shadow-lg hover:shadow-xl"
+          className="absolute top-1/2 left-1 sm:left-2 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all shadow-lg"
         >
           <ChevronLeft size={24} />
         </button>
@@ -150,8 +125,7 @@ export default function RoomGalleryCarousel({
         {/* Right Arrow */}
         <button
           onClick={() => scroll("right")}
-          disabled={!canScrollRight}
-          className="absolute top-1/2 right-0 sm:right-2 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 touch-none shadow-lg hover:shadow-xl"
+          className="absolute top-1/2 right-1 sm:right-2 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all shadow-lg"
         >
           <ChevronRight size={24} />
         </button>
