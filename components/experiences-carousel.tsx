@@ -153,7 +153,7 @@ export default function ExperiencesCarousel() {
             {scrollExperiences.map((experience, index) => (
               <div
                 key={`${experience.name}-${index}`}
-                className={`shrink-0 w-4/5 sm:w-1/2 lg:w-1/3 transition-all duration-700 ${
+                className={`shrink-0 w-full sm:w-1/2 lg:w-1/3 transition-all duration-700 ${
                   isVisible
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-10"
@@ -191,17 +191,19 @@ export default function ExperiencesCarousel() {
           {/* Left Arrow */}
           <button
             onClick={() => scroll("left")}
-            className="absolute top-1/2 left-1 sm:left-2 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all shadow-lg"
+            disabled={!canScrollLeft}
+            className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            <ChevronLeft size={24} />
+            <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
           </button>
 
           {/* Right Arrow */}
           <button
             onClick={() => scroll("right")}
-            className="absolute top-1/2 right-1 sm:right-2 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all shadow-lg"
+            disabled={!canScrollRight}
+            className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            <ChevronRight size={24} />
+            <ChevronRight size={20} className="sm:w-6 sm:h-6" />
           </button>
         </div>
       </div>

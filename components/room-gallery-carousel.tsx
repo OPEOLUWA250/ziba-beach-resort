@@ -14,19 +14,35 @@ export default function RoomGalleryCarousel({
   roomName,
 }: RoomGalleryProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
   const animationRef = useRef<number | null>(null);
 
-  const scroll = useCallback((direction: "left" | "right") => {
+  const checkScroll = useCallback(() => {
     if (scrollRef.current) {
-      const scrollAmount = 400;
-      scrollRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
+      setCanScrollLeft(scrollRef.current.scrollLeft > 0);
+      setCanScrollRight(
+        scrollRef.current.scrollLeft <
+          scrollRef.current.scrollWidth - scrollRef.current.clientWidth - 10,
+      );
     }
   }, []);
+
+  const scroll = useCallback(
+    (direction: "left" | "right") => {
+      if (scrollRef.current) {
+        const scrollAmount = 400;
+        scrollRef.current.scrollBy({
+          left: direction === "left" ? -scrollAmount : scrollAmount,
+          behavior: "smooth",
+        });
+        setTimeout(checkScroll, 100);
+      }
+    },
+    [checkScroll],
+  );
 
   // Auto-scroll effect
   useEffect(() => {
@@ -47,6 +63,7 @@ export default function RoomGalleryCarousel({
         scrollRef.current.scrollLeft = 0;
       }
 
+      checkScroll();
       animationRef.current = requestAnimationFrame(animate);
     };
 
@@ -57,7 +74,7 @@ export default function RoomGalleryCarousel({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isHovering]);
+  }, [isHovering, checkScroll]);
 
   // Update selected index based on scroll position
   useEffect(() => {
@@ -89,6 +106,7 @@ export default function RoomGalleryCarousel({
         {/* Carousel Container */}
         <div
           ref={scrollRef}
+          onScroll={checkScroll}
           className="flex gap-4 overflow-x-auto scroll-smooth"
           style={{
             scrollBehavior: "smooth",
@@ -99,7 +117,7 @@ export default function RoomGalleryCarousel({
           {images.map((image, index) => (
             <div
               key={`${roomName}-image-${index}`}
-              className="flex-shrink-0 w-4/5 lg:w-1/2 aspect-video rounded-xl overflow-hidden"
+              className="flex-shrink-0 w-full lg:w-1/2 aspect-video rounded-xl overflow-hidden"
             >
               <Image
                 src={image}
@@ -117,17 +135,19 @@ export default function RoomGalleryCarousel({
         {/* Left Arrow */}
         <button
           onClick={() => scroll("left")}
-          className="absolute top-1/2 left-1 sm:left-2 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all shadow-lg"
+          disabled={!canScrollLeft}
+          className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
-          <ChevronLeft size={24} />
+          <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
         </button>
 
         {/* Right Arrow */}
         <button
           onClick={() => scroll("right")}
-          className="absolute top-1/2 right-1 sm:right-2 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all shadow-lg"
+          disabled={!canScrollRight}
+          className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
-          <ChevronRight size={24} />
+          <ChevronRight size={20} className="sm:w-6 sm:h-6" />
         </button>
       </div>
 
