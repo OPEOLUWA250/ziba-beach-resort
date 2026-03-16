@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 import { Cormorant_Garamond } from "next/font/google";
 import { getRoomHeroImage } from "@/lib/room-images";
 
@@ -253,19 +254,20 @@ export default function Rooms() {
                   ))}
                 </ul>
 
-                {/* CTA Button */}
+                {/* CTA Button - Prominent Action */}
                 <Link
                   href={`/bookings/rooms/${room.id}`}
-                  className="w-full block bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700 text-white font-light transition-all duration-500 rounded-lg text-center py-3 px-4 shadow-md hover:shadow-lg"
+                  className="block w-full mt-4 bg-blue-900 hover:bg-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1 active:translate-y-0 text-center"
                 >
-                  Explore Room
+                  <div className="flex items-center justify-center gap-2 w-full">
+                    <span>View Room Details</span>
+                    <ArrowRight size={20} />
+                  </div>
                 </Link>
               </div>
             </div>
           ))}
         </div>
-
-
       </div>
     </section>
   );
