@@ -438,12 +438,12 @@ function ProductCard({
   return (
     <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-300 flex flex-col h-full p-7">
       {/* Title */}
-      <h4 className="font-light text-gray-900 mb-3 text-lg font-medium">
+      <h4 className="text-gray-900 mb-3 text-lg font-medium">
         {product.name}
       </h4>
 
       {/* Description */}
-      <p className="text-sm text-gray-600 font-light mb-6 flex-grow">
+      <p className="text-sm text-gray-600 font-light mb-6 grow">
         {product.description || "A premium experience at Ziba Beach Resort."}
       </p>
 

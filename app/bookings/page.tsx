@@ -460,10 +460,10 @@ Thank you!`;
                       </div>
 
                       {/* Divider */}
-                      <div className="w-12 h-0.5 bg-gradient-to-r from-blue-300 to-transparent my-4"></div>
+                      <div className="w-12 h-0.5 bg-linear-to-r from-blue-300 to-transparent my-4"></div>
 
                       {/* Room Details */}
-                      <div className="space-y-3 mb-6 flex-grow">
+                      <div className="space-y-3 mb-6 grow">
                         <div className="flex items-start gap-3">
                           <span className="text-gray-900 font-light">🛏️</span>
                           <p className="text-sm text-gray-700 font-light">

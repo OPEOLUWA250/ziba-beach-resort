@@ -206,7 +206,6 @@ export default function BookingForm({
                   className="react-calendar-custom"
                   tileDisabled={({ date }) => isDateBookedForCheckIn(date)}
                   tileClassName={getTileClassName}
-                  tileStyle={getTileStyle}
                 />
               </div>
             )}
@@ -241,7 +240,6 @@ export default function BookingForm({
                   className="react-calendar-custom"
                   tileDisabled={({ date }) => isDateBookedForCheckOut(date)}
                   tileClassName={getTileClassName}
-                  tileStyle={getTileStyle}
                 />
               </div>
             )}

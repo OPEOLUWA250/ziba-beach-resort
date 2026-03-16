@@ -167,7 +167,7 @@ export default function Footer() {
                     className="relative pb-1 inline-block text-blue-100 group-hover:text-blue-200 transition-colors duration-300"
                   >
                     {room.label}
-                    <span className="absolute bottom-0 left-0 w-0 h-px bg-gradient-to-r from-blue-300 to-blue-200 group-hover:w-full transition-all duration-500 ease-out" />
+                    <span className="absolute bottom-0 left-0 w-0 h-px bg-linear-to-r from-blue-300 to-blue-200 group-hover:w-full transition-all duration-500 ease-out" />
                   </a>
                 </li>
               ))}
@@ -210,7 +210,7 @@ export default function Footer() {
                     className="relative pb-1 inline-block text-blue-100 group-hover:text-blue-200 transition-colors duration-300"
                   >
                     {link.label}
-                    <span className="absolute bottom-0 left-0 w-0 h-px bg-gradient-to-r from-blue-300 to-blue-200 group-hover:w-full transition-all duration-500 ease-out" />
+                    <span className="absolute bottom-0 left-0 w-0 h-px bg-linear-to-r from-blue-300 to-blue-200 group-hover:w-full transition-all duration-500 ease-out" />
                   </a>
                 </li>
               ))}
@@ -254,7 +254,7 @@ export default function Footer() {
                     className="relative pb-1 inline-block text-blue-100 group-hover:text-blue-200 transition-colors duration-300 hover:text-blue-300"
                   >
                     +234 704 730 0013
-                    <span className="absolute bottom-0 left-0 w-0 h-px bg-gradient-to-r from-blue-300 to-blue-200 group-hover:w-full transition-all duration-500 ease-out" />
+                    <span className="absolute bottom-0 left-0 w-0 h-px bg-linear-to-r from-blue-300 to-blue-200 group-hover:w-full transition-all duration-500 ease-out" />
                   </a>
                 </p>
                 <p className="group">
@@ -263,7 +263,7 @@ export default function Footer() {
                     className="relative pb-1 inline-block text-blue-100 group-hover:text-blue-200 transition-colors duration-300 hover:text-blue-300"
                   >
                     +234 818 744 4447
-                    <span className="absolute bottom-0 left-0 w-0 h-px bg-gradient-to-r from-blue-300 to-blue-200 group-hover:w-full transition-all duration-500 ease-out" />
+                    <span className="absolute bottom-0 left-0 w-0 h-px bg-linear-to-r from-blue-300 to-blue-200 group-hover:w-full transition-all duration-500 ease-out" />
                   </a>
                 </p>
               </div>
@@ -275,7 +275,7 @@ export default function Footer() {
                     className="relative pb-1 inline-block text-blue-100 group-hover:text-blue-200 transition-colors duration-300 hover:text-blue-300"
                   >
                     bookings@zibabeachresort.com
-                    <span className="absolute bottom-0 left-0 w-0 h-px bg-gradient-to-r from-blue-300 to-blue-200 group-hover:w-full transition-all duration-500 ease-out" />
+                    <span className="absolute bottom-0 left-0 w-0 h-px bg-linear-to-r from-blue-300 to-blue-200 group-hover:w-full transition-all duration-500 ease-out" />
                   </a>
                 </p>
               </div>

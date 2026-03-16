@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const experiences = [
   {
@@ -39,6 +40,7 @@ export default function ExperiencesCarousel() {
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const animationRef = useRef<number | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -81,7 +83,12 @@ export default function ExperiencesCarousel() {
   );
 
   // Auto-scroll effect with smooth continuous scrolling using requestAnimationFrame
+  // Disabled on mobile to allow native touch scrolling
   useEffect(() => {
+    if (isMobile) {
+      return;
+    }
+
     const animate = () => {
       if (!scrollRef.current || isHovering) {
         animationRef.current = requestAnimationFrame(animate);
@@ -112,7 +119,7 @@ export default function ExperiencesCarousel() {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isHovering, checkScroll]);
+  }, [isHovering, checkScroll, isMobile]);
 
   return (
     <section
@@ -155,7 +162,7 @@ export default function ExperiencesCarousel() {
             {scrollExperiences.map((experience, index) => (
               <div
                 key={`${experience.name}-${index}`}
-                className={`shrink-0 w-full sm:w-1/2 lg:w-1/3 transition-all duration-700 ${
+                className={`shrink-0 w-5/6 sm:w-1/2 lg:w-1/3 transition-all duration-700 ${
                   isVisible
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-10"
@@ -194,7 +201,7 @@ export default function ExperiencesCarousel() {
           <button
             onClick={() => scroll("left")}
             disabled={!canScrollLeft}
-            className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="absolute top-1/2 left-0 sm:left-1 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 touch-none"
           >
             <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
           </button>
@@ -203,7 +210,7 @@ export default function ExperiencesCarousel() {
           <button
             onClick={() => scroll("right")}
             disabled={!canScrollRight}
-            className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="absolute top-1/2 right-0 sm:right-1 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 touch-none"
           >
             <ChevronRight size={20} className="sm:w-6 sm:h-6" />
           </button>

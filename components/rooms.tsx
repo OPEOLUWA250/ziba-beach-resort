@@ -176,14 +176,13 @@ export default function Rooms() {
           {rooms.map((room, idx) => (
             <div
               key={room.id}
-              className={`group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 ease-out transform hover:-translate-y-2 flex flex-col h-full ${
+              className={`group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-opacity transition-transform duration-500 ease-out transform hover:-translate-y-2 flex flex-col h-full ${
                 isVisible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-10"
               }`}
               style={{
                 transitionDelay: isVisible ? `${300 + idx * 100}ms` : "0ms",
-                transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
               {/* Image Container - Enhanced with smooth zoom */}
@@ -237,7 +236,7 @@ export default function Rooms() {
                   {room.features.map((feature, featureIdx) => (
                     <li
                       key={featureIdx}
-                      className={`flex items-center gap-2 text-sm text-gray-700 transition-all duration-500 ${
+                      className={`flex items-center gap-2 text-sm text-gray-700 transition-opacity transition-transform duration-500 ${
                         isVisible
                           ? "opacity-100 translate-x-0"
                           : "opacity-0 -translate-x-5"
@@ -266,89 +265,7 @@ export default function Rooms() {
           ))}
         </div>
 
-        {/* Pricing Information Section - Beautiful & Professional */}
-        <div
-          className={`mt-20 pt-16 border-t border-gray-200 transition-all duration-1000 ease-out ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-          style={{ transitionDelay: isVisible ? "600ms" : "0ms" }}
-        >
-          {/* Pricing Header */}
-          <div className="text-center mb-12">
-            <h3
-              className={`${cormorant.className} text-3xl sm:text-4xl text-blue-900 mb-4`}
-            >
-              Real-Time Pricing
-            </h3>
-            <div className="w-12 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
-            <p className="text-gray-600 font-light text-lg max-w-3xl mx-auto">
-              Pricing is dynamically updated based on availability, seasons, and special promotions. 
-              See accurate, real-time rates when you proceed to book.
-            </p>
-          </div>
 
-          {/* Pricing Info Cards */}
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {/* Card 1 */}
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 text-center border border-blue-200 hover:shadow-lg transition-all duration-300">
-              <div className="text-4xl mb-3">🌍</div>
-              <h4 className={`${cormorant.className} text-xl text-blue-900 mb-2`}>
-                Dynamic Rates
-              </h4>
-              <p className="text-sm text-gray-700 font-light">
-                Prices adjust seasonally and based on real-time demand
-              </p>
-            </div>
-
-            {/* Card 2 */}
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 text-center border border-blue-200 hover:shadow-lg transition-all duration-300">
-              <div className="text-4xl mb-3">✅</div>
-              <h4 className={`${cormorant.className} text-xl text-blue-900 mb-2`}>
-                Always Current
-              </h4>
-              <p className="text-sm text-gray-700 font-light">
-                Single source of truth ensures accurate pricing always
-              </p>
-            </div>
-
-            {/* Card 3 */}
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 text-center border border-blue-200 hover:shadow-lg transition-all duration-300">
-              <div className="text-4xl mb-3">🎯</div>
-              <h4 className={`${cormorant.className} text-xl text-blue-900 mb-2`}>
-                Best Offers
-              </h4>
-              <p className="text-sm text-gray-700 font-light">
-                Early-bird promotions & exclusive discounts available
-              </p>
-            </div>
-          </div>
-
-          {/* CTA Section */}
-          <div className="mt-12 text-center">
-            <p className="text-gray-600 font-light mb-6 text-lg">
-              Ready to see current rates and availability?
-            </p>
-            <a
-              href="/bookings"
-              className="inline-flex items-center gap-3 bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700 text-white font-light px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
-            >
-              <span>Browse All Rooms</span>
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
-            </a>
-          </div>
-        </div>
       </div>
     </section>
   );

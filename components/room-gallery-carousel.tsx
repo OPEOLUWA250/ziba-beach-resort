@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface RoomGalleryProps {
   images: string[];
@@ -19,6 +20,7 @@ export default function RoomGalleryCarousel({
   const [isHovering, setIsHovering] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const animationRef = useRef<number | null>(null);
+  const isMobile = useIsMobile();
 
   const checkScroll = useCallback(() => {
     if (scrollRef.current) {
@@ -44,8 +46,12 @@ export default function RoomGalleryCarousel({
     [checkScroll],
   );
 
-  // Auto-scroll effect
+  // Disabled on mobile to allow native touch scrolling
   useEffect(() => {
+    if (isMobile) {
+      return;
+    }
+
     const animate = () => {
       if (!scrollRef.current || isHovering) {
         animationRef.current = requestAnimationFrame(animate);
@@ -74,7 +80,7 @@ export default function RoomGalleryCarousel({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isHovering, checkScroll]);
+  }, [isHovering, checkScroll, isMobile]);
 
   // Update selected index based on scroll position
   useEffect(() => {
@@ -117,7 +123,7 @@ export default function RoomGalleryCarousel({
           {images.map((image, index) => (
             <div
               key={`${roomName}-image-${index}`}
-              className="flex-shrink-0 w-full lg:w-1/2 aspect-video rounded-xl overflow-hidden"
+              className="flex-shrink-0 w-5/6 lg:w-1/2 aspect-video rounded-xl overflow-hidden"
             >
               <Image
                 src={image}
@@ -136,7 +142,7 @@ export default function RoomGalleryCarousel({
         <button
           onClick={() => scroll("left")}
           disabled={!canScrollLeft}
-          className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
+          className="absolute top-1/2 left-0 sm:left-2 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 touch-none shadow-lg hover:shadow-xl"
         >
           <ChevronLeft size={24} />
         </button>
@@ -145,7 +151,7 @@ export default function RoomGalleryCarousel({
         <button
           onClick={() => scroll("right")}
           disabled={!canScrollRight}
-          className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
+          className="absolute top-1/2 right-0 sm:right-2 transform -translate-y-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 touch-none shadow-lg hover:shadow-xl"
         >
           <ChevronRight size={24} />
         </button>

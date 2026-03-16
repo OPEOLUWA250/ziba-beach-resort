@@ -57,7 +57,7 @@ export default function BookingCards() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 mt-16 sm:mt-12 lg:mt-16">
           {/* Day Experience Card */}
           <div
-            className={`group relative overflow-hidden rounded-xl sm:rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:lg:-translate-y-4 min-h-96 sm:min-h-[420px] lg:min-h-[520px] hover-lift ${
+            className={`group relative overflow-hidden rounded-xl sm:rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:lg:-translate-y-4 min-h-96 sm:min-h-105 lg:min-h-130 hover-lift ${
               isVisible
                 ? "opacity-100 translate-x-0 translate-y-0"
                 : "opacity-0 -translate-x-10 translate-y-10"
@@ -135,7 +135,7 @@ export default function BookingCards() {
                           : "0ms",
                       }}
                     >
-                      <span className="w-1.5 h-1.5 rounded-full bg-orange-300 flex-shrink-0 mt-0.5" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-orange-300 shrink-0 mt-0.5" />
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -171,7 +171,7 @@ export default function BookingCards() {
 
           {/* Night Experience Card */}
           <div
-            className={`group relative overflow-hidden rounded-xl sm:rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:lg:-translate-y-4 min-h-96 sm:min-h-[420px] lg:min-h-[520px] hover-lift ${
+            className={`group relative overflow-hidden rounded-xl sm:rounded-2xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:lg:-translate-y-4 min-h-96 sm:min-h-105 lg:min-h-130 hover-lift ${
               isVisible
                 ? "opacity-100 translate-x-0 translate-y-0"
                 : "opacity-0 translate-x-10 translate-y-10"
@@ -249,7 +249,7 @@ export default function BookingCards() {
                           : "0ms",
                       }}
                     >
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-300 flex-shrink-0 mt-0.5" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-300 shrink-0 mt-0.5" />
                       <span>{feature}</span>
                     </li>
                   ))}

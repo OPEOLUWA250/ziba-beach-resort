@@ -508,7 +508,7 @@ export default function RoomDetail({
               <div className="flex gap-3">
                 <button
                   onClick={handleBookNow}
-                  className="flex-1 py-4 rounded-lg transition font-light font-light flex items-center justify-center gap-2 bg-linear-to-r from-blue-900 to-blue-800 text-white hover:from-blue-800 hover:to-blue-700 hover:shadow-lg"
+                  className="flex-1 py-4 rounded-lg transition font-light flex items-center justify-center gap-2 bg-linear-to-r from-blue-900 to-blue-800 text-white hover:from-blue-800 hover:to-blue-700 hover:shadow-lg"
                 >
                   Book Now
                   <span>→</span>
@@ -662,7 +662,7 @@ export default function RoomDetail({
                   <div className="flex gap-3">
                     <button
                       onClick={handleBookNow}
-                      className="flex-1 py-4 rounded-lg transition font-light font-light flex items-center justify-center gap-2 bg-linear-to-r from-blue-900 to-blue-800 text-white hover:from-blue-800 hover:to-blue-700 hover:shadow-lg"
+                      className="flex-1 py-4 rounded-lg transition font-light flex items-center justify-center gap-2 bg-linear-to-r from-blue-900 to-blue-800 text-white hover:from-blue-800 hover:to-blue-700 hover:shadow-lg"
                     >
                       Book Now
                       <span>→</span>

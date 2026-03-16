@@ -105,7 +105,7 @@ const RoomCard = ({
   return (
     <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border-2 border-blue-100">
       {/* Header with Status Badge */}
-      <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-b-2 border-blue-200 px-6 py-4">
+      <div className="bg-linear-to-r from-blue-50 to-blue-100 border-b-2 border-blue-200 px-6 py-4">
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1">
             <h3 className="text-lg font-bold text-gray-900">
@@ -188,7 +188,7 @@ const RoomCard = ({
       {isEditingPrice && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full">
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex justify-between items-center">
+            <div className="bg-linear-to-r from-blue-600 to-blue-700 px-6 py-4 flex justify-between items-center">
               <h2 className="text-xl font-bold text-white">Edit Price</h2>
               <button
                 onClick={() => handleCancelEdit()}
@@ -256,7 +256,7 @@ const RoomCard = ({
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full">
-            <div className="bg-gradient-to-r from-red-600 to-red-700 px-6 py-4 flex justify-between items-center">
+            <div className="bg-linear-to-r from-red-600 to-red-700 px-6 py-4 flex justify-between items-center">
               <h2 className="text-xl font-bold text-white">Delete Room</h2>
               <button
                 onClick={() => setShowDeleteModal(false)}
@@ -454,7 +454,7 @@ export default function RoomsManagement() {
           </p>
         </div>
         <button
-          className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center gap-2"
+          className="bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center gap-2"
           disabled={isUpdating}
         >
           <Plus size={20} />
@@ -464,19 +464,19 @@ export default function RoomsManagement() {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-gradient-to-br from-blue-600/30 to-blue-700/30 backdrop-blur-sm rounded-2xl p-5 border border-blue-400/30 hover:border-blue-400/60 transition-all">
+        <div className="bg-linear-to-br from-blue-600/30 to-blue-700/30 backdrop-blur-sm rounded-2xl p-5 border border-blue-400/30 hover:border-blue-400/60 transition-all">
           <p className="text-blue-300 text-sm uppercase tracking-wider font-semibold mb-2">
             Total Rooms
           </p>
           <p className="text-4xl font-black text-white">{rooms.length}</p>
         </div>
-        <div className="bg-gradient-to-br from-green-600/30 to-green-700/30 backdrop-blur-sm rounded-2xl p-5 border border-green-400/30 hover:border-green-400/60 transition-all">
+        <div className="bg-linear-to-br from-green-600/30 to-green-700/30 backdrop-blur-sm rounded-2xl p-5 border border-green-400/30 hover:border-green-400/60 transition-all">
           <p className="text-green-300 text-sm uppercase tracking-wider font-semibold mb-2">
             Available
           </p>
           <p className="text-4xl font-black text-green-400">{availableRooms}</p>
         </div>
-        <div className="bg-gradient-to-br from-purple-600/30 to-pink-700/30 backdrop-blur-sm rounded-2xl p-5 border border-purple-400/30 hover:border-purple-400/60 transition-all">
+        <div className="bg-linear-to-br from-purple-600/30 to-pink-700/30 backdrop-blur-sm rounded-2xl p-5 border border-purple-400/30 hover:border-purple-400/60 transition-all">
           <p className="text-purple-300 text-sm uppercase tracking-wider font-semibold mb-2">
             Fully Booked
           </p>

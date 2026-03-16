@@ -274,7 +274,7 @@ export default function BookingCard({
       )}
 
       {/* Total Price */}
-      <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4">
+      <div className="bg-linear-to-r from-blue-50 to-blue-100 rounded-lg p-4">
         <p className="text-gray-600 text-sm mb-1">Total Price</p>
         <p className="text-3xl font-bold text-blue-900 cormorant">
           ₦{totalPrice.toLocaleString()}
@@ -285,7 +285,7 @@ export default function BookingCard({
       <button
         onClick={handlePayment}
         disabled={loading}
-        className="w-full bg-gradient-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-105 disabled:scale-100 shadow-lg"
+        className="w-full bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-105 disabled:scale-100 shadow-lg"
       >
         {loading ? (
           <span className="flex items-center justify-center gap-2">
