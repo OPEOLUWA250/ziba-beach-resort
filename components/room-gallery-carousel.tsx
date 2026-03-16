@@ -135,8 +135,7 @@ export default function RoomGalleryCarousel({
         {/* Left Arrow */}
         <button
           onClick={() => scroll("left")}
-          disabled={!canScrollLeft}
-          className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all active:scale-95"
         >
           <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
         </button>
@@ -144,8 +143,7 @@ export default function RoomGalleryCarousel({
         {/* Right Arrow */}
         <button
           onClick={() => scroll("right")}
-          disabled={!canScrollRight}
-          className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all active:scale-95"
         >
           <ChevronRight size={20} className="sm:w-6 sm:h-6" />
         </button>
