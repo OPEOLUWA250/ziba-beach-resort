@@ -2,8 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Cormorant_Garamond } from "next/font/google";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
 
 interface MenuItem {
   id: string;
@@ -61,7 +67,10 @@ export default function Menu() {
   }) => (
     <div className="border-b border-gray-200 pb-6 mb-6 last:border-b-0 transition-all duration-300 hover:translate-x-2">
       <div className="flex justify-between items-start mb-2">
-        <h4 className="font-light text-gray-900 text-lg transition-colors duration-300 hover:text-blue-900">
+        <h4 
+          className="font-light text-gray-900 text-lg transition-colors duration-300 hover:text-blue-900"
+          style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.5rem", fontWeight: 300 }}
+        >
           {name}
         </h4>
         <span className="text-blue-900 font-semibold ml-4 whitespace-nowrap transition-all duration-300 hover:scale-110">
@@ -88,7 +97,10 @@ export default function Menu() {
       style={{ animation: "fadeInUp 0.8s ease-out forwards" }}
     >
       <div>
-        <h2 className="h2 text-blue-900 mb-2 transition-all duration-300 hover:text-blue-700">
+        <h2 
+          className="h2 text-blue-900 mb-2 transition-all duration-300 hover:text-blue-700"
+          style={{ fontFamily: "Cormorant Garamond, serif" }}
+        >
           {title}
         </h2>
         <p className="text-gray-600 font-light text-sm">{timing}</p>
@@ -118,7 +130,10 @@ export default function Menu() {
         >
           <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/30 to-black/50"></div>
           <div className="relative max-w-5xl mx-auto text-center px-4 z-10">
-            <h2 className="h2 font-light text-white mb-6 text-center">
+            <h2 
+              className="h2 font-light text-white mb-6 text-center"
+              style={{ fontFamily: "Cormorant Garamond, serif" }}
+            >
               Our Culinary Menu
             </h2>
             <p className="text-lg sm:text-xl lg:text-2xl text-gray-100 font-light">
@@ -189,7 +204,10 @@ export default function Menu() {
 
         <section className="px-4 sm:px-6 lg:px-8 py-20 bg-blue-900">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="h2 font-light text-white mb-6 text-center">
+            <h2 
+              className="h2 font-light text-white mb-6 text-center"
+              style={{ fontFamily: "Cormorant Garamond, serif" }}
+            >
               Ready to Dine?
             </h2>
             <p className="text-base sm:text-lg lg:text-xl text-blue-100 font-light mb-10">

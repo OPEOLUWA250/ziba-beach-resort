@@ -465,15 +465,25 @@ Thank you!`;
                       {/* Room Details */}
                       <div className="space-y-2">
                         <div className="flex items-start gap-3">
-                          <span className="text-gray-900 font-light text-lg">🛏️</span>
+                          <span className="text-gray-900 font-light text-lg">
+                            🛏️
+                          </span>
                           <p className="text-sm text-gray-700 font-light">
-                            <span className="font-semibold text-gray-900">Bed:</span> {room.bedding}
+                            <span className="font-semibold text-gray-900">
+                              Bed:
+                            </span>{" "}
+                            {room.bedding}
                           </p>
                         </div>
                         <div className="flex items-start gap-3">
-                          <span className="text-gray-900 font-light text-lg">🏝️</span>
+                          <span className="text-gray-900 font-light text-lg">
+                            🏝️
+                          </span>
                           <p className="text-sm text-gray-700 font-light">
-                            <span className="font-semibold text-gray-900">View:</span> {room.view}
+                            <span className="font-semibold text-gray-900">
+                              View:
+                            </span>{" "}
+                            {room.view}
                           </p>
                         </div>
                       </div>
@@ -484,16 +494,15 @@ Thank you!`;
                       {/* View Room Details Button - PROMINENT CTA */}
                       <Link
                         href={`/bookings/rooms/${room.roomId}`}
-                        className={`w-full py-3 px-4 rounded-lg font-semibold text-center transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg mt-2 ${
-                          room.isFullyBooked
-                            ? "bg-gray-300 text-gray-600 cursor-not-allowed pointer-events-none"
-                            : "bg-blue-900 text-white hover:bg-blue-800 hover:-translate-y-0.5 active:translate-y-0"
-                        }`}
+                        className="w-full mt-4 py-4 px-6 rounded-lg font-semibold text-center transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg bg-blue-900 text-white hover:bg-blue-800 hover:-translate-y-1 active:translate-y-0"
                       >
-                        <span className="text-base font-semibold">View Room Details</span>
-                        {!room.isFullyBooked && (
-                          <ArrowRight size={20} className="transition-transform duration-300" />
-                        )}
+                        <span className="text-base font-semibold">
+                          View Room Details
+                        </span>
+                        <ArrowRight
+                          size={20}
+                          className="transition-transform duration-300"
+                        />
                       </Link>
                     </div>
                   </div>
