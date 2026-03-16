@@ -14,19 +14,19 @@ export default function RoomGalleryCarousel({
   roomName,
 }: RoomGalleryProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(true);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const animationRef = useRef<number | null>(null);
+  const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const checkScroll = useCallback(() => {
     if (scrollRef.current) {
-      setCanScrollLeft(scrollRef.current.scrollLeft > 0);
-      setCanScrollRight(
-        scrollRef.current.scrollLeft <
-          scrollRef.current.scrollWidth - scrollRef.current.clientWidth - 10,
-      );
+      // For infinite scroll, both directions are always available
+      setCanScrollLeft(true);
+      setCanScrollRight(true);
     }
   }, []);
 
@@ -38,6 +38,14 @@ export default function RoomGalleryCarousel({
           left: direction === "left" ? -scrollAmount : scrollAmount,
           behavior: "smooth",
         });
+        // Pause auto-scroll after user clicks
+        setIsPaused(true);
+        if (pauseTimeoutRef.current) {
+          clearTimeout(pauseTimeoutRef.current);
+        }
+        pauseTimeoutRef.current = setTimeout(() => {
+          setIsPaused(false);
+        }, 3000);
         setTimeout(checkScroll, 100);
       }
     },
@@ -47,7 +55,7 @@ export default function RoomGalleryCarousel({
   // Auto-scroll effect
   useEffect(() => {
     const animate = () => {
-      if (!scrollRef.current || isHovering) {
+      if (!scrollRef.current || isHovering || isPaused) {
         animationRef.current = requestAnimationFrame(animate);
         return;
       }
@@ -74,7 +82,16 @@ export default function RoomGalleryCarousel({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isHovering, checkScroll]);
+  }, [isHovering, isPaused, checkScroll]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (pauseTimeoutRef.current) {
+        clearTimeout(pauseTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Update selected index based on scroll position
   useEffect(() => {
@@ -135,7 +152,8 @@ export default function RoomGalleryCarousel({
         {/* Left Arrow */}
         <button
           onClick={() => scroll("left")}
-          className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all active:scale-95"
+          disabled={!canScrollLeft}
+          className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
           <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
         </button>
@@ -143,7 +161,8 @@ export default function RoomGalleryCarousel({
         {/* Right Arrow */}
         <button
           onClick={() => scroll("right")}
-          className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all active:scale-95"
+          disabled={!canScrollRight}
+          className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
           <ChevronRight size={20} className="sm:w-6 sm:h-6" />
         </button>

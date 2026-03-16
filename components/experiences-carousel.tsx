@@ -38,7 +38,9 @@ export default function ExperiencesCarousel() {
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const animationRef = useRef<number | null>(null);
+  const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -55,7 +57,12 @@ export default function ExperiencesCarousel() {
       observer.observe(sectionRef.current);
     }
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (pauseTimeoutRef.current) {
+        clearTimeout(pauseTimeoutRef.current);
+      }
+    };
   }, []);
 
   const checkScroll = useCallback(() => {
@@ -74,16 +81,24 @@ export default function ExperiencesCarousel() {
           left: direction === "left" ? -scrollAmount : scrollAmount,
           behavior: "smooth",
         });
+        // Pause auto-scroll after user clicks
+        setIsPaused(true);
+        if (pauseTimeoutRef.current) {
+          clearTimeout(pauseTimeoutRef.current);
+        }
+        pauseTimeoutRef.current = setTimeout(() => {
+          setIsPaused(false);
+        }, 3000);
         setTimeout(checkScroll, 100);
       }
     },
     [checkScroll],
   );
 
-  // Auto-scroll effect with smooth continuous scrolling using requestAnimationFrame
+  // Auto-scroll effect
   useEffect(() => {
     const animate = () => {
-      if (!scrollRef.current || isHovering) {
+      if (!scrollRef.current || isHovering || isPaused) {
         animationRef.current = requestAnimationFrame(animate);
         return;
       }
@@ -110,7 +125,7 @@ export default function ExperiencesCarousel() {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isHovering, checkScroll]);
+  }, [isHovering, isPaused, checkScroll]);
 
   return (
     <section
@@ -191,7 +206,8 @@ export default function ExperiencesCarousel() {
           {/* Left Arrow */}
           <button
             onClick={() => scroll("left")}
-            className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all active:scale-95"
+            disabled={!canScrollLeft}
+            className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
           </button>
@@ -199,7 +215,8 @@ export default function ExperiencesCarousel() {
           {/* Right Arrow */}
           <button
             onClick={() => scroll("right")}
-            className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all active:scale-95"
+            disabled={!canScrollRight}
+            className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             <ChevronRight size={20} className="sm:w-6 sm:h-6" />
           </button>
