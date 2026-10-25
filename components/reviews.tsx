@@ -1,191 +1,105 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { IPMS_BOOKING_URL } from "@/lib/booking-links";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
+import type { GoogleReview } from "@/lib/server/google-reviews";
+import {
+  GOOGLE_REVIEWS_SEARCH_URL,
+  useGoogleReviews,
+} from "@/hooks/use-google-reviews";
 
-interface Review {
-  name: string;
+const GoogleLogo = ({ className = "w-3 h-3" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.851-2.84z" />
+    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+  </svg>
+);
+
+const Stars = ({ rating, className }: { rating: number; className: string }) => (
+  <span aria-label={`${rating} out of 5 stars`} className="flex gap-0.5">
+    {[...Array(5)].map((_, i) => (
+      <span
+        key={i}
+        aria-hidden="true"
+        className={`${className} ${i < Math.round(rating) ? "text-blue-500" : "text-gray-300"}`}
+      >
+        ★
+      </span>
+    ))}
+  </span>
+);
+
+const AverageRating = ({
+  isVisible,
+  rating,
+  totalReviews,
+  mapsUrl,
+}: {
+  isVisible: boolean;
   rating: number;
-  text: string;
-  category: string;
-  source: "google" | "guest";
-  date?: string;
-  profileImage?: string;
-}
-
-const googleReviews: Review[] = [
-  {
-    name: "Amara Okonkwo",
-    rating: 5,
-    text: "Absolutely stunning. The overwater rooms are extraordinary—waking up to ocean views changed my life. Impeccable service, exceptional food.",
-    category: "Aesthetics & Amenities",
-    source: "google",
-    date: "2 weeks ago",
-    profileImage: "🌟",
-  },
-  {
-    name: "Tunde Musa",
-    rating: 5,
-    text: "World-class experience at this price point. Food, service, and facilities were all exceptional. The spa was rejuvenating.",
-    category: "Value & Experience",
-    source: "google",
-    date: "3 weeks ago",
-    profileImage: "✨",
-  },
-  {
-    name: "Oluwatoyin Babawale",
-    rating: 5,
-    text: "Exceptional attention to detail. Every staff member was courteous and helpful. The beach access is perfect for morning walks. Highly recommend!",
-    category: "Service Excellence",
-    source: "google",
-    date: "1 week ago",
-    profileImage: "👑",
-  },
-];
-
-const guestReviews: Review[] = [
-  {
-    name: "Chisom Patricia",
-    rating: 5,
-    text: "Best family vacation ever. Our kids loved the playground and pool area. The staff treated us like family. We're already planning our next visit.",
-    category: "Family Experience",
-    source: "guest",
-    date: "1 month ago",
-  },
-  {
-    name: "Nkechi Adeyemi",
-    rating: 5,
-    text: "Seamless booking process. Real-time availability made it easy. The rooms were exactly as advertised—beautiful and well-maintained.",
-    category: "Booking & Check-in",
-    source: "guest",
-    date: "2 months ago",
-  },
-  {
-    name: "Chinedu Obi",
-    rating: 5,
-    text: "The perfect getaway spot. Beautiful surroundings, delicious meals, and friendly staff. Can't wait to return!",
-    category: "Overall Experience",
-    source: "guest",
-    date: "3 days ago",
-  },
-  {
-    name: "Adebayo Okonkwo",
-    rating: 5,
-    text: "Incredible attention to detail in every room. The sunset views from the terrace are absolutely breathtaking. Staff went above and beyond!",
-    category: "Room Quality",
-    source: "guest",
-    date: "1 week ago",
-  },
-  {
-    name: "Folake Ayokunle",
-    rating: 5,
-    text: "Wedding anniversary celebration was unforgettable. The team arranged everything beautifully. We felt truly special throughout our stay.",
-    category: "Special Occasions",
-    source: "guest",
-    date: "10 days ago",
-  },
-  {
-    name: "Emeka Nwosu",
-    rating: 5,
-    text: "Amazing food, fantastic location, and the most welcoming staff. This is not just a hotel—it's a home away from home.",
-    category: "Dining & Hospitality",
-    source: "guest",
-    date: "2 weeks ago",
-  },
-  {
-    name: "Zainab Hassan",
-    rating: 5,
-    text: "The spa treatments were absolutely heavenly. I walked in stressed and left completely rejuvenated. Highly recommend!",
-    category: "Wellness",
-    source: "guest",
-    date: "2 weeks ago",
-  },
-  {
-    name: "David Okafor",
-    rating: 5,
-    text: "Business trip turned amazing vacation! The conference facilities are top-notch and the beach relaxation afterwards was perfect.",
-    category: "Business Amenities",
-    source: "guest",
-    date: "3 weeks ago",
-  },
-  {
-    name: "Nneka Udah",
-    rating: 5,
-    text: "The sunrise breakfast by the pool is a game-changer. Every moment here feels like a luxury experience without being pretentious.",
-    category: "Dining Experience",
-    source: "guest",
-    date: "1 month ago",
-  },
-  {
-    name: "Kunle Adebayo",
-    rating: 5,
-    text: "Brought my extended family for a reunion. The variety of activities and spacious accommodations made everyone happy. Absolute hit!",
-    category: "Group Getaway",
-    source: "guest",
-    date: "1 month ago",
-  },
-];
-
-const allReviews = [...googleReviews, ...guestReviews];
-
-const AverageRating = ({ isVisible }: { isVisible: boolean }) => {
-  const avgRating = (
-    allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length
-  ).toFixed(1);
-  const totalReviews = allReviews.length;
-
-  return (
-    <div
-      className={`bg-linear-to-br from-blue-50 to-blue-100 rounded-2xl p-8 sm:p-12 border-2 border-blue-300 mb-12 transition-all duration-1000 ease-out ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      }`}
-    >
-      <div className="flex flex-col md:flex-row items-center gap-8">
-        <div className="text-center">
-          <div className="text-6xl font-bold text-blue-600 mb-2 transition-all duration-700">
-            {avgRating}
-          </div>
-          <div className="flex justify-center gap-1 mb-3">
-            {[...Array(5)].map((_, i) => (
-              <span
-                key={i}
-                className="text-2xl text-blue-500 transition-all duration-500 transform hover:scale-125"
-                style={{
-                  transitionDelay: isVisible ? `${100 + i * 50}ms` : "0ms",
-                }}
-              >
-                ★
-              </span>
-            ))}
-          </div>
+  totalReviews: number | null;
+  mapsUrl: string;
+}) => (
+  <div
+    className={`bg-linear-to-br from-blue-50 to-blue-100 rounded-2xl p-8 sm:p-12 border-2 border-blue-300 mb-12 transition-all duration-1000 ease-out ${
+      isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+    }`}
+  >
+    <div className="flex flex-col md:flex-row items-center gap-8">
+      <div className="text-center">
+        <div className="text-6xl font-bold text-blue-600 mb-2 transition-all duration-700">
+          {rating.toFixed(1)}
+        </div>
+        <div className="flex justify-center mb-3">
+          <Stars rating={rating} className="text-2xl" />
+        </div>
+        {totalReviews !== null && (
           <div className="text-sm text-gray-600 font-light">
-            Based on {totalReviews} reviews
+            Based on {totalReviews.toLocaleString("en-NG")} Google reviews
           </div>
-        </div>
-        <div className="flex-1">
-          <h3 className="text-2xl font-semibold text-gray-900 mb-3 cormorant">
-            Trusted by Guests
-          </h3>
-          <p className="text-gray-700 font-light leading-relaxed">
-            Our guests consistently praise our attention to detail, world-class
-            service, and unforgettable experiences. Join hundreds of satisfied
-            visitors who've made Ziba Beach Resort their destination of choice.
-          </p>
-        </div>
+        )}
+      </div>
+      <div className="flex-1">
+        <h3 className="text-2xl font-semibold text-gray-900 mb-3 cormorant">
+          Rated by Real Guests on Google
+        </h3>
+        <p className="text-gray-700 font-light leading-relaxed mb-4">
+          These ratings and reviews come straight from Google and update
+          automatically.
+        </p>
+        <a
+          href={mapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-blue-700 font-medium hover:underline"
+        >
+          <GoogleLogo className="w-4 h-4" />
+          Read all reviews on Google
+        </a>
       </div>
     </div>
-  );
-};
+  </div>
+);
 
 const ReviewCard = ({
   review,
   index,
   isVisible,
 }: {
-  review: Review;
+  review: GoogleReview;
   index: number;
   isVisible: boolean;
 }) => {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = review.text.length > 280;
+
   return (
     <div
       className={`shrink-0 w-full sm:w-1/2 lg:w-1/3 transition-all duration-700 ${
@@ -195,133 +109,122 @@ const ReviewCard = ({
         transitionDelay: isVisible ? `${200 + index * 100}ms` : "0ms",
       }}
     >
-      <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 hover:shadow-2xl hover:border-blue-400 transition-all duration-500 transform hover:scale-105 h-full flex flex-col">
-        {/* Header with name and rating */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <h4 className="font-semibold text-gray-900">{review.name}</h4>
-              {review.source === "google" && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 rounded-full text-xs font-medium text-blue-600">
-                  <svg
-                    className="w-3 h-3"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.851-2.84z" />
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                  </svg>
-                  Google
-                </span>
-              )}
+      <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8 hover:shadow-2xl hover:border-blue-400 transition-all duration-500 h-full flex flex-col">
+        {/* Author and rating */}
+        <div className="flex items-start gap-3 mb-4">
+          {review.authorPhotoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={review.authorPhotoUrl}
+              alt=""
+              width={40}
+              height={40}
+              referrerPolicy="no-referrer"
+              className="w-10 h-10 rounded-full object-cover shrink-0"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-semibold shrink-0">
+              {review.authorName.charAt(0)}
             </div>
+          )}
+          <div className="flex-1 min-w-0">
+            {review.authorUrl ? (
+              <a
+                href={review.authorUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-gray-900 hover:underline block truncate"
+              >
+                {review.authorName}
+              </a>
+            ) : (
+              <h4 className="font-semibold text-gray-900 truncate">{review.authorName}</h4>
+            )}
             <div className="flex items-center gap-2">
-              <div className="flex gap-0.5">
-                {[...Array(review.rating)].map((_, i) => (
-                  <span key={i} className="text-blue-500 text-sm">
-                    ★
-                  </span>
-                ))}
-              </div>
+              <Stars rating={review.rating} className="text-sm" />
               <span className="text-xs text-gray-500 font-light">
-                {review.date}
+                {review.relativeTime}
               </span>
             </div>
-            <p className="text-xs text-gray-500 font-light mt-2 uppercase tracking-wide">
-              {review.category}
-            </p>
           </div>
-          {review.profileImage && (
-            <div className="text-3xl ml-4">{review.profileImage}</div>
-          )}
         </div>
 
-        {/* Review text */}
-        <blockquote className="text-gray-700 font-light leading-relaxed flex-1 mb-4 text-sm">
-          "{review.text}"
+        {/* Review text (unaltered; long reviews collapse) */}
+        <blockquote
+          className={`text-gray-700 font-light leading-relaxed flex-1 mb-4 text-sm whitespace-pre-line ${
+            !expanded && isLong ? "line-clamp-6" : ""
+          }`}
+        >
+          {review.text}
         </blockquote>
-
-        {/* Footer badge */}
-        <div className="pt-4 border-t border-gray-100">
-          <span
-            className={`inline-block text-xs font-medium px-3 py-1 rounded-full ${
-              review.source === "google"
-                ? "bg-blue-100 text-blue-700"
-                : "bg-green-100 text-green-700"
-            }`}
+        {isLong && (
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="text-left text-sm text-blue-700 hover:underline mb-4"
           >
-            {review.source === "google"
-              ? "✓ Verified on Google"
-              : "✓ Verified Guest"}
-          </span>
+            {expanded ? "Show less" : "Read more"}
+          </button>
+        )}
+
+        {/* Source attribution */}
+        <div className="pt-4 border-t border-gray-100">
+          <a
+            href={review.reviewUrl || GOOGLE_REVIEWS_SEARCH_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200"
+          >
+            <GoogleLogo />
+            Posted on Google
+          </a>
         </div>
       </div>
     </div>
   );
 };
 
-const GuestTestimonialsCarousel = ({ isVisible }: { isVisible: boolean }) => {
+const ReviewsCarousel = ({
+  reviews,
+  isVisible,
+}: {
+  reviews: GoogleReview[];
+  isVisible: boolean;
+}) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
   const [isHovering, setIsHovering] = useState(false);
   const animationRef = useRef<number | null>(null);
+  // Only auto-scroll (with a duplicated set) when there are enough cards to
+  // overflow the row on desktop.
+  const autoScroll = reviews.length > 3;
 
-  const checkScroll = useCallback(() => {
-    if (scrollRef.current) {
-      setCanScrollLeft(true);
-      setCanScrollRight(true);
-    }
+  const scroll = useCallback((direction: "left" | "right") => {
+    scrollRef.current?.scrollBy({
+      left: direction === "left" ? -400 : 400,
+      behavior: "smooth",
+    });
   }, []);
 
-  const scroll = useCallback(
-    (direction: "left" | "right") => {
-      if (scrollRef.current) {
-        const scrollAmount = 400;
-        scrollRef.current.scrollBy({
-          left: direction === "left" ? -scrollAmount : scrollAmount,
-          behavior: "smooth",
-        });
-        setTimeout(checkScroll, 100);
-      }
-    },
-    [checkScroll],
-  );
-
-  // Auto-scroll effect
   useEffect(() => {
+    if (!autoScroll) return;
     const animate = () => {
-      if (!scrollRef.current || isHovering) {
-        animationRef.current = requestAnimationFrame(animate);
-        return;
+      if (scrollRef.current && !isHovering) {
+        const oneSetWidth = scrollRef.current.scrollWidth / 2;
+        scrollRef.current.scrollLeft += 1.5;
+        if (scrollRef.current.scrollLeft >= oneSetWidth - 10) {
+          scrollRef.current.scrollLeft = 0;
+        }
       }
-
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      const oneSetWidth = scrollWidth / 2;
-
-      scrollRef.current.scrollLeft += 1.5;
-
-      if (scrollRef.current.scrollLeft >= oneSetWidth - 10) {
-        scrollRef.current.scrollLeft = 0;
-      }
-
-      checkScroll();
       animationRef.current = requestAnimationFrame(animate);
     };
 
     animationRef.current = requestAnimationFrame(animate);
-
     return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
-  }, [isHovering, checkScroll]);
+  }, [isHovering, autoScroll]);
 
-  // Duplicate reviews for seamless infinite scroll
-  const scrollGuestReviews = [...guestReviews, ...guestReviews];
+  const items = autoScroll ? [...reviews, ...reviews] : reviews;
 
   return (
     <div
@@ -331,7 +234,6 @@ const GuestTestimonialsCarousel = ({ isVisible }: { isVisible: boolean }) => {
     >
       <div
         ref={scrollRef}
-        onScroll={checkScroll}
         className="flex gap-6 overflow-x-auto scroll-smooth"
         style={{
           scrollBehavior: "smooth",
@@ -339,33 +241,34 @@ const GuestTestimonialsCarousel = ({ isVisible }: { isVisible: boolean }) => {
           msOverflowStyle: "none",
         }}
       >
-        {scrollGuestReviews.map((review, index) => (
+        {items.map((review, index) => (
           <ReviewCard
-            key={`${review.name}-${index}`}
+            key={`${review.authorName}-${index}`}
             review={review}
-            index={index % guestReviews.length}
+            index={index % reviews.length}
             isVisible={isVisible}
           />
         ))}
       </div>
 
-      {/* Left Arrow */}
-      <button
-        onClick={() => scroll("left")}
-        disabled={!canScrollLeft}
-        className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-      >
-        <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
-      </button>
-
-      {/* Right Arrow */}
-      <button
-        onClick={() => scroll("right")}
-        disabled={!canScrollRight}
-        className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-      >
-        <ChevronRight size={20} className="sm:w-6 sm:h-6" />
-      </button>
+      {autoScroll && (
+        <>
+          <button
+            onClick={() => scroll("left")}
+            aria-label="Previous reviews"
+            className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all"
+          >
+            <FontAwesomeIcon icon={faChevronLeft} className="h-5 w-5 sm:w-6 sm:h-6" />
+          </button>
+          <button
+            onClick={() => scroll("right")}
+            aria-label="Next reviews"
+            className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all"
+          >
+            <FontAwesomeIcon icon={faChevronRight} className="h-5 w-5 sm:w-6 sm:h-6" />
+          </button>
+        </>
+      )}
     </div>
   );
 };
@@ -374,6 +277,7 @@ export default function Reviews() {
   const headingFont = { fontFamily: "Cormorant Garamond, serif" };
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
+  const { data, loading } = useGoogleReviews();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -392,6 +296,10 @@ export default function Reviews() {
 
     return () => observer.disconnect();
   }, []);
+
+  const mapsUrl = data?.mapsUrl || GOOGLE_REVIEWS_SEARCH_URL;
+  const writeReviewUrl = data?.writeReviewUrl || GOOGLE_REVIEWS_SEARCH_URL;
+  const reviews = data?.reviews || [];
 
   return (
     <section
@@ -414,22 +322,59 @@ export default function Reviews() {
           </h2>
           <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
           <p className="text-lg text-gray-600 font-light leading-relaxed text-center">
-            Read authentic reviews from travelers who've experienced the Ziba
-            Beach Resort difference. Their stories inspire us to keep delivering
-            excellence.
+            Real reviews from guests who&apos;ve stayed with us, as posted on
+            Google.
           </p>
         </div>
 
-        {/* Average Rating Card */}
-        <AverageRating isVisible={isVisible} />
+        {/* Average Rating Card (live from Google) */}
+        {data?.rating != null && (
+          <AverageRating
+            isVisible={isVisible}
+            rating={data.rating}
+            totalReviews={data.totalReviews}
+            mapsUrl={mapsUrl}
+          />
+        )}
 
-        {/* Guest Testimonials Carousel */}
+        {/* Reviews */}
         <div className="mb-16">
           <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
             <span className="text-2xl">💬</span>
-            Guest Testimonials
+            Recent Google Reviews
           </h3>
-          <GuestTestimonialsCarousel isVisible={isVisible} />
+          {loading ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" aria-busy="true">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="h-64 rounded-xl bg-white border border-gray-200 animate-pulse" />
+              ))}
+            </div>
+          ) : reviews.length > 0 ? (
+            <ReviewsCarousel reviews={reviews} isVisible={isVisible} />
+          ) : (
+            <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
+              <p className="text-gray-700 font-light mb-4">
+                See what guests are saying about Ziba Beach Resort on Google.
+              </p>
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-blue-700 font-medium hover:underline"
+              >
+                <GoogleLogo className="w-4 h-4" />
+                Read our reviews on Google
+              </a>
+            </div>
+          )}
+          {reviews.length > 0 && (
+            <p className="mt-6 text-xs text-gray-500 flex items-center gap-1">
+              <GoogleLogo /> Reviews provided by Google.{" "}
+              <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="underline">
+                See all
+              </a>
+            </p>
+          )}
         </div>
 
         {/* CTA Section */}
@@ -440,63 +385,60 @@ export default function Reviews() {
               Share Your Story
             </h3>
             <p className="font-light leading-relaxed mb-8">
-              Your feedback helps us improve and guides future guests. We'd love
+              Your feedback helps us improve and guides future guests. We&apos;d love
               to hear about your Ziba experience!
             </p>
             <a
-              href="https://www.google.com/search?q=Ziba+Beach+Resort"
+              href={writeReviewUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 bg-white text-blue-900 font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-lg hover:bg-blue-50 transition w-full sm:w-fit whitespace-nowrap"
             >
-              <svg
-                className="w-5 h-5 shrink-0"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.851-2.84z" />
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-              </svg>
+              <GoogleLogo className="w-5 h-5 shrink-0" />
               Leave a Google Review
             </a>
           </div>
 
-          {/* Stats/Info CTA */}
+          {/* Highlights CTA: only facts we can stand behind */}
           <div className="bg-linear-to-br from-blue-50 to-blue-100 border-2 border-blue-300 rounded-2xl p-8 sm:p-12 flex flex-col justify-center">
             <h3 className="text-3xl font-bold text-gray-900 mb-8 cormorant">
               Why Choose Us
             </h3>
             <ul className="space-y-4">
+              {data?.rating != null && (
+                <li className="flex gap-3 items-start">
+                  <span className="text-2xl">⭐</span>
+                  <div>
+                    <p className="font-semibold text-gray-900">
+                      {data.rating.toFixed(1)} on Google
+                      {data.totalReviews !== null &&
+                        ` · ${data.totalReviews.toLocaleString("en-NG")} reviews`}
+                    </p>
+                    <p className="text-sm text-gray-600 font-light">
+                      Live rating from real guests
+                    </p>
+                  </div>
+                </li>
+              )}
               <li className="flex gap-3 items-start">
-                <span className="text-2xl">⭐</span>
+                <span className="text-2xl">🌊</span>
                 <div>
-                  <p className="font-semibold text-gray-900">500+ Reviews</p>
+                  <p className="font-semibold text-gray-900">
+                    Overwater Rooms & Suites
+                  </p>
                   <p className="text-sm text-gray-600 font-light">
-                    Across Google and guest platforms
+                    Step straight from your room into our signature overwater pool
                   </p>
                 </div>
               </li>
               <li className="flex gap-3 items-start">
-                <span className="text-2xl">🏆</span>
+                <span className="text-2xl">🏖️</span>
                 <div>
                   <p className="font-semibold text-gray-900">
-                    Consistently 5-Star Rated
+                    A Beach Escape in Lagos
                   </p>
                   <p className="text-sm text-gray-600 font-light">
-                    Excellence in service and facilities
-                  </p>
-                </div>
-              </li>
-              <li className="flex gap-3 items-start">
-                <span className="text-2xl">😊</span>
-                <div>
-                  <p className="font-semibold text-gray-900">
-                    99% Guest Satisfaction
-                  </p>
-                  <p className="text-sm text-gray-600 font-light">
-                    Creating memories that last forever
+                    No visa stress or long flights — just Okun Ajah
                   </p>
                 </div>
               </li>
@@ -510,11 +452,11 @@ export default function Reviews() {
             Ready to Create Your Ziba Story?
           </h3>
           <p className="text-sm sm:text-base text-blue-100 font-light mb-4 sm:mb-6 max-w-2xl mx-auto">
-            Book your getaway today and join hundreds of satisfied guests who've
-            fallen in love with Ziba Beach Resort.
+            Book your getaway today and see why guests keep coming back to
+            Ziba Beach Resort.
           </p>
           <a
-            href="https://live.ipms247.com/booking/book-rooms-zibaresort"
+            href={IPMS_BOOKING_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block bg-white text-blue-900 font-semibold px-6 sm:px-8 py-2 sm:py-3 rounded-lg hover:bg-blue-50 transition text-sm sm:text-base"

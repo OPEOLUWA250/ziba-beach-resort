@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { supabase } from "@/lib/supabase/client";
+import { supabaseServer as supabase } from "@/lib/supabase/server";
 
 const SALT_ROUNDS = 10;
 
@@ -18,7 +18,7 @@ export async function registerUser(input: RegisterInput) {
     const hashedPassword = await bcrypt.hash(input.password, SALT_ROUNDS);
     const userId = `user-${Date.now()}`;
 
-    const { data, error } = await supabase.from("users").insert({
+    const { error } = await supabase.from("users").insert({
       id: userId,
       email: input.email,
       firstName: input.firstName || "",

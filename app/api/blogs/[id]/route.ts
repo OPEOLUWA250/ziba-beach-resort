@@ -1,3 +1,5 @@
+import type { NextRequest } from "next/server";
+import { requireAdmin } from "@/lib/server/require-admin";
 import { getBlogBySlug, updateBlog, deleteBlog } from "@/lib/services/blogs";
 import { handleSupabaseError } from "@/lib/supabase/utils";
 
@@ -39,9 +41,12 @@ export async function GET(
 }
 
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const { id } = await params;
     const body = await request.json();
@@ -66,9 +71,12 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const { id } = await params;
     console.log(`[DELETE /api/blogs] Attempting to delete: ${id}`);

@@ -1,7 +1,14 @@
 "use client";
 
-import { Facebook, Instagram, Twitter } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFacebookF,
+  faInstagram,
+  faXTwitter,
+} from "@fortawesome/free-brands-svg-icons";
 import Image from "next/image";
+import Link from "next/link";
+import { ROOM_CATALOG, ROOM_IDS } from "@/lib/room-catalog";
 import { useEffect, useRef, useState } from "react";
 
 export default function Footer() {
@@ -52,7 +59,7 @@ export default function Footer() {
             }`}
           >
             <div className="mb-6 flex justify-center md:justify-start">
-              <a href="/" className="hover:opacity-80 transition-opacity">
+              <Link href="/" className="hover:opacity-80 transition-opacity">
                 <Image
                   src="/ZIBA-LOGO-WHITE.png"
                   alt="Ziba Beach Resort"
@@ -63,10 +70,10 @@ export default function Footer() {
                     animation: isVisible ? "none" : "none",
                   }}
                 />
-              </a>
+              </Link>
             </div>
             <p className="text-sm font-light text-blue-100 leading-relaxed">
-              Experience luxury redefined at Nigeria's premier beachfront
+              Experience luxury redefined at Nigeria&apos;s premier beachfront
               destination, where world-class hospitality meets pristine natural
               beauty.
             </p>
@@ -74,21 +81,21 @@ export default function Footer() {
             <div className="flex gap-4 pt-6 justify-center md:justify-start">
               {[
                 {
-                  Icon: Facebook,
+                  icon: faFacebookF,
                   delay: 0,
                   href: "https://web.facebook.com/p/Ziba-Beach-Resort-100082712688250/?_rdc=1&_rdr#",
                 },
                 {
-                  Icon: Instagram,
+                  icon: faInstagram,
                   delay: 50,
                   href: "https://www.instagram.com/zibabeachresorts/",
                 },
                 {
-                  Icon: Twitter,
+                  icon: faXTwitter,
                   delay: 100,
                   href: "https://x.com/zibabeachresort",
                 },
-              ].map(({ Icon, delay, href }, index) => (
+              ].map(({ icon, delay, href }, index) => (
                 <a
                   key={index}
                   href={href}
@@ -102,7 +109,7 @@ export default function Footer() {
                     opacity: isVisible ? 1 : 0,
                   }}
                 >
-                  <Icon size={20} />
+                  <FontAwesomeIcon icon={icon} className="h-5 w-5" />
                   <span className="absolute inset-0 rounded-full bg-blue-300 opacity-0 group-hover:opacity-20 blur-lg transition-opacity duration-300 -z-10 scale-0 group-hover:scale-100" />
                 </a>
               ))}
@@ -125,38 +132,10 @@ export default function Footer() {
               Our Rooms
             </h4>
             <ul className="space-y-3 text-sm font-light text-blue-100">
-              {[
-                { href: "/bookings", label: "Beach Facing Room" },
-                {
-                  href: "/bookings",
-                  label: "Beach Facing Family Room",
-                },
-                {
-                  href: "/bookings",
-                  label: "Beach Facing Family Room (Full View)",
-                },
-                {
-                  href: "/bookings",
-                  label: "Beach Facing Connecting Room",
-                },
-                {
-                  href: "/bookings",
-                  label: "Beach Facing Suite",
-                },
-                {
-                  href: "/bookings",
-                  label: "Two Bedroom Apartment",
-                },
-                {
-                  href: "/bookings",
-                  label: "Overwater Terrace Room",
-                },
-                {
-                  href: "/bookings",
-                  label: "Overwater Terrace Suite",
-                },
-                { href: "/bookings", label: "Ziba Black" },
-              ].map((room, index) => (
+              {ROOM_IDS.map((id) => ({
+                href: `/bookings/rooms/${id}`,
+                label: ROOM_CATALOG[id].name,
+              })).map((room, index) => (
                 <li
                   key={index}
                   style={getListItemClass(index)}

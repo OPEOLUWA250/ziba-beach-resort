@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search, Filter, Eye, Edit, Trash2, X } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faMagnifyingGlass,
+  faFilter,
+  faEye,
+  faPenToSquare,
+  faTrashCan,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   getAllBookings,
   getAllDayPassBookings,
@@ -9,7 +17,8 @@ import {
   updateDayPassBookingStatus,
   deleteBooking,
   deleteDayPassBooking,
-} from "@/lib/services/booking";
+  deleteBookings,
+} from "@/lib/services/admin-bookings";
 import { getRoomById, getAllRooms } from "@/lib/services/rooms";
 
 interface Booking {
@@ -178,7 +187,7 @@ const RoomBookingModal = ({
             onClick={onClose}
             className="p-2 hover:bg-gray-700 rounded-lg transition"
           >
-            <X size={24} className="text-gray-400" />
+            <FontAwesomeIcon icon={faXmark} className="h-6 w-6 text-gray-400" />
           </button>
         </div>
 
@@ -422,7 +431,7 @@ const DayPassBookingModal = ({
             onClick={onClose}
             className="p-2 hover:bg-gray-700 rounded-lg transition"
           >
-            <X size={24} className="text-gray-400" />
+            <FontAwesomeIcon icon={faXmark} className="h-6 w-6 text-gray-400" />
           </button>
         </div>
 
@@ -615,7 +624,7 @@ const DeleteConfirmationModal = ({
       <div className="bg-gray-800 rounded-2xl max-w-md w-full border border-gray-700">
         <div className="p-6 space-y-4">
           <div className="flex items-center gap-3">
-            <Trash2 size={24} className="text-red-400" />
+            <FontAwesomeIcon icon={faTrashCan} className="h-6 w-6 text-red-400" />
             <h2 className="text-xl font-semibold text-white cormorant">
               Delete Booking
             </h2>
@@ -1016,25 +1025,17 @@ export default function BookingsManagement() {
 
     setIsDeleting(true);
     try {
-      const idsToDelete = [...selectedRoomBookings];
-      const results = await Promise.allSettled(
-        idsToDelete.map((id) => deleteBooking(id)),
+      const successfulIds = await deleteBookings(
+        "room",
+        selectedRoomBookings.map(String),
       );
-
-      const successfulIds = results
-        .map((result, index) =>
-          result.status === "fulfilled" && result.value
-            ? idsToDelete[index]
-            : null,
-        )
-        .filter((id): id is string => Boolean(id));
 
       if (successfulIds.length > 0) {
         setRoomBookings((prev) =>
-          prev.filter((booking) => !successfulIds.includes(booking.id)),
+          prev.filter((booking) => !successfulIds.includes(String(booking.id))),
         );
         setSelectedRoomBookings((prev) =>
-          prev.filter((id) => !successfulIds.includes(id)),
+          prev.filter((id) => !successfulIds.includes(String(id))),
         );
       }
     } catch (err) {
@@ -1055,25 +1056,17 @@ export default function BookingsManagement() {
 
     setIsDeleting(true);
     try {
-      const idsToDelete = [...selectedDayPassBookings];
-      const results = await Promise.allSettled(
-        idsToDelete.map((id) => deleteDayPassBooking(id)),
+      const successfulIds = await deleteBookings(
+        "day-pass",
+        selectedDayPassBookings.map(String),
       );
-
-      const successfulIds = results
-        .map((result, index) =>
-          result.status === "fulfilled" && result.value
-            ? idsToDelete[index]
-            : null,
-        )
-        .filter((id): id is string => Boolean(id));
 
       if (successfulIds.length > 0) {
         setDayPassBookings((prev) =>
-          prev.filter((booking) => !successfulIds.includes(booking.id)),
+          prev.filter((booking) => !successfulIds.includes(String(booking.id))),
         );
         setSelectedDayPassBookings((prev) =>
-          prev.filter((id) => !successfulIds.includes(id)),
+          prev.filter((id) => !successfulIds.includes(String(id))),
         );
       }
     } catch (err) {
@@ -1120,7 +1113,6 @@ export default function BookingsManagement() {
       const nights = Math.ceil(
         (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24),
       );
-      const totalAmount = roomForm.pricePerNight * nights;
 
       // Submit to API
       const response = await fetch("/api/bookings/create", {
@@ -1297,7 +1289,7 @@ export default function BookingsManagement() {
             setNewBookingModalOpen(true);
             setNewBookingType(null);
           }}
-          className="bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg"
+          className="bg-blue-900 hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg"
         >
           + New Booking
         </button>
@@ -1343,9 +1335,9 @@ export default function BookingsManagement() {
           <div className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1 relative">
-                <Search
-                  size={20}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+                <FontAwesomeIcon
+                  icon={faMagnifyingGlass}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 h-5 w-5"
                 />
                 <input
                   type="text"
@@ -1369,9 +1361,9 @@ export default function BookingsManagement() {
                   <option value="COMPLETED">Completed</option>
                   <option value="CANCELLED">Cancelled</option>
                 </select>
-                <Filter
-                  size={18}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+                <FontAwesomeIcon
+                  icon={faFilter}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none h-4.5 w-4.5"
                 />
               </div>
             </div>
@@ -1529,14 +1521,14 @@ export default function BookingsManagement() {
                               className="p-2 hover:bg-blue-900/30 rounded-lg transition text-blue-400 hover:text-blue-300"
                               title="View booking details"
                             >
-                              <Eye size={18} />
+                              <FontAwesomeIcon icon={faEye} className="h-4.5 w-4.5" />
                             </button>
                             <button
                               onClick={() => handleOpenRoomModal(booking)}
                               className="p-2 hover:bg-blue-900/30 rounded-lg transition text-gray-400 hover:text-gray-300"
                               title="Edit booking"
                             >
-                              <Edit size={18} />
+                              <FontAwesomeIcon icon={faPenToSquare} className="h-4.5 w-4.5" />
                             </button>
                             <button
                               onClick={() => {
@@ -1547,7 +1539,7 @@ export default function BookingsManagement() {
                               className="p-2 hover:bg-red-900/30 rounded-lg transition text-red-400 hover:text-red-300"
                               title="Delete booking"
                             >
-                              <Trash2 size={18} />
+                              <FontAwesomeIcon icon={faTrashCan} className="h-4.5 w-4.5" />
                             </button>
                           </div>
                         </td>
@@ -1593,9 +1585,9 @@ export default function BookingsManagement() {
           <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1 relative">
-                <Search
-                  size={20}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+                <FontAwesomeIcon
+                  icon={faMagnifyingGlass}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 h-5 w-5"
                 />
                 <input
                   type="text"
@@ -1616,9 +1608,9 @@ export default function BookingsManagement() {
                   <option value="PENDING">Pending</option>
                   <option value="COMPLETED">Completed</option>
                 </select>
-                <Filter
-                  size={18}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+                <FontAwesomeIcon
+                  icon={faFilter}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none h-4.5 w-4.5"
                 />
               </div>
             </div>
@@ -1769,7 +1761,7 @@ export default function BookingsManagement() {
                               className="p-2 hover:bg-blue-900/30 rounded-lg transition text-blue-400 hover:text-blue-300"
                               title="View booking details"
                             >
-                              <Eye size={18} />
+                              <FontAwesomeIcon icon={faEye} className="h-4.5 w-4.5" />
                             </button>
                             <button
                               onClick={(e) => {
@@ -1779,7 +1771,7 @@ export default function BookingsManagement() {
                               className="p-2 hover:bg-blue-900/30 rounded-lg transition text-gray-400 hover:text-gray-300"
                               title="Edit booking"
                             >
-                              <Edit size={18} />
+                              <FontAwesomeIcon icon={faPenToSquare} className="h-4.5 w-4.5" />
                             </button>
                             <button
                               onClick={(e) => {
@@ -1791,7 +1783,7 @@ export default function BookingsManagement() {
                               className="p-2 hover:bg-red-900/30 rounded-lg transition text-red-400 hover:text-red-300"
                               title="Delete booking"
                             >
-                              <Trash2 size={18} />
+                              <FontAwesomeIcon icon={faTrashCan} className="h-4.5 w-4.5" />
                             </button>
                           </div>
                         </td>
@@ -1838,7 +1830,7 @@ export default function BookingsManagement() {
                 }}
                 className="p-2 hover:bg-gray-700 rounded-lg transition"
               >
-                <X size={24} className="text-gray-400" />
+                <FontAwesomeIcon icon={faXmark} className="h-6 w-6 text-gray-400" />
               </button>
             </div>
 
@@ -1903,7 +1895,7 @@ export default function BookingsManagement() {
                 }}
                 className="p-2 hover:bg-gray-700 rounded-lg transition"
               >
-                <X size={24} className="text-gray-400" />
+                <FontAwesomeIcon icon={faXmark} className="h-6 w-6 text-gray-400" />
               </button>
             </div>
 
@@ -2108,7 +2100,7 @@ export default function BookingsManagement() {
                 }}
                 className="p-2 hover:bg-gray-700 rounded-lg transition"
               >
-                <X size={24} className="text-gray-400" />
+                <FontAwesomeIcon icon={faXmark} className="h-6 w-6 text-gray-400" />
               </button>
             </div>
 

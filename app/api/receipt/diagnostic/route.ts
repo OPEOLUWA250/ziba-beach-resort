@@ -1,3 +1,5 @@
+import type { NextRequest } from "next/server";
+import { requireAdmin } from "@/lib/server/require-admin";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
@@ -6,7 +8,10 @@ export const dynamic = "force-dynamic";
 /**
  * Diagnostic endpoint to test database connectivity and check for specific booking
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   const diagnostics = {
     envCheck: {} as any,
     connectionTest: {} as any,

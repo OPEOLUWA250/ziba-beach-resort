@@ -1,8 +1,8 @@
 "use client";
 
-import { X, CreditCard } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import { faXmark, faCreditCard } from "@fortawesome/free-solid-svg-icons";
 
 interface PaymentMethodModalProps {
   isOpen: boolean;
@@ -26,7 +26,6 @@ export default function PaymentMethodModal({
   totalAmount,
   checkInDate,
   checkOutDate,
-  guestName,
   isProcessing = false,
 }: PaymentMethodModalProps) {
   if (!isOpen) return null;
@@ -40,14 +39,14 @@ export default function PaymentMethodModal({
             <div>
               <h2 className="text-2xl font-bold">Choose Payment Method</h2>
               <p className="text-blue-100 text-sm mt-1">
-                Select how you'd like to proceed
+                Select how you&apos;d like to proceed
               </p>
             </div>
             <button
               onClick={onClose}
               className="p-1 hover:bg-blue-700 rounded-lg transition"
             >
-              <X className="w-5 h-5" />
+              <FontAwesomeIcon icon={faXmark} className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -74,7 +73,7 @@ export default function PaymentMethodModal({
             className="w-full border-2 border-blue-600 bg-white text-blue-900 py-4 rounded-lg hover:bg-blue-50 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-4 px-4 group"
           >
             <div className="bg-blue-100 p-3 rounded-lg group-hover:bg-blue-200 transition">
-              <CreditCard className="w-6 h-6 text-blue-900" />
+              <FontAwesomeIcon icon={faCreditCard} className="w-6 h-6 text-blue-900" />
             </div>
             <div className="text-left flex-1">
               <p className="font-bold">Pay with Paystack</p>

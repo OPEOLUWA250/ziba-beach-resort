@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { X } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { getActivePopups, PopupData } from "@/lib/services/popups";
 
 interface Popup {
@@ -108,7 +109,7 @@ export function PopupCarousel() {
             onClick={() => setIsVisible(false)}
             className="flex items-center justify-center gap-1 mt-3 sm:mt-4 text-blue-900/60 hover:text-blue-900 text-xs sm:text-sm transition hover:underline"
           >
-            <X size={16} />
+            <FontAwesomeIcon icon={faXmark} className="h-4 w-4" />
             Close
           </button>
         </div>

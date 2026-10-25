@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimitByIp, tooManyRequests } from "@/lib/security/rate-limit";
 import { supabaseServer } from "@/lib/supabase/server";
 import {
   generateSessionId,
@@ -21,6 +22,9 @@ function safeCompare(value: string, expected: string) {
 }
 
 export async function POST(request: NextRequest) {
+  const rate = await rateLimitByIp(request.headers, "api:admin:recover", 5, 15 * 60_000);
+  if (!rate.allowed) return tooManyRequests(rate);
+
   try {
     const body = await request.json();
     const {

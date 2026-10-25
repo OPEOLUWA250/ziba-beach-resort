@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AlertCircle, Trash2, Edit2, Plus, X } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCircleExclamation,
+  faTrashCan,
+  faPenToSquare,
+  faPlus,
+} from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 
 interface MenuItem {
@@ -187,7 +193,10 @@ export default function AdminMenusPage() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
+            <FontAwesomeIcon
+              icon={faCircleExclamation}
+              className="w-5 h-5 text-red-600 mt-0.5 shrink-0"
+            />
             <p className="text-red-700">{error}</p>
           </div>
         )}
@@ -318,14 +327,14 @@ export default function AdminMenusPage() {
                           className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="Edit"
                         >
-                          <Edit2 className="w-4 h-4" />
+                          <FontAwesomeIcon icon={faPenToSquare} className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteItem(category.id, item.id)}
                           className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title="Delete"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <FontAwesomeIcon icon={faTrashCan} className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -412,7 +421,7 @@ export default function AdminMenusPage() {
                   onClick={() => setShowAddItem(category.id)}
                   className="w-full p-6 text-center text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors flex items-center justify-center gap-2 border-t border-gray-200"
                 >
-                  <Plus className="w-4 h-4" />
+                  <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
                   Add Item to {category.name}
                 </button>
               )}

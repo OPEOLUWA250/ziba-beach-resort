@@ -36,7 +36,7 @@ export async function uploadImage(
     const filename = `${timestamp}-${random}-${file.name}`;
 
     // Upload to Supabase Storage
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from(bucket)
       .upload(`blog/${filename}`, file, {
         cacheControl: "3600",

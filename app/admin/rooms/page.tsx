@@ -1,20 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  AlertCircle,
-  Check,
-  Clock,
-  Wrench,
-  Lock,
-  X,
-  Save,
-  Loader,
-} from "lucide-react";
+  faPlus,
+  faPenToSquare,
+  faTrashCan,
+  faCheck,
+  faLock,
+  faXmark,
+  faSpinner,
+} from "@fortawesome/free-solid-svg-icons";
 
 interface Room {
   id: string;
@@ -27,23 +23,6 @@ interface Room {
   amenities?: string[];
   images?: string[];
 }
-
-const RoomStatusIcon = ({ status }: { status: string }) => {
-  switch (status) {
-    case "booked":
-      return <Clock size={20} className="text-red-400" />;
-    case "available":
-      return <Check size={20} className="text-green-400" />;
-    case "maintenance":
-      return <Wrench size={20} className="text-yellow-400" />;
-    case "blocked":
-      return <Lock size={20} className="text-gray-400" />;
-    case "fully-booked":
-      return <Lock size={20} className="text-gray-500" />;
-    default:
-      return <AlertCircle size={20} className="text-gray-400" />;
-  }
-};
 
 const RoomCard = ({
   room,
@@ -142,7 +121,7 @@ const RoomCard = ({
                 ₦{displayPrice.toLocaleString()}
               </p>
               <span className="text-blue-600 opacity-0 group-hover:opacity-100 transition text-sm font-semibold flex items-center gap-1">
-                <Edit size={16} />
+                <FontAwesomeIcon icon={faPenToSquare} className="h-4 w-4" />
                 Click to Edit
               </span>
             </div>
@@ -163,12 +142,12 @@ const RoomCard = ({
           >
             {isFullyBooked ? (
               <>
-                <Lock size={16} />
+                <FontAwesomeIcon icon={faLock} className="h-4 w-4" />
                 <span>Booked</span>
               </>
             ) : (
               <>
-                <Check size={16} />
+                <FontAwesomeIcon icon={faCheck} className="h-4 w-4" />
                 <span>Available</span>
               </>
             )}
@@ -178,7 +157,7 @@ const RoomCard = ({
             disabled={isUpdating}
             className="w-full py-2 px-3 rounded-lg font-semibold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white"
           >
-            <Trash2 size={16} />
+            <FontAwesomeIcon icon={faTrashCan} className="h-4 w-4" />
             <span>Delete</span>
           </button>
         </div>
@@ -194,7 +173,7 @@ const RoomCard = ({
                 onClick={() => handleCancelEdit()}
                 className="text-white hover:bg-white/20 p-1 rounded transition"
               >
-                <X size={20} />
+                <FontAwesomeIcon icon={faXmark} className="h-5 w-5" />
               </button>
             </div>
             <div className="p-6 space-y-6">
@@ -229,11 +208,11 @@ const RoomCard = ({
                 >
                   {isUpdating ? (
                     <>
-                      <Loader size={18} className="animate-spin" />
+                      <FontAwesomeIcon icon={faSpinner} className="h-4.5 w-4.5 animate-spin" />
                     </>
                   ) : (
                     <>
-                      <Check size={18} />
+                      <FontAwesomeIcon icon={faCheck} className="h-4.5 w-4.5" />
                       Save
                     </>
                   )}
@@ -243,7 +222,7 @@ const RoomCard = ({
                   disabled={isUpdating}
                   className="w-full py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg transition disabled:opacity-50 font-semibold flex items-center justify-center gap-2"
                 >
-                  <X size={18} />
+                  <FontAwesomeIcon icon={faXmark} className="h-4.5 w-4.5" />
                   Cancel
                 </button>
               </div>
@@ -262,7 +241,7 @@ const RoomCard = ({
                 onClick={() => setShowDeleteModal(false)}
                 className="text-white hover:bg-white/20 p-1 rounded transition"
               >
-                <X size={20} />
+                <FontAwesomeIcon icon={faXmark} className="h-5 w-5" />
               </button>
             </div>
             <div className="p-6 space-y-6">
@@ -285,10 +264,10 @@ const RoomCard = ({
                   className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition disabled:opacity-50 font-semibold flex items-center justify-center gap-2"
                 >
                   {isUpdating ? (
-                    <Loader size={18} className="animate-spin" />
+                    <FontAwesomeIcon icon={faSpinner} className="h-4.5 w-4.5 animate-spin" />
                   ) : (
                     <>
-                      <Trash2 size={18} />
+                      <FontAwesomeIcon icon={faTrashCan} className="h-4.5 w-4.5" />
                       Delete
                     </>
                   )}
@@ -298,7 +277,7 @@ const RoomCard = ({
                   disabled={isUpdating}
                   className="w-full py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg transition disabled:opacity-50 font-semibold flex items-center justify-center gap-2"
                 >
-                  <X size={18} />
+                  <FontAwesomeIcon icon={faXmark} className="h-4.5 w-4.5" />
                   Keep It
                 </button>
               </div>
@@ -417,11 +396,7 @@ export default function RoomsManagement() {
     }
   };
 
-  const bookedRooms = rooms.filter((r) => r.status === "booked").length;
   const availableRooms = rooms.filter((r) => r.status === "available").length;
-  const maintenanceRooms = rooms.filter(
-    (r) => r.status === "maintenance",
-  ).length;
   const fullyBookedRooms = rooms.filter(
     (r) => r.status === "fully-booked",
   ).length;
@@ -430,9 +405,9 @@ export default function RoomsManagement() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <Loader
-            size={48}
-            className="animate-spin text-blue-400 mx-auto mb-4"
+          <FontAwesomeIcon
+            icon={faSpinner}
+            className="animate-spin text-blue-400 mx-auto mb-4 h-12 w-12"
           />
           <p className="text-gray-400">Loading rooms...</p>
         </div>
@@ -454,10 +429,10 @@ export default function RoomsManagement() {
           </p>
         </div>
         <button
-          className="bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center gap-2"
+          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center gap-2"
           disabled={isUpdating}
         >
-          <Plus size={20} />
+          <FontAwesomeIcon icon={faPlus} className="h-5 w-5" />
           Add Room
         </button>
       </div>
@@ -489,7 +464,10 @@ export default function RoomsManagement() {
       {/* Rooms Grid */}
       {rooms.length === 0 ? (
         <div className="text-center py-16">
-          <Lock size={48} className="mx-auto mb-4 text-gray-600" />
+          <FontAwesomeIcon
+            icon={faLock}
+            className="mx-auto mb-4 text-gray-600 h-12 w-12"
+          />
           <p className="text-gray-400 text-lg mb-2">No rooms found</p>
           <p className="text-gray-500 text-sm">
             Create your first room to get started managing your inventory

@@ -1,6 +1,8 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import type { NextRequest } from "next/server";
+import { supabaseServer } from "@/lib/supabase/server";
 
 export type AdminRole = "SUPER_ADMIN" | "ADMIN";
 
@@ -65,4 +67,26 @@ export function validatePasswordPolicy(password: string) {
  */
 export function generateSessionId() {
   return crypto.randomBytes(32).toString("hex");
+}
+
+/**
+ * Resolve the active admin from the session cookie on an API request.
+ * Returns null if there is no valid, active admin session.
+ * Use this to gate every admin-only API route.
+ */
+export async function getSessionAdmin(request: NextRequest) {
+  const token = request.cookies.get(getSessionCookieName())?.value;
+  if (!token) return null;
+
+  const session = verifyAdminSession(token);
+  if (!session) return null;
+
+  const { data: admin } = await supabaseServer
+    .from("admin_users")
+    .select("id, username, email, role, status")
+    .eq("id", session.adminId)
+    .maybeSingle();
+
+  if (!admin || admin.status !== "active") return null;
+  return admin;
 }

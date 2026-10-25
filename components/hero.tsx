@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { IPMS_BOOKING_URL } from "@/lib/booking-links";
+import { track } from "@/lib/analytics";
 import Image from "next/image";
 import { Cormorant_Garamond } from "next/font/google";
 
@@ -19,7 +21,7 @@ const heroImages = [
 export default function Hero() {
   const [scrollPos, setScrollPos] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const [isAutoPlay] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -124,7 +126,7 @@ export default function Hero() {
                 className={`${cormorant.className} text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-tight`}
                 style={{ textShadow: "0 3px 14px rgba(0, 0, 0, 0.42)" }}
               >
-                <span className="text-white block">Nigeria's first</span>
+                <span className="text-white block">Nigeria&apos;s first</span>
                 <span className="text-white block font-bold mt-1 sm:mt-2 md:mt-3 lg:mt-4">
                   overwater resort
                 </span>
@@ -153,7 +155,10 @@ export default function Hero() {
             >
               {/* Primary Button - Brand Blue Gradient with Pulse */}
               <button
-                onClick={() => (window.location.href = "https://live.ipms247.com/booking/book-rooms-zibaresort")}
+                onClick={() => {
+                  track("room_book_click", { context: "hero" });
+                  window.location.href = IPMS_BOOKING_URL;
+                }}
                 className="group relative px-8 sm:px-10 md:px-12 py-4 sm:py-4 md:py-5 text-white font-semibold text-sm sm:text-base md:text-lg tracking-wide overflow-hidden rounded-lg transition-all duration-500 transform hover:scale-105 hover:shadow-2xl w-full sm:w-auto active:scale-95 bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700"
                 style={{
                   boxShadow:

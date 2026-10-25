@@ -1,7 +1,3 @@
-import axios from "axios";
-
-const OPEN_EXCHANGE_RATES_API = "https://openexchangerates.org/api/latest.json";
-
 interface ExchangeRateResult {
   rate: number;
   source: string;
@@ -29,13 +25,6 @@ export async function convertCurrency(
   }
 
   return { convertedAmount: amount, rate: 1, source: "fallback-default" };
-}
-
-async function fetchExchangeRate(
-  fromCurrency: string,
-  toCurrency: string,
-): Promise<ExchangeRateResult | null> {
-  return getFallbackRate(fromCurrency, toCurrency);
 }
 
 function getFallbackRate(

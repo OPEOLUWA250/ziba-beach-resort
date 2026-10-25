@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { Noto_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import BackToTop from "@/components/back-to-top";
+import AnalyticsTracker from "@/components/analytics-tracker";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -95,6 +96,7 @@ export default function RootLayout({
         {children}
         <BackToTop />
         <Analytics />
+        <AnalyticsTracker />
       </body>
     </html>
   );

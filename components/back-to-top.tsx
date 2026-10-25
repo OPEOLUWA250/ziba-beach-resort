@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ChevronUp, MapPin } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronUp,
+  faLocationDot,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function BackToTop() {
   const [isVisible, setIsVisible] = useState(false);
@@ -52,7 +56,7 @@ export default function BackToTop() {
             aria-label="View location on map"
             title="Ziba Beach Close, Okun Ajah, Lagos, Nigeria"
           >
-            <MapPin size={24} strokeWidth={2.5} />
+            <FontAwesomeIcon icon={faLocationDot} className="h-6 w-6" />
           </button>
           {/* Back to Top Button */}
           <button
@@ -61,7 +65,7 @@ export default function BackToTop() {
             aria-label="Back to top"
             title="Back to top"
           >
-            <ChevronUp size={24} strokeWidth={2.5} />
+            <FontAwesomeIcon icon={faChevronUp} className="h-6 w-6" />
           </button>
         </div>
       )}

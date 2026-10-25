@@ -20,7 +20,7 @@ export function PopupCTASection({ ctaText, ctaUrl }: PopupCTASectionProps) {
         Ready to Experience This?
       </h3>
       <p className="text-blue-100 font-light mb-6 max-w-2xl mx-auto">
-        Don't miss out on this special offering at Ziba Beach Resort
+        Don&apos;t miss out on this special offering at Ziba Beach Resort
       </p>
       <button
         onClick={handleClick}

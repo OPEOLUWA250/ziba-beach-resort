@@ -1,16 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Plus,
-  Edit2,
-  Trash2,
-  Search,
-  ChevronDown,
-  Eye,
-  Copy,
-  AlertCircle,
-} from "lucide-react";
+  faPlus,
+  faPenToSquare,
+  faTrashCan,
+  faMagnifyingGlass,
+  faChevronDown,
+  faCircleExclamation,
+} from "@fortawesome/free-solid-svg-icons";
 import { BlogPost } from "@/lib/blog-data";
 import BlogForm from "./blog-form";
 
@@ -107,7 +106,7 @@ export default function BlogManagement() {
               }}
               className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
             >
-              <Plus size={20} />
+              <FontAwesomeIcon icon={faPlus} className="h-5 w-5" />
               New Blog Post
             </button>
           </div>
@@ -119,7 +118,7 @@ export default function BlogManagement() {
         {/* Success Message */}
         {successMessage && (
           <div className="mb-4 bg-green-900/30 border border-green-600 text-green-200 px-4 py-3 rounded-lg flex items-center gap-2">
-            <AlertCircle size={18} />
+            <FontAwesomeIcon icon={faCircleExclamation} className="h-4.5 w-4.5" />
             {successMessage}
           </div>
         )}
@@ -128,7 +127,10 @@ export default function BlogManagement() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-3 text-gray-500" size={20} />
+            <FontAwesomeIcon
+              icon={faMagnifyingGlass}
+              className="absolute left-3 top-3 text-gray-500 h-5 w-5"
+            />
             <input
               type="text"
               placeholder="Search blogs..."
@@ -151,9 +153,9 @@ export default function BlogManagement() {
                 </option>
               ))}
             </select>
-            <ChevronDown
-              className="absolute right-3 top-3 text-gray-500 pointer-events-none"
-              size={20}
+            <FontAwesomeIcon
+              icon={faChevronDown}
+              className="absolute right-3 top-3 text-gray-500 pointer-events-none h-5 w-5"
             />
           </div>
         </div>
@@ -234,14 +236,14 @@ export default function BlogManagement() {
                             className="p-2 hover:bg-blue-600/20 text-blue-400 rounded transition"
                             title="Edit"
                           >
-                            <Edit2 size={18} />
+                            <FontAwesomeIcon icon={faPenToSquare} className="h-4.5 w-4.5" />
                           </button>
                           <button
                             onClick={() => setShowDeleteConfirm(blog.id)}
                             className="p-2 hover:bg-red-600/20 text-red-400 rounded transition"
                             title="Delete"
                           >
-                            <Trash2 size={18} />
+                            <FontAwesomeIcon icon={faTrashCan} className="h-4.5 w-4.5" />
                           </button>
                         </div>
                       </td>

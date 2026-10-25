@@ -44,12 +44,11 @@ export function getAnimationClass(
     | "fadeInUp"
     | "fadeInDown"
     | "scaleIn" = "fadeInUp",
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   duration: number = 1000,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   delay: number = 0,
 ): string {
-  const durationMs = `${duration}ms`;
-  const delayMs = delay > 0 ? `${delay}ms` : "0ms";
-
   if (!isVisible) {
     return "opacity-0";
   }

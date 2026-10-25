@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Header from "@/components/header";
 import Hero from "@/components/hero";
 import { PopupModal } from "@/components/popup-modal";

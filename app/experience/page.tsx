@@ -1,18 +1,17 @@
 "use client";
 
 import Header from "@/components/header";
+import { useGoogleReviews } from "@/hooks/use-google-reviews";
+import { ROOM_IDS } from "@/lib/room-catalog";
 import Footer from "@/components/footer";
 import PageHero from "@/components/page-hero";
 import Image from "next/image";
-import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  ChevronDown,
-  CheckCircle,
-  Calendar,
-  Users,
-  Sparkles,
-  MapPin,
-} from "lucide-react";
+  faCircleCheck,
+  faUsers,
+  faWandMagicSparkles,
+} from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 
 const eventSpaces = [
@@ -299,10 +298,9 @@ const honeymoonPackages = [
   },
 ];
 
-const faqItems = [];
-
 export default function Celebrate() {
   const headingFont = { fontFamily: "Cormorant Garamond, serif" };
+  const { data: googleReviews } = useGoogleReviews();
   const [selectedNights, setSelectedNights] = useState<"all" | 2 | 4 | 6>(
     "all",
   );
@@ -341,21 +339,30 @@ export default function Celebrate() {
         <section className="px-4 sm:px-6 lg:px-8 py-16 bg-linear-to-r from-blue-900 via-blue-800 to-blue-900">
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 text-white text-center mb-12">
+              {/* Verifiable facts only: live Google figures + resort facts */}
               <div>
-                <p className="text-4xl font-light mb-2">500+</p>
-                <p className="font-light text-blue-100">Events Hosted</p>
+                <p className="text-4xl font-light mb-2">
+                  {googleReviews?.rating != null
+                    ? `${googleReviews.rating.toFixed(1)}★`
+                    : "Google"}
+                </p>
+                <p className="font-light text-blue-100">
+                  {googleReviews?.totalReviews != null
+                    ? `${googleReviews.totalReviews.toLocaleString("en-NG")} Google reviews`
+                    : "Guest reviews"}
+                </p>
               </div>
               <div>
-                <p className="text-4xl font-light mb-2">10K+</p>
-                <p className="font-light text-blue-100">Happy Guests</p>
+                <p className="text-4xl font-light mb-2">{ROOM_IDS.length}</p>
+                <p className="font-light text-blue-100">Room & Suite Types</p>
               </div>
               <div>
-                <p className="text-4xl font-light mb-2">99%</p>
-                <p className="font-light text-blue-100">Satisfaction Rate</p>
+                <p className="text-4xl font-light mb-2">Overwater</p>
+                <p className="font-light text-blue-100">Signature Pool & Rooms</p>
               </div>
               <div>
-                <p className="text-4xl font-light mb-2">5+</p>
-                <p className="font-light text-blue-100">Years Experience</p>
+                <p className="text-4xl font-light mb-2">Since 2023</p>
+                <p className="font-light text-blue-100">Okun Ajah, Lagos</p>
               </div>
             </div>
           </div>
@@ -450,22 +457,22 @@ export default function Celebrate() {
             {/* Gallery Description */}
             <div className="text-center text-gray-900">
               <p className="font-light text-lg text-blue-900 mb-6">
-                Create timeless memories with your loved one at Nigeria's most
+                Create timeless memories with your loved one at Nigeria&apos;s most
                 romantic beachfront destination
               </p>
               <div className="flex gap-3 justify-center text-gray-800 font-light flex-wrap">
                 <span className="flex items-center gap-1">
-                  <Sparkles className="w-5 h-5 text-pink-400" /> Overwater
+                  <FontAwesomeIcon icon={faWandMagicSparkles} className="w-5 h-5 text-pink-400" /> Overwater
                   Paradise
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
-                  <Sparkles className="w-5 h-5 text-pink-400" /> Romantic
+                  <FontAwesomeIcon icon={faWandMagicSparkles} className="w-5 h-5 text-pink-400" /> Romantic
                   Experiences
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
-                  <Sparkles className="w-5 h-5 text-pink-400" /> Unforgettable
+                  <FontAwesomeIcon icon={faWandMagicSparkles} className="w-5 h-5 text-pink-400" /> Unforgettable
                   Moments
                 </span>
               </div>
@@ -554,7 +561,7 @@ export default function Celebrate() {
                         key={`${pkg.id}-${item}`}
                         className="flex items-start gap-2.5 text-gray-700 font-light text-sm"
                       >
-                        <CheckCircle className="w-4 h-4 text-blue-900 mt-0.5 shrink-0 group-hover:text-blue-700 transition-colors" />
+                        <FontAwesomeIcon icon={faCircleCheck} className="w-4 h-4 text-blue-900 mt-0.5 shrink-0 group-hover:text-blue-700 transition-colors" />
                         <span>{item}</span>
                       </li>
                     ))}
@@ -757,9 +764,10 @@ export default function Celebrate() {
                   className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   <div className="relative h-64 overflow-hidden">
-                    <img
+                    <Image
                       src={space.image}
                       alt={space.name}
+                      fill
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                     />
                   </div>
@@ -771,7 +779,7 @@ export default function Celebrate() {
                           {space.name}
                         </h3>
                         <p className="text-blue-900 font-light flex items-center gap-1">
-                          <Users className="w-4 h-4" />
+                          <FontAwesomeIcon icon={faUsers} className="w-4 h-4" />
                           {space.capacity}
                         </p>
                       </div>
@@ -780,7 +788,7 @@ export default function Celebrate() {
                     <div className="space-y-2 mb-6">
                       {space.features.map((feature, j) => (
                         <div key={j} className="flex items-start gap-2">
-                          <CheckCircle className="w-4 h-4 text-blue-900 mt-0.5 shrink-0" />
+                          <FontAwesomeIcon icon={faCircleCheck} className="w-4 h-4 text-blue-900 mt-0.5 shrink-0" />
                           <p className="text-gray-600 font-light text-sm">
                             {feature}
                           </p>
@@ -866,9 +874,10 @@ export default function Celebrate() {
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg">
               <div className="grid md:grid-cols-2">
                 <div className="relative h-96">
-                  <img
+                  <Image
                     src="/honeymoon/honeymoon-6.jpg"
                     alt="Professional Shoots"
+                    fill
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -889,7 +898,7 @@ export default function Celebrate() {
                         key={j}
                         className="flex items-center gap-3 text-gray-700 font-light"
                       >
-                        <CheckCircle className="w-5 h-5 text-blue-900 shrink-0" />
+                        <FontAwesomeIcon icon={faCircleCheck} className="w-5 h-5 text-blue-900 shrink-0" />
                         {item}
                       </li>
                     ))}
@@ -915,7 +924,7 @@ export default function Celebrate() {
               Ready to Celebrate?
             </h2>
             <p className="text-blue-100 font-light text-lg mb-8 max-w-2xl mx-auto">
-              Whether it's a honeymoon, corporate event, wedding, or
+              Whether it&apos;s a honeymoon, corporate event, wedding, or
               professional shoot, our team is ready to make it unforgettable.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">

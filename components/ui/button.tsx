@@ -51,9 +51,8 @@ const buttonVariants = cva(
         "icon-sm": "size-8 p-0 has-[>svg]:p-0",
         "icon-md": "size-10 p-0 has-[>svg]:p-0",
         "icon-lg": "size-12 p-0 has-[>svg]:p-0",
-        // Legacy sizes for backwards compatibility
+        // Legacy size for backwards compatibility
         icon: "size-9",
-        "icon-lg": "size-10",
       },
     },
     defaultVariants: {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { rateLimitByIp, tooManyRequests } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -7,19 +8,29 @@ export const dynamic = "force-dynamic";
  * Universal Receipt Lookup API
  * Searches across all booking types (rooms, day-pass, honeymoon)
  * Accepts Ziba references (ZB-xxx) or Paystack references
- * Email is optional for additional verification
+ * Ziba references (ZB-xxx) are short and guessable, so they also require the
+ * booking email. Paystack references are long and random; email is optional.
  */
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const ref = searchParams.get("ref");
-    const email = searchParams.get("email"); // Optional
+    // Required for short ZB- codes (guessable); optional for Paystack refs.
+    const email = searchParams.get("email");
 
-    console.log("[Receipt Lookup] Search parameters:", { ref, email });
+    const rate = await rateLimitByIp(request.headers, "api:receipt:lookup", 20, 60_000);
+    if (!rate.allowed) return tooManyRequests(rate);
 
     if (!ref) {
       return NextResponse.json(
         { error: "Reference number is required" },
+        { status: 400 },
+      );
+    }
+
+    if (ref.startsWith("ZB-") && !email) {
+      return NextResponse.json(
+        { error: "Please enter the email address used for the booking" },
         { status: 400 },
       );
     }
@@ -89,24 +100,10 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      console.log("[Receipt Lookup] Room booking data:", data);
-      console.log("[Receipt Lookup] Room booking found:", !!data);
-      console.log(
-        "[Receipt Lookup] Email check - provided email:",
-        email,
-        "booking email:",
-        data?.guest_email,
-      );
-
       if (data) {
         const emailMatches =
-          !email || data.guest_email.toLowerCase() === email.toLowerCase();
-        console.log(
-          "[Receipt Lookup] Email matches:",
-          emailMatches,
-          "email required:",
-          !!email,
-        );
+          !!email &&
+          data.guest_email?.toLowerCase() === email.trim().toLowerCase();
 
         if (emailMatches) {
           console.log("[Receipt Lookup] Setting booking to room booking");
@@ -160,7 +157,8 @@ export async function GET(request: NextRequest) {
 
       if (
         data &&
-        (!email || data.email.toLowerCase() === email.toLowerCase())
+        !!email &&
+        data.email?.toLowerCase() === email.trim().toLowerCase()
       ) {
         booking = {
           ...data,

@@ -1,11 +1,12 @@
 'use client'
 
 import * as React from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from 'lucide-react'
+  faChevronDown,
+  faChevronLeft,
+  faChevronRight,
+} from '@fortawesome/free-solid-svg-icons'
 import { DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker'
 
 import { cn } from '@/lib/utils'
@@ -135,16 +136,18 @@ function Calendar({
             />
           )
         },
-        Chevron: ({ className, orientation, ...props }) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        Chevron: ({ className, orientation, size: _size, ...props }) => {
           if (orientation === 'left') {
             return (
-              <ChevronLeftIcon className={cn('size-4', className)} {...props} />
+              <FontAwesomeIcon icon={faChevronLeft} className={cn('size-4', className)} {...props} />
             )
           }
 
           if (orientation === 'right') {
             return (
-              <ChevronRightIcon
+              <FontAwesomeIcon
+                icon={faChevronRight}
                 className={cn('size-4', className)}
                 {...props}
               />
@@ -152,7 +155,7 @@ function Calendar({
           }
 
           return (
-            <ChevronDownIcon className={cn('size-4', className)} {...props} />
+            <FontAwesomeIcon icon={faChevronDown} className={cn('size-4', className)} {...props} />
           )
         },
         DayButton: CalendarDayButton,

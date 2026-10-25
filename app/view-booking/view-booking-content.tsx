@@ -5,13 +5,14 @@ import { useSearchParams } from "next/navigation";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { format } from "date-fns";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  AlertCircle,
-  CheckCircle,
-  Calendar,
-  Users,
-  DollarSign,
-} from "lucide-react";
+  faCircleExclamation,
+  faCircleCheck,
+  faCalendar,
+  faUsers,
+  faDollarSign,
+} from "@fortawesome/free-solid-svg-icons";
 
 interface Booking {
   id: string;
@@ -95,7 +96,7 @@ export function ViewBookingContent() {
         <Header />
         <div className="min-h-screen bg-linear-to-b from-blue-50 to-white flex items-center justify-center px-4">
           <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center">
-            <AlertCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
+            <FontAwesomeIcon icon={faCircleExclamation} className="w-16 h-16 text-red-600 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Booking Not Found
             </h2>
@@ -116,7 +117,7 @@ export function ViewBookingContent() {
         <Header />
         <div className="min-h-screen bg-linear-to-b from-blue-50 to-white flex items-center justify-center px-4">
           <div className="text-center">
-            <AlertCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
+            <FontAwesomeIcon icon={faCircleExclamation} className="w-16 h-16 text-red-600 mx-auto mb-4" />
             <p className="text-gray-900 font-semibold">No booking found</p>
           </div>
         </div>
@@ -138,9 +139,9 @@ export function ViewBookingContent() {
   };
 
   const statusIcons: Record<string, React.ReactNode> = {
-    PENDING: <AlertCircle className="w-5 h-5" />,
-    CONFIRMED: <CheckCircle className="w-5 h-5" />,
-    CANCELLED: <AlertCircle className="w-5 h-5" />,
+    PENDING: <FontAwesomeIcon icon={faCircleExclamation} className="w-5 h-5" />,
+    CONFIRMED: <FontAwesomeIcon icon={faCircleCheck} className="w-5 h-5" />,
+    CANCELLED: <FontAwesomeIcon icon={faCircleExclamation} className="w-5 h-5" />,
   };
 
   return (
@@ -151,7 +152,7 @@ export function ViewBookingContent() {
           {/* Header Card */}
           <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
             <div className="text-center mb-6">
-              <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
+              <FontAwesomeIcon icon={faCircleCheck} className="w-16 h-16 text-green-600 mx-auto mb-4" />
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 Booking Confirmed
               </h1>
@@ -203,7 +204,7 @@ export function ViewBookingContent() {
             <div className="grid md:grid-cols-2 gap-6 mb-8 pb-8 border-b border-gray-200">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <Calendar className="w-5 h-5 text-blue-900" />
+                  <FontAwesomeIcon icon={faCalendar} className="w-5 h-5 text-blue-900" />
                   <p className="text-sm text-gray-600 font-semibold">
                     Check-In
                   </p>
@@ -215,7 +216,7 @@ export function ViewBookingContent() {
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <Calendar className="w-5 h-5 text-blue-900" />
+                  <FontAwesomeIcon icon={faCalendar} className="w-5 h-5 text-blue-900" />
                   <p className="text-sm text-gray-600 font-semibold">
                     Check-Out
                   </p>
@@ -231,7 +232,7 @@ export function ViewBookingContent() {
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <Users className="w-5 h-5 text-blue-900" />
+                  <FontAwesomeIcon icon={faUsers} className="w-5 h-5 text-blue-900" />
                   <p className="text-sm text-gray-600 font-semibold">Guests</p>
                 </div>
                 <p className="text-lg font-bold text-gray-900">
@@ -241,7 +242,7 @@ export function ViewBookingContent() {
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <DollarSign className="w-5 h-5 text-blue-900" />
+                  <FontAwesomeIcon icon={faDollarSign} className="w-5 h-5 text-blue-900" />
                   <p className="text-sm text-gray-600 font-semibold">
                     Duration
                   </p>

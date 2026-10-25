@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Loader, Upload, ImageIcon } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faXmark,
+  faSpinner,
+  faUpload,
+} from "@fortawesome/free-solid-svg-icons";
 import { BlogPost } from "@/lib/blog-data";
 import { uploadImage } from "@/lib/supabase/image-upload";
 
@@ -159,7 +164,7 @@ export default function BlogForm({ blog, onClose, onSuccess }: BlogFormProps) {
             disabled={loading}
             className="text-gray-400 hover:text-white transition"
           >
-            <X size={24} />
+            <FontAwesomeIcon icon={faXmark} className="h-6 w-6" />
           </button>
         </div>
 
@@ -317,12 +322,18 @@ export default function BlogForm({ blog, onClose, onSuccess }: BlogFormProps) {
               >
                 {uploading ? (
                   <>
-                    <Loader size={32} className="text-blue-500 animate-spin" />
+                    <FontAwesomeIcon
+                      icon={faSpinner}
+                      className="h-8 w-8 text-blue-500 animate-spin"
+                    />
                     <p className="text-sm text-gray-300">Uploading...</p>
                   </>
                 ) : (
                   <>
-                    <Upload size={32} className="text-gray-400" />
+                    <FontAwesomeIcon
+                      icon={faUpload}
+                      className="h-8 w-8 text-gray-400"
+                    />
                     <p className="text-sm text-gray-300">
                       Drag and drop your image here, or click to select
                     </p>
@@ -396,7 +407,12 @@ export default function BlogForm({ blog, onClose, onSuccess }: BlogFormProps) {
               disabled={loading}
               className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading && <Loader size={18} className="animate-spin" />}
+              {loading && (
+                <FontAwesomeIcon
+                  icon={faSpinner}
+                  className="h-4.5 w-4.5 animate-spin"
+                />
+              )}
               {loading ? "Saving..." : blog ? "Update Blog" : "Create Blog"}
             </button>
           </div>

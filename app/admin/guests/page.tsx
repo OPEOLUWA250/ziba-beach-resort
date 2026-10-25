@@ -1,16 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Search,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Heart,
-  ArrowUpRight,
-  MessageSquare,
-} from "lucide-react";
+  faMagnifyingGlass,
+  faEnvelope,
+  faPhone,
+  faHeart,
+  faMessage,
+} from "@fortawesome/free-solid-svg-icons";
 
 const mockGuests = [
   {
@@ -127,9 +125,9 @@ export default function GuestsManagement() {
       {/* Search */}
       <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700">
         <div className="relative">
-          <Search
-            size={20}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+          <FontAwesomeIcon
+            icon={faMagnifyingGlass}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 h-5 w-5"
           />
           <input
             type="text"
@@ -164,10 +162,10 @@ export default function GuestsManagement() {
                     <div className="flex items-center gap-2">
                       <h4 className="text-white font-semibold">{guest.name}</h4>
                       {guest.repeatGuest && (
-                        <Heart
-                          fill="#EC4899"
-                          size={16}
-                          className="text-pink-500"
+                        <FontAwesomeIcon
+                          icon={faHeart}
+                          className="text-pink-500 h-4 w-4"
+                          style={{ color: "#EC4899" }}
                         />
                       )}
                     </div>
@@ -207,7 +205,7 @@ export default function GuestsManagement() {
               <div className="flex gap-4">
                 <div className="flex-1">
                   <label className="text-gray-400 text-sm font-light flex items-center gap-2 mb-1">
-                    <Mail size={14} /> Email
+                    <FontAwesomeIcon icon={faEnvelope} className="h-3.5 w-3.5" /> Email
                   </label>
                   <a
                     href={`mailto:${selectedGuest.email}`}
@@ -221,7 +219,7 @@ export default function GuestsManagement() {
               <div className="flex gap-4">
                 <div className="flex-1">
                   <label className="text-gray-400 text-sm font-light flex items-center gap-2 mb-1">
-                    <Phone size={14} /> Phone
+                    <FontAwesomeIcon icon={faPhone} className="h-3.5 w-3.5" /> Phone
                   </label>
                   <a
                     href={`tel:${selectedGuest.phone}`}
@@ -285,10 +283,10 @@ export default function GuestsManagement() {
               {/* Actions */}
               <div className="grid grid-cols-2 gap-3 pt-4 border-t border-gray-700">
                 <button className="bg-blue-900/30 hover:bg-blue-900/50 text-blue-400 px-4 py-2 rounded-lg transition flex items-center gap-2 text-sm font-semibold">
-                  <Mail size={16} /> Email
+                  <FontAwesomeIcon icon={faEnvelope} className="h-4 w-4" /> Email
                 </button>
                 <button className="bg-gray-700/30 hover:bg-gray-700/50 text-gray-400 px-4 py-2 rounded-lg transition flex items-center gap-2 text-sm font-semibold">
-                  <MessageSquare size={16} /> Message
+                  <FontAwesomeIcon icon={faMessage} className="h-4 w-4" /> Message
                 </button>
               </div>
             </div>

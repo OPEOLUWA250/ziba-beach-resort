@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/server/require-admin";
 import { NextRequest, NextResponse } from "next/server";
 import { getMenusByCategory, createMenuItem } from "@/lib/services/menus";
 import {
@@ -42,6 +43,9 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ categoryId: string }> },
 ) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const body = await request.json();
     const { categoryId } = await params;

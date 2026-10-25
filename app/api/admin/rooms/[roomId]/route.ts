@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
+import { getSessionAdmin } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,11 @@ export async function PUT(
   { params }: { params: Promise<{ roomId: string }> },
 ) {
   try {
+    const actor = await getSessionAdmin(request);
+    if (!actor) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { roomId } = await params;
     let body = await request.json();
 
@@ -56,6 +62,11 @@ export async function DELETE(
   { params }: { params: Promise<{ roomId: string }> },
 ) {
   try {
+    const actor = await getSessionAdmin(request);
+    if (!actor) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { roomId } = await params;
 
     const { error } = await supabaseServer

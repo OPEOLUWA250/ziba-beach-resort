@@ -3,14 +3,15 @@
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  ArrowLeft,
-  Calendar,
-  Clock,
-  Share2,
-  MessageCircle,
-  Mail,
-} from "lucide-react";
+  faArrowLeft,
+  faCalendarDays,
+  faClock,
+  faShareNodes,
+  faComment,
+  faEnvelope,
+} from "@fortawesome/free-solid-svg-icons";
 import { use, useState, useEffect } from "react";
 
 interface BlogPost {
@@ -88,7 +89,7 @@ export default function BlogPost({
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="h1 text-gray-900 mb-4">Post Not Found</h1>
               <p className="text-gray-600 font-light mb-8">
-                The blog post you're looking for doesn't exist.
+                The blog post you&apos;re looking for doesn&apos;t exist.
               </p>
               <Link
                 href="/blog"
@@ -124,7 +125,7 @@ export default function BlogPost({
               href="/blog"
               className="inline-flex items-center gap-2 text-white hover:text-gray-200 transition font-light bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/30"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4" />
               Back to Blog
             </Link>
           </div>
@@ -147,7 +148,7 @@ export default function BlogPost({
             {/* Meta Info */}
             <div className="flex flex-wrap items-center gap-6 pb-8 border-b border-gray-200">
               <div className="flex items-center gap-2 text-gray-600 font-light">
-                <Calendar className="w-4 h-4" />
+                <FontAwesomeIcon icon={faCalendarDays} className="w-4 h-4" />
                 <span>
                   {new Date(post.createdat).toLocaleDateString("en-US", {
                     year: "numeric",
@@ -157,7 +158,7 @@ export default function BlogPost({
                 </span>
               </div>
               <div className="flex items-center gap-2 text-gray-600 font-light">
-                <Clock className="w-4 h-4" />
+                <FontAwesomeIcon icon={faClock} className="w-4 h-4" />
                 <span>{post.read_time} min read</span>
               </div>
               <div className="text-gray-600 font-light">By {post.author}</div>
@@ -167,13 +168,13 @@ export default function BlogPost({
             <div className="flex items-center gap-3 mt-6">
               <span className="text-gray-600 font-light text-sm">Share:</span>
               <button className="p-2 hover:bg-gray-100 rounded-lg transition">
-                <Share2 className="w-5 h-5 text-gray-600" />
+                <FontAwesomeIcon icon={faShareNodes} className="w-5 h-5 text-gray-600" />
               </button>
               <button className="p-2 hover:bg-gray-100 rounded-lg transition">
-                <Mail className="w-5 h-5 text-gray-600" />
+                <FontAwesomeIcon icon={faEnvelope} className="w-5 h-5 text-gray-600" />
               </button>
               <button className="p-2 hover:bg-gray-100 rounded-lg transition">
-                <MessageCircle className="w-5 h-5 text-gray-600" />
+                <FontAwesomeIcon icon={faComment} className="w-5 h-5 text-gray-600" />
               </button>
             </div>
           </div>
@@ -227,7 +228,7 @@ export default function BlogPost({
             </h2>
             <p className="text-gray-600 font-light mb-8 max-w-2xl mx-auto">
               Visit Ziba Beach Resort and create unforgettable memories. From
-              proposals to weddings to family getaways, we've got you covered.
+              proposals to weddings to family getaways, we&apos;ve got you covered.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
               <a

@@ -1,3 +1,5 @@
+import type { NextRequest } from "next/server";
+import { requireAdmin } from "@/lib/server/require-admin";
 import { getAllBlogs, createBlog } from "@/lib/services/blogs";
 import {
   validateRequiredFields,
@@ -28,7 +30,10 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const body = await request.json();
 

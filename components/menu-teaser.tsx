@@ -3,7 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { ChefHat, Wine, Utensils } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faKitchenSet,
+  faWineGlass,
+  faUtensils,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function MenuTeaser() {
   const headingFont = { fontFamily: "Cormorant Garamond, serif" };
@@ -30,17 +35,17 @@ export default function MenuTeaser() {
 
   const features = [
     {
-      icon: ChefHat,
+      icon: faKitchenSet,
       title: "Culinary Excellence",
       description: "Award-winning chefs crafting exquisite dishes",
     },
     {
-      icon: Wine,
+      icon: faWineGlass,
       title: "Premium Selection",
       description: "Curated wines and beverages from around the world",
     },
     {
-      icon: Utensils,
+      icon: faUtensils,
       title: "Fine Dining",
       description: "Elegant dining experiences with ocean views",
     },
@@ -104,7 +109,6 @@ export default function MenuTeaser() {
             {/* Features List */}
             <div className="space-y-8 mb-12">
               {features.map((feature, idx) => {
-                const IconComponent = feature.icon;
                 return (
                   <div
                     key={feature.title}
@@ -120,10 +124,9 @@ export default function MenuTeaser() {
                     }}
                   >
                     <div className="shrink-0 w-12 h-12 rounded-full bg-linear-to-br from-blue-900 to-blue-800 flex items-center justify-center">
-                      <IconComponent
-                        size={24}
-                        className="text-white"
-                        strokeWidth={1.5}
+                      <FontAwesomeIcon
+                        icon={feature.icon}
+                        className="h-6 w-6 text-white"
                       />
                     </div>
                     <div>
@@ -142,7 +145,7 @@ export default function MenuTeaser() {
             {/* CTA Button */}
             <Link href="/menu">
               <button
-                className={`w-full flex items-center justify-center gap-3 px-6 sm:px-10 py-3 sm:py-4 bg-linear-to-r from-blue-900 to-blue-800 text-white font-light tracking-wide rounded-lg hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-xl ${
+                className={`w-full flex items-center justify-center gap-3 px-6 sm:px-10 py-3 sm:py-4 bg-blue-900 hover:bg-blue-800 text-white font-light tracking-wide rounded-lg transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-xl ${
                   isVisible
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-5"

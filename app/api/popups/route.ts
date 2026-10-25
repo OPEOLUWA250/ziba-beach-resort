@@ -1,7 +1,7 @@
+import { requireAdmin } from "@/lib/server/require-admin";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer, isSupabaseConfigured } from "@/lib/supabase/server";
-import { createPopup } from "@/lib/services/popups";
 
 export async function GET(request: NextRequest) {
   try {
@@ -88,6 +88,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     // Check if Supabase is configured
     if (!isSupabaseConfigured()) {

@@ -1,7 +1,8 @@
 "use client";
 
 import { Suspense } from "react";
-import { Loader2 } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import DayPassConfirmationContent from "./confirmation-content";
 
 export default function DayPassConfirmationPage() {
@@ -11,7 +12,7 @@ export default function DayPassConfirmationPage() {
         fallback={
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
-              <Loader2 className="w-12 h-12 text-blue-900 animate-spin mx-auto mb-4" />
+              <FontAwesomeIcon icon={faSpinner} className="w-12 h-12 text-blue-900 animate-spin mx-auto mb-4" />
               <p className="text-gray-600">Loading your receipt...</p>
             </div>
           </div>

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Upload, X } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUpload, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { uploadImage, deleteImage } from "@/lib/supabase/image-upload";
 
 interface PopupFormProps {
@@ -255,13 +256,16 @@ export function PopupForm({
                 onClick={handleRemoveImage}
                 className="absolute top-2 right-2 p-1 bg-red-600 hover:bg-red-700 rounded transition"
               >
-                <X size={20} className="text-white" />
+                <FontAwesomeIcon icon={faXmark} className="text-white h-5 w-5" />
               </button>
             </div>
           ) : (
             <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-blue-500 transition">
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <Upload size={32} className="text-gray-400 mb-2" />
+                <FontAwesomeIcon
+                  icon={faUpload}
+                  className="text-gray-400 mb-2 h-8 w-8"
+                />
                 <p className="text-sm text-gray-400">
                   Click to upload or drag and drop
                 </p>
@@ -392,7 +396,7 @@ export function PopupForm({
                   onClick={() => handleRemoveTag(tag)}
                   className="hover:text-red-400 transition"
                 >
-                  <X size={14} />
+                  <FontAwesomeIcon icon={faXmark} className="h-3.5 w-3.5" />
                 </button>
               </span>
             ))}

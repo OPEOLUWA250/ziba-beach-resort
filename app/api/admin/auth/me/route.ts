@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Return admin data without the session token
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { current_session_token, ...adminData } = admin;
 
     return NextResponse.json({ success: true, admin: adminData });

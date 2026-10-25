@@ -3,8 +3,10 @@
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Plus, Minus } from "lucide-react";
+import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
+import { track } from "@/lib/analytics";
 
 interface CartItem {
   id: string;
@@ -23,7 +25,6 @@ interface Product {
 }
 
 export default function DayPass() {
-  const router = useRouter();
   const [cart, setCart] = useState<Record<string, number>>({});
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -140,6 +141,11 @@ export default function DayPass() {
   };
 
   const updateQuantity = (productId: string, change: number) => {
+    if (change > 0) {
+      track("daypass_add_to_cart", {
+        item: products.find((p) => p.id === productId)?.name || productId,
+      });
+    }
     setCart((prev) => {
       const newQty = Math.max(0, (prev[productId] || 0) + change);
       let updated;
@@ -156,17 +162,6 @@ export default function DayPass() {
 
   const getQuantity = (productId: string) => cart[productId] || 0;
 
-  const calculateTotal = () => {
-    return Object.entries(cart).reduce((total, [productId, qty]) => {
-      const product = products.find((p) => p.id === productId);
-      return total + (product ? product.price * qty : 0);
-    }, 0);
-  };
-
-  const formatCurrency = (amount: number) => {
-    return `₦${amount.toLocaleString()}`;
-  };
-
   const ticketProducts = products.filter((p) => p.category === "tickets");
   const regularTickets = ticketProducts.filter((p) => !p.name.includes("Plus"));
   const plusTickets = ticketProducts.filter((p) => p.name.includes("Plus"));
@@ -181,9 +176,10 @@ export default function DayPass() {
         {/* HERO SECTION */}
         <section className="relative w-full h-screen bg-gray-900 overflow-hidden flex items-center py-20">
           <div className="absolute inset-0">
-            <img
+            <Image
               src="/day-experience.jpg"
               alt="Day Pass Hero"
+              fill
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-black/50"></div>
@@ -471,7 +467,7 @@ function ProductCard({
             disabled={quantity === 0}
             className="p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            <Minus size={16} className="text-gray-900" />
+            <FontAwesomeIcon icon={faMinus} className="w-4 h-4 text-gray-900" />
           </button>
           <span className="w-8 text-center font-light text-gray-900 text-sm">
             {quantity}
@@ -480,7 +476,7 @@ function ProductCard({
             onClick={onIncrease}
             className="p-2 hover:bg-gray-100 transition-colors"
           >
-            <Plus size={16} className="text-gray-900" />
+            <FontAwesomeIcon icon={faPlus} className="w-4 h-4 text-gray-900" />
           </button>
         </div>
       </div>

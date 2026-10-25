@@ -64,7 +64,7 @@ export default function InstagramFeed() {
   const [selectedPost, setSelectedPost] = useState<InstagramPost | null>(
     mockInstagramPosts[0],
   );
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
   const sectionRef = useRef(null);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -213,7 +213,7 @@ export default function InstagramFeed() {
                 </h3>
 
                 <p className="text-gray-600 font-light text-lg">
-                  Nigeria's First Overwater Resort
+                  Nigeria&apos;s First Overwater Resort
                 </p>
               </div>
 

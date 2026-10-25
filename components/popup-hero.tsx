@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
 
 interface PopupHeroProps {
@@ -41,7 +42,7 @@ export function PopupHero({ featuredImage, title }: PopupHeroProps) {
           onClick={handleBack}
           className="flex items-center gap-2 px-5 py-2.5 bg-white/95 hover:bg-white text-blue-900 rounded-full shadow-lg backdrop-blur-sm transition-all hover:scale-105 font-light"
         >
-          <ArrowLeft size={18} />
+          <FontAwesomeIcon icon={faArrowLeft} className="h-4.5 w-4.5" />
           <span className="hidden sm:inline">Back</span>
         </button>
       </div>

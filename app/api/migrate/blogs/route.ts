@@ -1,9 +1,14 @@
+import type { NextRequest } from "next/server";
+import { requireAdmin } from "@/lib/server/require-admin";
 import { createClient } from "@supabase/supabase-js";
 import { blogPosts } from "@/lib/blog-data";
 
 export const dynamic = "force-dynamic";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";

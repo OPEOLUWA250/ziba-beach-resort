@@ -4,7 +4,13 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import PageHero from "@/components/page-hero";
 import ContactForm from "../../components/contact-form";
-import { Mail, Phone, MapPin, ChevronDown } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEnvelope,
+  faPhone,
+  faLocationDot,
+  faChevronDown,
+} from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 
 interface FAQItem {
@@ -78,28 +84,28 @@ export default function Contact() {
               <div>
                 <p className="text-4xl font-light mb-2">
                   {" "}
-                  <span className="text-white">Available 24/7</span>
+                  <span className="text-white">24/7 Front Desk</span>
                 </p>
                 <p className="font-light text-blue-100">
-                  Round-the-clock support for all guests
+                  On-site for guests staying with us
                 </p>
               </div>
               <div>
                 <p className="text-4xl font-light mb-2">
                   {" "}
-                  <span className="text-white">&lt; 2 Hours</span>
+                  <span className="text-white">WhatsApp</span>
                 </p>
                 <p className="font-light text-blue-100">
-                  Average response time to inquiries
+                  Message us on +234 704 730 0013
                 </p>
               </div>
               <div>
                 <p className="text-4xl font-light mb-2">
                   {" "}
-                  <span className="text-white">100% Responsive</span>
+                  <span className="text-white">Okun Ajah</span>
                 </p>
                 <p className="font-light text-blue-100">
-                  Dedicated team ready to assist you
+                  Ziba Beach Close, Lagos
                 </p>
               </div>
             </div>
@@ -111,7 +117,7 @@ export default function Contact() {
           <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-20">
             {[
               {
-                icon: Mail,
+                icon: faEnvelope,
                 title: "Email",
                 details: [
                   "bookings@zibabeachresort.com",
@@ -120,24 +126,23 @@ export default function Contact() {
                 href: "https://mail.google.com/mail/?to=bookings@zibabeachresort.com",
               },
               {
-                icon: Phone,
+                icon: faPhone,
                 title: "Phone",
                 details: ["+234 704 730 0013", "+234 818 744 4447"],
                 href: "tel:+2347047300013",
               },
               {
-                icon: MapPin,
+                icon: faLocationDot,
                 title: "Location",
                 details: ["Ziba Beach Close", "Okun Ajah, Lagos, Nigeria"],
                 href: "https://www.google.com/maps?q=Ziba+Beach+Close+Okun+Ajah+Lagos+Nigeria",
               },
             ].map((contact, i) => {
-              const Icon = contact.icon;
               const isClickable = contact.href;
               const CardContent = (
                 <div className="h-full flex flex-col">
                   <div className="flex-1">
-                    <Icon className="w-12 h-12 text-blue-900 mx-auto mb-4" />
+                    <FontAwesomeIcon icon={contact.icon} className="w-12 h-12 text-blue-900 mx-auto mb-4" />
                     <h3 className="h4 text-gray-900 mb-3">{contact.title}</h3>
                     {contact.details.map((detail, j) => (
                       <p key={j} className="text-gray-600 font-light">
@@ -220,12 +225,13 @@ export default function Contact() {
                         onClick={() =>
                           setExpandedFAQ(expandedFAQ === index ? null : index)
                         }
-                        className="w-full px-6 py-4 flex items-center justify-between bg-white hover:bg-linear-to-r hover:from-blue-50 hover:to-white transition-all duration-200 group"
+                        className="w-full px-6 py-4 flex items-center justify-between bg-white hover:bg-blue-50 transition-all duration-200 group"
                       >
                         <h3 className="text-lg font-light text-gray-900 text-left group-hover:text-blue-900 transition-colors duration-300">
                           {item.question}
                         </h3>
-                        <ChevronDown
+                        <FontAwesomeIcon
+                          icon={faChevronDown}
                           className={`w-5 h-5 text-blue-900 transition-all duration-500 shrink-0 ml-4 group-hover:scale-110 ${
                             expandedFAQ === index ? "rotate-180" : ""
                           }`}

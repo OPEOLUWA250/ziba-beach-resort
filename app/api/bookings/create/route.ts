@@ -1,28 +1,83 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { isRoomAvailable } from "@/lib/services/booking";
-import { rateLimitByIp } from "@/lib/security/rate-limit";
+import { supabaseServer } from "@/lib/supabase/server";
+import { isRoomAvailable, ROOM_HOLD_MINUTES } from "@/lib/services/booking";
+import { requireAdmin } from "@/lib/server/require-admin";
 import { roomBookingCreateSchema } from "@/lib/security/validators";
+import { generateRoomBookingReference } from "@/lib/utils/booking-reference";
 
 export const dynamic = "force-dynamic";
 
+const DAY_MS = 86_400_000;
+const MAX_REFERENCE_ATTEMPTS = 5;
+
+type InsertResult =
+  | { ok: true; booking: Record<string, any> }
+  | { ok: false; status: number; error: string };
+
+/**
+ * Reserve the room atomically. The create_room_booking RPC takes a per-room
+ * advisory lock, re-checks overlap and inserts in one transaction, so two
+ * concurrent requests cannot both book the same dates. If the migration that
+ * creates the RPC has not been applied yet, fall back to the (racy)
+ * check-then-insert so bookings keep working.
+ */
+async function insertBooking(row: Record<string, unknown>): Promise<InsertResult> {
+  for (let attempt = 0; attempt < MAX_REFERENCE_ATTEMPTS; attempt++) {
+    const payload = { ...row, booking_reference_code: generateRoomBookingReference() };
+
+    const rpc = await supabaseServer.rpc("create_room_booking", {
+      p_booking: payload,
+      p_hold_minutes: ROOM_HOLD_MINUTES,
+    });
+
+    let error = rpc.error;
+    let booking = rpc.data as Record<string, any> | null;
+
+    if (error?.code === "PGRST202" || error?.code === "42883") {
+      console.warn(
+        "[Create Booking] create_room_booking RPC missing; apply supabase/migrations. Using non-atomic fallback.",
+      );
+      const available = await isRoomAvailable(
+        String(row.room_id),
+        new Date(String(row.check_in_date)),
+        new Date(String(row.check_out_date)),
+      );
+      if (!available) {
+        return { ok: false, status: 409, error: "ROOM_UNAVAILABLE" };
+      }
+      const insert = await supabaseServer.from("bookings").insert(payload).select().single();
+      error = insert.error;
+      booking = insert.data;
+    }
+
+    if (!error && booking) return { ok: true, booking };
+
+    if (error?.message?.includes("ROOM_UNAVAILABLE")) {
+      return { ok: false, status: 409, error: "ROOM_UNAVAILABLE" };
+    }
+    // Unique violation on booking_reference_code: retry with a new code.
+    if (error?.code === "23505" && error.message.includes("booking_reference_code")) {
+      continue;
+    }
+
+    console.error("[Create Booking] Insert failed:", error?.message);
+    return { ok: false, status: 500, error: "Failed to save booking" };
+  }
+
+  return { ok: false, status: 500, error: "Could not allocate a booking reference" };
+}
+
+/**
+ * Create a manual room booking (admin only).
+ *
+ * Guests book rooms on the resort's IPMS booking engine, which owns room
+ * availability and rates; this endpoint records walk-in / phone bookings
+ * that staff take directly, for the operations and check-in tools.
+ */
 export async function POST(request: NextRequest) {
   try {
-    const rate = rateLimitByIp(
-      request.headers,
-      "api:bookings:create",
-      30,
-      60_000,
-    );
-    if (!rate.allowed) {
-      return NextResponse.json(
-        { error: "Too many booking attempts. Please retry shortly." },
-        {
-          status: 429,
-          headers: { "Retry-After": String(rate.retryAfterSeconds) },
-        },
-      );
-    }
+    const auth = await requireAdmin(request);
+    if (auth.response) return auth.response;
 
     const body = await request.json();
     const parsed = roomBookingCreateSchema.safeParse(body);
@@ -42,9 +97,6 @@ export async function POST(request: NextRequest) {
       checkOutDate,
       numberOfGuests,
       specialRequests,
-      roomPriceNGN,
-      numberOfNights,
-      paymentStatus,
     } = parsed.data;
 
     const checkIn = new Date(checkInDate);
@@ -57,186 +109,62 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate total
-    const totalAmountNGN = roomPriceNGN * numberOfNights;
-
-    // Initialize Supabase
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !serviceRoleKey) {
-      console.error("Missing Supabase configuration");
-      return NextResponse.json(
-        { error: "Server configuration error" },
-        { status: 500 },
-      );
+    const numberOfNights = Math.round((checkOut.getTime() - checkIn.getTime()) / DAY_MS);
+    if (numberOfNights < 1 || numberOfNights > 60) {
+      return NextResponse.json({ error: "Stay must be between 1 and 60 nights" }, { status: 400 });
     }
 
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
+    // Staff may record the negotiated nightly rate; default to the room's price.
+    const { data: room } = await supabaseServer
+      .from("rooms")
+      .select("*")
+      .eq("id", roomId)
+      .maybeSingle();
 
-    // Check availability BEFORE creating booking
-    const isAvailable = await isRoomAvailable(roomId, checkIn, checkOut);
+    const roomPriceNGN =
+      parsed.data.roomPriceNGN ?? Number(room?.pricengn ?? room?.priceNGN ?? 0);
 
-    if (!isAvailable) {
+    if (!(roomPriceNGN > 0)) {
+      return NextResponse.json({ error: "Enter the nightly rate for this booking" }, { status: 400 });
+    }
+
+    const result = await insertBooking({
+      guest_email: guestEmail,
+      guest_name: guestName,
+      guest_phone: guestPhone,
+      room_id: roomId,
+      check_in_date: checkIn.toISOString(),
+      check_out_date: checkOut.toISOString(),
+      number_of_guests: numberOfGuests,
+      special_requests: specialRequests || "",
+      room_price_ngn: roomPriceNGN,
+      number_of_nights: numberOfNights,
+      total_amount_ngn: roomPriceNGN * numberOfNights,
+      payment_status: "PENDING",
+      payment_type: "manual",
+      date_of_booking: new Date().toISOString(),
+      paystack_reference: null,
+    });
+
+    if (!result.ok) {
       return NextResponse.json(
         {
           error:
-            "Room is not available for the selected dates. Please choose different dates.",
+            result.error === "ROOM_UNAVAILABLE"
+              ? "This room already has a booking on those dates."
+              : result.error,
         },
-        { status: 409 },
+        { status: result.status },
       );
     }
 
-    // Generate booking reference code: ZB-YYYY-NNNNN (Always generated)
-    const year = new Date().getFullYear();
-    const randomNumber = Math.floor(Math.random() * 90000) + 10000; // 5 digit random number
-    const bookingReferenceCode = `ZB-${year}-${randomNumber}`;
-
-    // Determine if this is admin-created (PENDING) or customer booking (RESERVED)
-    const isAdminCreated = paymentStatus === "PENDING";
-
-    // Set payment type based on creation source
-    const paymentType = isAdminCreated ? "manual" : "online";
-
-    // Only generate Paystack reference for customer bookings, not for admin-created
-    const paystackReference = isAdminCreated
-      ? null
-      : `ziba-${Date.now()}-${Math.random().toString(36).substring(7)}`;
-
-    // Save booking to database
-    const { data: booking, error: bookingError } = await supabase
-      .from("bookings")
-      .insert({
-        guest_email: guestEmail,
-        guest_name: guestName,
-        guest_phone: guestPhone,
-        room_id: roomId,
-        check_in_date: checkIn.toISOString(),
-        check_out_date: checkOut.toISOString(),
-        number_of_guests: numberOfGuests,
-        special_requests: specialRequests || "",
-        room_price_ngn: roomPriceNGN,
-        number_of_nights: numberOfNights,
-        total_amount_ngn: totalAmountNGN,
-        payment_status: paymentStatus || "RESERVED",
-        payment_type: paymentType,
-        date_of_booking: new Date().toISOString(),
-        paystack_reference: paystackReference,
-        booking_reference_code: bookingReferenceCode,
-      })
-      .select()
-      .single();
-
-    if (bookingError) {
-      console.error("Error saving booking:", bookingError);
-      return NextResponse.json(
-        { error: `Failed to save booking: ${bookingError.message}` },
-        { status: 500 },
-      );
-    }
-
-    // Only perform Paystack operations for customer bookings (RESERVED status)
-    if (!isAdminCreated) {
-      // Initialize Paystack payment
-      const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;
-
-      if (!paystackSecretKey) {
-        console.error("Missing Paystack secret key");
-        return NextResponse.json(
-          { error: "Payment gateway configuration error" },
-          { status: 500 },
-        );
-      }
-
-      // Call Paystack API to initialize transaction
-      const paystackResponse = await fetch(
-        "https://api.paystack.co/transaction/initialize",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${paystackSecretKey}`,
-          },
-          body: JSON.stringify({
-            email: guestEmail,
-            amount: totalAmountNGN * 100, // Paystack uses kobo (1 NGN = 100 kobo)
-            reference: paystackReference,
-            metadata: {
-              booking_id: booking.id,
-              room_id: roomId,
-              check_in_date: checkIn.toISOString(),
-              check_out_date: checkOut.toISOString(),
-              guest_name: guestName,
-              guest_phone: guestPhone,
-            },
-          }),
-        },
-      );
-
-      const paystackData = await paystackResponse.json();
-
-      if (!paystackResponse.ok || !paystackData.status) {
-        console.error("Paystack initialization failed:", paystackData);
-        return NextResponse.json(
-          { error: "Failed to initialize payment" },
-          { status: 500 },
-        );
-      }
-
-      // Update booking with Paystack details
-      const { error: updateError } = await supabase
-        .from("bookings")
-        .update({
-          paystack_access_code: paystackData.data.access_code,
-          paystack_authorization_url: paystackData.data.authorization_url,
-        })
-        .eq("id", booking.id);
-
-      if (updateError) {
-        if (updateError.code !== "PGRST204") {
-          console.error(
-            "Error updating booking with Paystack details:",
-            updateError,
-          );
-        }
-      }
-
-      return NextResponse.json(
-        {
-          success: true,
-          booking: {
-            id: booking.id,
-            ...booking,
-          },
-          payment: {
-            reference: paystackReference,
-            authorizationUrl: paystackData.data.authorization_url,
-            accessCode: paystackData.data.access_code,
-          },
-        },
-        { status: 201 },
-      );
-    }
-
-    // Admin-created bookings: return only booking details, no payment info
+    console.log(`[Create Booking] ${auth.admin.username} created manual booking ${result.booking.id}`);
     return NextResponse.json(
-      {
-        success: true,
-        booking: {
-          id: booking.id,
-          ...booking,
-        },
-      },
+      { success: true, booking: { id: result.booking.id, ...result.booking } },
       { status: 201 },
     );
-  } catch (error) {
-    console.error("Error creating booking:", error);
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error ? error.message : "Failed to create booking",
-      },
-      { status: 500 },
-    );
+  } catch (error: any) {
+    console.error("[Create Booking] Error:", error?.message);
+    return NextResponse.json({ error: "Failed to create booking" }, { status: 500 });
   }
 }

@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/server/require-admin";
 import { NextRequest, NextResponse } from "next/server";
 import {
   getMenuItemById,
@@ -47,6 +48,9 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ categoryId: string; itemId: string }> },
 ) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const { itemId } = await params;
     const body = await request.json();
@@ -81,6 +85,9 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ categoryId: string; itemId: string }> },
 ) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const { itemId } = await params;
 

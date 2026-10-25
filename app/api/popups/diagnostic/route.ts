@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     // Check 1: Can we connect to database?
     console.log("[Diagnostic] Check 1: Database connection...");
     try {
-      const { data: connTest } = await supabaseServer
+      await supabaseServer
         .from("popups")
         .select("count");
       diagnostics.checks.database_connection = {
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     // Check 2: Table exists?
     console.log("[Diagnostic] Check 2: Table existence...");
     try {
-      const { data, error } = await supabaseServer
+      const { error } = await supabaseServer
         .from("popups")
         .select("*")
         .limit(1);
@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
         const testId = testPopups.data[0].id;
         console.log(`[Diagnostic] Testing update on popup: ${testId}`);
 
-        const { data, error } = await supabaseServer
+        const { error } = await supabaseServer
           .from("popups")
           .update({ updated_at: new Date().toISOString() })
           .eq("id", testId)

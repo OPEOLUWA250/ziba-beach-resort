@@ -1,31 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getBookingDetails } from "@/lib/services/booking";
+import { canViewBooking } from "@/lib/server/booking-access";
+import { rateLimitByIp, tooManyRequests } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Booking details for the confirmation page. Requires `?ref=<paystack ref>`
+ * matching the booking (or an admin session), so booking IDs cannot be
+ * enumerated to read guest details.
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = await params;
-    console.log("📋 Booking details endpoint: id =", id);
-    const { getBookingDetails } = await import("@/lib/services/booking");
-    const bookingId = id;
+    const rate = await rateLimitByIp(request.headers, "api:bookings:get", 60, 60_000);
+    if (!rate.allowed) return tooManyRequests(rate);
+
+    const { id: bookingId } = await params;
 
     if (!bookingId) {
-      console.error("❌ No booking ID provided");
       return NextResponse.json(
         { error: "Booking ID is required" },
         { status: 400 },
       );
     }
 
-    console.log("🔍 Fetching booking details for ID:", bookingId);
     const booking = await getBookingDetails(bookingId);
-    console.log("✅ Booking fetched:", booking);
 
-    if (!booking) {
-      console.error("❌ Booking not found for ID:", bookingId);
+    // Same response for "missing" and "not yours" so IDs can't be probed.
+    if (!booking || !(await canViewBooking(request, booking))) {
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }
 
@@ -34,58 +39,7 @@ export async function GET(
       booking,
     });
   } catch (error: any) {
-    console.error("Error getting booking:", error.message, error.stack);
-    return NextResponse.json(
-      {
-        error: error.message || "Failed to get booking",
-        details: error.toString(),
-      },
-      { status: 500 },
-    );
-  }
-}
-
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  try {
-    const { cancelBooking } = await import("@/lib/services/booking");
-    const bookingId = params.id;
-    const body = await request.json();
-    const { userId, action } = body;
-
-    if (!bookingId || !userId) {
-      return NextResponse.json(
-        { error: "Missing required fields: bookingId, userId" },
-        { status: 400 },
-      );
-    }
-
-    // Only support cancel action for now
-    if (action === "cancel") {
-      const cancelledBooking = await cancelBooking(bookingId, userId);
-      return NextResponse.json(cancelledBooking);
-    }
-
-    return NextResponse.json(
-      { error: `Action '${action}' not supported` },
-      { status: 400 },
-    );
-  } catch (error: any) {
-    console.error("Error updating booking:", error);
-
-    if (error.message.includes("Unauthorized")) {
-      return NextResponse.json({ error: error.message }, { status: 403 });
-    }
-
-    if (error.message.includes("not found")) {
-      return NextResponse.json({ error: error.message }, { status: 404 });
-    }
-
-    return NextResponse.json(
-      { error: error.message || "Failed to update booking" },
-      { status: 500 },
-    );
+    console.error("Error getting booking:", error?.message);
+    return NextResponse.json({ error: "Failed to get booking" }, { status: 500 });
   }
 }

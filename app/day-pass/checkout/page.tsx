@@ -3,8 +3,14 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PaymentMethodModal from "@/components/payment-method-modal";
-import { ChevronLeft, AlertCircle, Loader2 } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faCircleExclamation,
+  faSpinner,
+} from "@fortawesome/free-solid-svg-icons";
 import { format } from "date-fns";
+import { getSessionSource, track } from "@/lib/analytics";
 
 // Declare PaystackPop globally
 declare global {
@@ -39,9 +45,6 @@ export default function DayPassCheckout() {
   const [phone, setPhone] = useState("");
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
-  const [showReceiptModal, setShowReceiptModal] = useState(false);
-  const [bookingId, setBookingId] = useState("");
-  const [paystackReference, setPaystackReference] = useState("");
   const [showPaymentMethodModal, setShowPaymentMethodModal] = useState(false);
   const [pendingBooking, setPendingBooking] = useState<any>(null);
 
@@ -127,6 +130,7 @@ export default function DayPassCheckout() {
           visitDate: cart.visitDate,
           items: cart.items,
           totalAmount: cart.totalAmount,
+          source: getSessionSource(),
         }),
       });
 
@@ -136,6 +140,7 @@ export default function DayPassCheckout() {
       }
 
       const bookingData = await bookingRes.json();
+      track("daypass_payment_start", { amount: Number(bookingData.totalAmount) || 0 });
       setPendingBooking(bookingData);
       setShowPaymentMethodModal(true);
       setProcessing(false);
@@ -156,12 +161,11 @@ export default function DayPassCheckout() {
       const paystackRef = pendingBooking.paystackReference;
 
       if (!isValidPaystackKey) {
-        // Demo mode
+        // Demo mode (no live Paystack key configured)
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        // Confirm payment status with demo reference
         try {
-          await fetch("/api/day-pass/confirm-payment", {
+          const confirmRes = await fetch("/api/day-pass/confirm-payment", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -169,130 +173,171 @@ export default function DayPassCheckout() {
               reference: paystackRef,
             }),
           });
-        } catch (err) {
-          console.error("Failed to confirm payment:", err);
+
+          if (!confirmRes.ok) {
+            const errData = await confirmRes.json().catch(() => ({}));
+            throw new Error(
+              errData.error || "Payment could not be verified",
+            );
+          }
+        } catch (err: any) {
+          setError(
+            err.message ||
+              "We couldn't confirm your payment. Please contact support with your reference.",
+          );
+          setProcessing(false);
+          return;
         }
 
+        track("daypass_paid", { amount: Number(pendingBooking.totalAmount) || 0 });
         if (typeof window !== "undefined") {
           localStorage.removeItem("dayPassCart");
           localStorage.setItem("lastOrderCompleted", Date.now().toString());
           window.dispatchEvent(new Event("cart-updated"));
         }
 
-        setBookingId(pendingBooking.id);
-        setPaystackReference(paystackRef);
-        setShowReceiptModal(true);
-        setProcessing(false);
+        // Client-side navigation — instant, no full-page reload flash.
+        router.push(
+          `/day-pass/confirmation?bookingId=${pendingBooking.id}&ref=${paystackRef}`,
+        );
         return;
       }
 
       // Real Paystack payment
-      if (typeof window !== "undefined" && window.PaystackPop) {
+      //
+      // NOTE: when the Paystack script has to be loaded for the first time,
+      // this function runs from script.onload — which fires *after*
+      // handlePaystackPayment's own try/catch has already returned. Any
+      // exception thrown in here would otherwise be an uncaught error that
+      // leaves the UI stuck on "Processing..." forever (no popup, no error
+      // message), so it needs its own try/catch rather than relying on the
+      // outer one.
+      const openPaystackCheckout = () => {
+        try {
+          openPaystackCheckoutUnsafe();
+        } catch (err: any) {
+          console.error("Failed to open Paystack checkout:", err);
+          setError(
+            err?.message || "Failed to open payment window. Please try again.",
+          );
+          setProcessing(false);
+        }
+      };
+
+      const openPaystackCheckoutUnsafe = () => {
+        if (!window.PaystackPop) {
+          setError("Failed to load payment provider. Please try again.");
+          setProcessing(false);
+          return;
+        }
+
+        // Guards against onSuccess/onClose both firing (or firing more than once)
+        let resolved = false;
+
+        const handlePaymentSuccess = async (response: any) => {
+          if (resolved) return;
+          resolved = true;
+
+          // Get the actual Paystack reference from the response
+          const actualPaystackReference = response.reference || paystackRef;
+
+          // Verify with the server BEFORE showing the receipt or clearing the cart —
+          // never assume success just because Paystack's client-side callback fired
+          try {
+            const confirmRes = await fetch("/api/day-pass/confirm-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                bookingId: pendingBooking.id,
+                reference: actualPaystackReference,
+              }),
+            });
+
+            if (!confirmRes.ok) {
+              const errData = await confirmRes.json().catch(() => ({}));
+              throw new Error(
+                errData.error ||
+                  "We couldn't verify your payment yet. If you were charged, please contact support with your reference.",
+              );
+            }
+          } catch (err: any) {
+            setError(
+              err.message ||
+                "We couldn't verify your payment. Please contact support.",
+            );
+            setProcessing(false);
+            return;
+          }
+
+          // Only clear the cart and show the receipt once verification succeeds
+          track("daypass_paid", { amount: Number(pendingBooking.totalAmount) || 0 });
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("dayPassCart");
+            window.dispatchEvent(new Event("cart-updated"));
+          }
+
+          // Go straight to the receipt — no intermediate "click to view" step,
+          // and a client-side navigation so there's no full-page reload flash.
+          clearTimeout(stuckTimer);
+          router.push(
+            `/day-pass/confirmation?bookingId=${pendingBooking.id}&ref=${actualPaystackReference}`,
+          );
+        };
+
         const handler = window.PaystackPop.setup({
           key: paystackKey,
           email: email,
-          amount: cart.totalAmount * 100,
+          amount: Math.round(Number(pendingBooking.totalAmount ?? cart.totalAmount) * 100),
           ref: paystackRef,
-          onSuccess: async (response: any) => {
-            // Get the actual Paystack reference from the response
-            const actualPaystackReference = response.reference || paystackRef;
-
-            // Clear the cart IMMEDIATELY after successful payment (before any redirects)
-            if (typeof window !== "undefined") {
-              localStorage.removeItem("dayPassCart");
-              window.dispatchEvent(new Event("cart-updated"));
-            }
-
-            // Mark payment as confirmed with actual Paystack reference
-            try {
-              await fetch("/api/day-pass/confirm-payment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  bookingId: pendingBooking.id,
-                  reference: actualPaystackReference,
-                }),
-              });
-            } catch (err) {
-              console.error("Failed to confirm payment:", err);
-            }
-
-            setBookingId(pendingBooking.id);
-            setPaystackReference(actualPaystackReference);
-            setShowReceiptModal(true);
-            setProcessing(false);
+          // The classic PaystackPop.setup() global script (js.paystack.co/v1/inline.js)
+          // only recognizes "callback" for the success handler — "onSuccess" is a
+          // different API surface (the @paystack/inline-js npm package's class-based
+          // PaystackPop) and is silently ignored here, which is why this never fired.
+          //
+          // Must be a plain (non-async) function: Paystack's validator checks
+          // Object.prototype.toString.call(fn) === "[object Function]", which
+          // an async function fails (it reports "[object AsyncFunction]"),
+          // so passing handlePaymentSuccess directly throws "Attribute
+          // callback must be a valid function" before the popup ever opens.
+          callback: (response: any) => {
+            handlePaymentSuccess(response);
           },
           onClose: () => {
+            if (resolved) return;
+            resolved = true;
+            clearTimeout(stuckTimer);
             setError("Payment cancelled");
             setProcessing(false);
           },
         });
         handler.openIframe();
 
-        // Show receipt modal after 10 seconds (fallback if payment modal doesn't close)
-        setTimeout(() => {
-          setBookingId(pendingBooking.id);
-          setPaystackReference(paystackRef);
-          setShowReceiptModal(true);
+        // Safety net: if Paystack never calls back at all (e.g. its iframe
+        // silently fails to load), recover the UI to an error state after a
+        // generous wait rather than leaving "Processing..." stuck forever.
+        // This never assumes success — only onSuccess (verified server-side
+        // above) can do that.
+        const stuckTimer = setTimeout(() => {
+          if (resolved) return;
+          resolved = true;
+          setError(
+            "The payment window didn't respond. Please try again — if you were charged, contact support with your booking reference.",
+          );
           setProcessing(false);
-        }, 10000);
+        }, 90_000);
+      };
+
+      if (typeof window !== "undefined" && window.PaystackPop) {
+        openPaystackCheckout();
       } else {
-        // Load Paystack script
+        // Load Paystack script, then open the checkout once it's ready
         const script = document.createElement("script");
         script.src = "https://js.paystack.co/v1/inline.js";
         script.async = true;
-        script.onload = () => {
-          if (window.PaystackPop) {
-            const handler = window.PaystackPop.setup({
-              key: paystackKey,
-              email: email,
-              amount: cart.totalAmount * 100,
-              ref: paystackRef,
-              onSuccess: async (response: any) => {
-                // Get the actual Paystack reference from the response
-                const actualPaystackReference =
-                  response.reference || paystackRef;
-
-                // Clear the cart IMMEDIATELY after successful payment (before any redirects)
-                if (typeof window !== "undefined") {
-                  localStorage.removeItem("dayPassCart");
-                  window.dispatchEvent(new Event("cart-updated"));
-                }
-
-                // Mark payment as confirmed with actual Paystack reference with actual Paystack reference
-                try {
-                  await fetch("/api/day-pass/confirm-payment", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      bookingId: pendingBooking.id,
-                      reference: actualPaystackReference,
-                    }),
-                  });
-                } catch (err) {
-                  console.error("Failed to confirm payment:", err);
-                }
-
-                setBookingId(pendingBooking.id);
-                setPaystackReference(actualPaystackReference);
-                setShowReceiptModal(true);
-                setProcessing(false);
-              },
-              onClose: () => {
-                setError("Payment cancelled");
-                setProcessing(false);
-              },
-            });
-            handler.openIframe();
-
-            // Show receipt modal after 10 seconds (fallback if payment modal doesn't close)
-            setTimeout(() => {
-              setBookingId(pendingBooking.id);
-              setPaystackReference(paystackRef);
-              setShowReceiptModal(true);
-              setProcessing(false);
-            }, 10000);
-          }
+        script.onload = openPaystackCheckout;
+        script.onerror = () => {
+          setError("Failed to load payment provider. Please try again.");
+          setProcessing(false);
         };
         document.head.appendChild(script);
       }
@@ -314,6 +359,7 @@ export default function DayPassCheckout() {
     const whatsappUrl = `https://wa.me/+2347047300013?text=${encodeURIComponent(message)}`;
 
     setShowPaymentMethodModal(false);
+    track("whatsapp_click", { context: "daypass-payment" });
     window.open(whatsappUrl, "_blank");
     setProcessing(false);
   };
@@ -322,7 +368,7 @@ export default function DayPassCheckout() {
     return (
       <main className="min-h-screen bg-linear-to-b from-blue-50 to-white flex items-center justify-center px-4">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-blue-900 animate-spin mx-auto mb-4" />
+          <FontAwesomeIcon icon={faSpinner} className="w-12 h-12 text-blue-900 animate-spin mx-auto mb-4" />
           <p className="text-gray-600">Loading...</p>
         </div>
       </main>
@@ -338,7 +384,7 @@ export default function DayPassCheckout() {
             onClick={() => router.back()}
             className="mb-6 flex items-center gap-2 text-blue-900 hover:text-blue-800 transition-colors"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <FontAwesomeIcon icon={faChevronLeft} className="w-5 h-5" />
             <span className="font-medium">Back</span>
           </button>
 
@@ -353,7 +399,7 @@ export default function DayPassCheckout() {
 
                 {error && (
                   <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
+                    <FontAwesomeIcon icon={faCircleExclamation} className="w-5 h-5 mt-0.5 shrink-0" />
                     <span>{error}</span>
                   </div>
                 )}
@@ -462,31 +508,6 @@ export default function DayPassCheckout() {
           </div>
         </div>
       </main>
-
-      {/* Receipt Modal */}
-      {showReceiptModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-in fade-in zoom-in">
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">
-              ✅ Payment Successful
-            </h2>
-            <p className="text-gray-600 text-sm mb-6">
-              Your day-pass booking has been confirmed. Click below to view your
-              receipt and booking details.
-            </p>
-            <button
-              onClick={() => {
-                router.push(
-                  `/day-pass/confirmation?bookingId=${bookingId}&ref=${paystackReference}`,
-                );
-              }}
-              className="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition font-bold text-base shadow-lg"
-            >
-              View Receipt
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Payment Method Modal */}
       <PaymentMethodModal

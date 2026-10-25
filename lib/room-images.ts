@@ -12,6 +12,8 @@ const ROOM_IMAGE_CONFIG: {
   room07: { folder: "overwater-terrace-room", carouselCount: 9 },
   room08: { folder: "overwater-terrace-suite", carouselCount: 5 },
   room09: { folder: "ziba-black", carouselCount: 7 },
+  room10: { folder: "grand-overwater-loft-room", carouselCount: 4 },
+  room11: { folder: "grand-overwater-studio-room", carouselCount: 6 },
 };
 
 /**

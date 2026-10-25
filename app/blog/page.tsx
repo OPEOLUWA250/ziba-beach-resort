@@ -5,7 +5,12 @@ import Footer from "@/components/footer";
 import PageHero from "@/components/page-hero";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { ArrowRight, Calendar, Clock } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowRight,
+  faCalendarDays,
+  faClock,
+} from "@fortawesome/free-solid-svg-icons";
 
 interface BlogPost {
   id: string;
@@ -142,11 +147,11 @@ export default function Blog() {
                             {/* Meta Info */}
                             <div className="flex items-center gap-4 text-xs text-gray-500 font-light pb-4 border-t border-gray-100 pt-4">
                               <div className="flex items-center gap-1">
-                                <Calendar className="w-4 h-4" />
+                                <FontAwesomeIcon icon={faCalendarDays} className="w-4 h-4" />
                                 <span>{postDate}</span>
                               </div>
                               <div className="flex items-center gap-1">
-                                <Clock className="w-4 h-4" />
+                                <FontAwesomeIcon icon={faClock} className="w-4 h-4" />
                                 <span>{post.read_time} min read</span>
                               </div>
                             </div>
@@ -154,7 +159,7 @@ export default function Blog() {
                             {/* CTA Button */}
                             <div className="flex items-center gap-2 text-blue-900 font-light group-hover:gap-3 transition-all mt-4">
                               Read More
-                              <ArrowRight className="w-4 h-4" />
+                              <FontAwesomeIcon icon={faArrowRight} className="w-4 h-4" />
                             </div>
                           </div>
                         </div>

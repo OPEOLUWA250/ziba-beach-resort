@@ -1,9 +1,13 @@
+import { requireAdmin } from "@/lib/server/require-admin";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
  * Simple diagnostic endpoint to test Paystack API connectivity
  */
 export async function POST(request: NextRequest) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const body = await request.json();
     const { reference } = body;

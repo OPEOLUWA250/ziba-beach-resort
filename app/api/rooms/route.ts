@@ -1,9 +1,12 @@
+import { requireAdmin } from "@/lib/server/require-admin";
 import { NextRequest, NextResponse } from "next/server";
-import { getAllRooms, createRoom } from "@/lib/services/rooms";
+import { getAllRooms } from "@/lib/services/rooms";
+import { supabaseServer } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: NextRequest) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function GET(_request: NextRequest) {
   try {
     const rooms = await getAllRooms();
 
@@ -24,6 +27,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const body = await request.json();
     const { title, description, priceNGN, capacity, amenities, images } = body;
@@ -35,16 +41,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const room = await createRoom({
+    const roomId = `room-${Date.now()}`;
+    const now = new Date().toISOString();
+    const { error } = await supabaseServer.from("rooms").insert({
+      id: roomId,
       title,
-      description,
-      priceNGN,
+      description: description || "",
+      pricengn: priceNGN,
       capacity,
-      amenities,
-      images,
+      amenities: amenities || [],
+      images: images || [],
+      status: "available",
+      createdAt: now,
+      updatedAt: now,
     });
 
-    return NextResponse.json(room, { status: 201 });
+    if (error) throw error;
+
+    return NextResponse.json(
+      { id: roomId, title, description, pricengn: priceNGN, capacity, amenities, images, status: "available" },
+      { status: 201 },
+    );
   } catch (error: any) {
     console.error("Error creating room:", error);
     return NextResponse.json(

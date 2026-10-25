@@ -1,79 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { supabaseServer } from "@/lib/supabase/server";
-import { getSessionCookieName, verifyAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/server/require-admin";
+import { canViewBooking } from "@/lib/server/booking-access";
+import { rateLimitByIp, tooManyRequests } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
-async function getSessionAdmin(request: NextRequest) {
-  const token = request.cookies.get(getSessionCookieName())?.value;
-  if (!token) return null;
-
-  const session = verifyAdminSession(token);
-  if (!session) return null;
-
-  const { data: admin } = await supabaseServer
-    .from("admin_users")
-    .select("id, status")
-    .eq("id", session.adminId)
-    .maybeSingle();
-
-  if (!admin || admin.status !== "active") return null;
-  return admin;
-}
-
+/**
+ * Day-pass booking details. Requires `?ref=<paystack ref>` matching the
+ * booking (or an admin session) so booking IDs cannot be enumerated.
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const rate = await rateLimitByIp(request.headers, "api:daypass:get", 60, 60_000);
+    if (!rate.allowed) return tooManyRequests(rate);
+
     const { id } = await params;
 
     if (!id) {
-      console.error("[Day-Pass GET] No ID provided");
       return NextResponse.json(
         { error: "Booking ID required" },
         { status: 400 },
       );
     }
 
-    console.log("[Day-Pass GET] Fetching booking with ID:", id);
-
-    // Initialize Supabase
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !supabaseKey) {
-      console.error("[Day-Pass GET] Missing Supabase credentials");
-      return NextResponse.json(
-        { error: "Server configuration error" },
-        { status: 500 },
-      );
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    console.log("[Day-Pass GET] Querying day_pass_bookings table for ID:", id);
-    const { data, error } = await supabase
+    const { data, error } = await supabaseServer
       .from("day_pass_bookings")
       .select("*")
       .eq("id", id)
-      .single();
+      .maybeSingle();
 
-    if (error) {
-      console.error("[Day-Pass GET] Supabase error:", error);
-      return NextResponse.json(
-        { error: `Database error: ${error.message}` },
-        { status: 404 },
-      );
+    if (error && error.code !== "22P02") {
+      console.error("[Day-Pass GET] Supabase error:", error.message);
+      return NextResponse.json({ error: "Failed to load booking" }, { status: 500 });
     }
 
-    if (!data) {
-      console.error("[Day-Pass GET] No booking found for ID:", id);
+    if (!data || !(await canViewBooking(request, data))) {
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }
-
-    console.log("[Day-Pass GET] Booking found, transforming data");
 
     // Transform database snake_case to camelCase for frontend
     const transformedData = {
@@ -89,14 +56,10 @@ export async function GET(
       paystackReference: data.paystack_reference,
     };
 
-    console.log("[Day-Pass GET] Returning booking data");
     return NextResponse.json(transformedData);
   } catch (err: any) {
-    console.error("[Day-Pass GET] Unexpected error:", err);
-    return NextResponse.json(
-      { error: `Server error: ${err.message}` },
-      { status: 500 },
-    );
+    console.error("[Day-Pass GET] Unexpected error:", err?.message);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
 
@@ -105,10 +68,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const actor = await getSessionAdmin(request);
-    if (!actor) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const auth = await requireAdmin(request);
+    if (auth.response) return auth.response;
 
     const { id } = await params;
     if (!id) {
@@ -124,7 +85,7 @@ export async function DELETE(
       .eq("id", id);
 
     if (error) {
-      console.error("[Day-Pass DELETE] Supabase error:", error);
+      console.error("[Day-Pass DELETE] Supabase error:", error.message);
       return NextResponse.json(
         { error: `Failed to delete booking: ${error.message}` },
         { status: 500 },
@@ -133,10 +94,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    console.error("[Day-Pass DELETE] Unexpected error:", err);
-    return NextResponse.json(
-      { error: `Server error: ${err.message}` },
-      { status: 500 },
-    );
+    console.error("[Day-Pass DELETE] Unexpected error:", err?.message);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

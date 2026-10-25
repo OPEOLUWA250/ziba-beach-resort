@@ -4,7 +4,8 @@ import Header from "../../components/header";
 import Footer from "../../components/footer";
 import PageHero from "../../components/page-hero";
 import Ratings from "../../components/ratings";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,9 +14,6 @@ import { getRoomHeroImage } from "../../lib/room-images";
 export default function OurStory() {
   const headingFont = { fontFamily: "Cormorant Garamond, serif" };
 
-  const [expandedPolicy, setExpandedPolicy] = useState<string | null>(
-    "overview",
-  );
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isHovering, setIsHovering] = useState(false);
   const animationRef = useRef<number | null>(null);
@@ -120,7 +118,7 @@ export default function OurStory() {
         return;
       }
 
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      const { scrollWidth } = scrollRef.current;
       const oneSetWidth = scrollWidth / 2;
 
       scrollRef.current.scrollLeft += 1.5;
@@ -168,7 +166,7 @@ export default function OurStory() {
 
             <div className="space-y-8 text-center text-lg text-gray-700 font-light leading-relaxed max-w-3xl mx-auto">
               <p>
-                Welcome to Ziba Beach Resort, where nature's beauty is
+                Welcome to Ziba Beach Resort, where nature&apos;s beauty is
                 represented in pristine luxury with your relaxation needs in
                 mind!
               </p>
@@ -459,7 +457,7 @@ export default function OurStory() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <button className="bg-linear-to-r from-blue-900 to-blue-800 text-white px-8 py-3 rounded-lg font-light hover:shadow-lg hover:scale-105 transition-all duration-300">
+                <button className="bg-blue-900 hover:bg-blue-800 text-white px-8 py-3 rounded-lg font-light hover:shadow-lg hover:scale-105 transition-all duration-300">
                   Inquire About Team Bonding
                 </button>
               </a>
@@ -486,7 +484,7 @@ export default function OurStory() {
                     World-Class Events
                   </h3>
                   <p className="text-gray-700 font-light leading-relaxed mb-6">
-                    Host your next meeting or event at Ziba's versatile hall,
+                    Host your next meeting or event at Ziba&apos;s versatile hall,
                     comfortably accommodating up to 85 guests. The space is
                     fully equipped with projector, speakers, Wi-Fi, and beverage
                     service.
@@ -496,7 +494,7 @@ export default function OurStory() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <button className="bg-linear-to-r from-blue-900 to-blue-800 text-white px-6 py-2 rounded-lg font-light hover:shadow-lg transition-all duration-300">
+                    <button className="bg-blue-900 hover:bg-blue-800 text-white px-6 py-2 rounded-lg font-light hover:shadow-lg transition-all duration-300">
                       Book Event Space
                     </button>
                   </a>
@@ -524,7 +522,7 @@ export default function OurStory() {
                     fuel to start your day right.
                   </p>
                   <Link href="/menu">
-                    <button className="bg-linear-to-br from-blue-900 to-blue-800 text-white px-6 py-2 rounded-lg font-light hover:shadow-lg transition-all duration-300 hover:from-blue-800 hover:to-blue-700">
+                    <button className="bg-blue-900 hover:bg-blue-800 text-white px-6 py-2 rounded-lg font-light hover:shadow-lg transition-all duration-300">
                       View Menu
                     </button>
                   </Link>
@@ -600,7 +598,7 @@ export default function OurStory() {
                 onClick={() => scroll("left")}
                 className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all"
               >
-                <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
+                <FontAwesomeIcon icon={faChevronLeft} className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
 
               {/* Right Arrow */}
@@ -608,7 +606,7 @@ export default function OurStory() {
                 onClick={() => scroll("right")}
                 className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 transition-all"
               >
-                <ChevronRight size={20} className="sm:w-6 sm:h-6" />
+                <FontAwesomeIcon icon={faChevronRight} className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
 
@@ -621,7 +619,7 @@ export default function OurStory() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <button className="bg-linear-to-r from-blue-900 to-blue-800 text-white px-8 py-3 rounded-lg font-light hover:shadow-lg hover:scale-105 transition-all duration-300">
+                <button className="bg-blue-900 hover:bg-blue-800 text-white px-8 py-3 rounded-lg font-light hover:shadow-lg hover:scale-105 transition-all duration-300">
                   Explore Partnership Opportunities
                 </button>
               </a>

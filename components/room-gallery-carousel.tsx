@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faChevronRight,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 
 interface RoomGalleryProps {
@@ -61,7 +66,7 @@ export default function RoomGalleryCarousel({
         return;
       }
 
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      const { scrollWidth, clientWidth } = scrollRef.current;
       const maxScroll = scrollWidth - clientWidth;
 
       // Continuously scroll right
@@ -178,7 +183,10 @@ export default function RoomGalleryCarousel({
           disabled={!canScrollLeft}
           className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
-          <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
+          <FontAwesomeIcon
+            icon={faChevronLeft}
+            className="h-5 w-5 sm:w-6 sm:h-6"
+          />
         </button>
 
         {/* Right Arrow */}
@@ -187,7 +195,10 @@ export default function RoomGalleryCarousel({
           disabled={!canScrollRight}
           className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
-          <ChevronRight size={20} className="sm:w-6 sm:h-6" />
+          <FontAwesomeIcon
+            icon={faChevronRight}
+            className="h-5 w-5 sm:w-6 sm:h-6"
+          />
         </button>
       </div>
 
@@ -244,7 +255,7 @@ export default function RoomGalleryCarousel({
               className="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-white/20 text-white hover:bg-white/40 transition-all backdrop-blur-sm"
               aria-label="Previous image"
             >
-              <ChevronLeft size={32} />
+              <FontAwesomeIcon icon={faChevronLeft} className="h-8 w-8" />
             </button>
 
             {/* Right Arrow */}
@@ -257,7 +268,7 @@ export default function RoomGalleryCarousel({
               className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-12 h-12 rounded-full bg-white/20 text-white hover:bg-white/40 transition-all backdrop-blur-sm"
               aria-label="Next image"
             >
-              <ChevronRight size={32} />
+              <FontAwesomeIcon icon={faChevronRight} className="h-8 w-8" />
             </button>
 
             {/* Close Button */}
@@ -266,7 +277,7 @@ export default function RoomGalleryCarousel({
               className="absolute top-4 right-4 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-white/20 text-white hover:bg-white/40 transition-all backdrop-blur-sm"
               aria-label="Close"
             >
-              <X size={32} />
+              <FontAwesomeIcon icon={faXmark} className="h-8 w-8" />
             </button>
 
             {/* Image Counter */}

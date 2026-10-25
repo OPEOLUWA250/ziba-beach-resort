@@ -24,7 +24,7 @@ export function middleware(request: NextRequest) {
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   response.headers.set(
     "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=(), payment=(self)",
+    'camera=(), microphone=(), geolocation=(), payment=(self "https://checkout.paystack.com" "https://js.paystack.co" "https://standard.paystack.co")',
   );
 
   if (process.env.NODE_ENV === "production") {
@@ -34,7 +34,15 @@ export function middleware(request: NextRequest) {
     );
   }
 
-  if (pathname.startsWith("/api")) {
+  // Default API responses to no-store, except public GET endpoints that set
+  // their own CDN caching (popups: s-maxage + SWR; Instagram: revalidate).
+  const cacheableApi =
+    request.method === "GET" &&
+    (pathname === "/api/popups" ||
+      pathname === "/api/instagram/feed" ||
+      pathname === "/api/reviews");
+
+  if (pathname.startsWith("/api") && !cacheableApi) {
     response.headers.set("Cache-Control", "no-store");
   }
 

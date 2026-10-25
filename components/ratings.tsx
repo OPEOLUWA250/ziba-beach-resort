@@ -1,22 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Star } from "lucide-react";
+import {
+  GOOGLE_REVIEWS_SEARCH_URL,
+  useGoogleReviews,
+} from "@/hooks/use-google-reviews";
 
-const ratings = [
-  {
-    platform: "Google Reviews",
-    rating: "Fantastic",
-    details: "Based on 1062 Reviews",
-    icon: "🔍",
-    color: "from-blue-900 to-blue-800",
-    textColor: "text-blue-700",
-    accentColor: "bg-blue-500",
-  },
+// Booking.com and TripAdvisor scores have no public API; they are maintained
+// by hand from the scores shown on zibabeachresort.com (checked 2026-10-24).
+// The Google figure is live (see hooks/use-google-reviews.ts).
+const STATIC_RATINGS = [
   {
     platform: "Booking.com",
     rating: "9.3/10",
-    details: "Exceptional Rating",
+    details: "Guest review score",
     icon: "✓",
     color: "from-cyan-500 to-teal-600",
     textColor: "text-teal-600",
@@ -25,7 +22,7 @@ const ratings = [
   {
     platform: "TripAdvisor",
     rating: "4.4/5",
-    details: "Highly Rated",
+    details: "Traveller rating",
     icon: "★",
     color: "from-amber-500 to-orange-600",
     textColor: "text-orange-600",
@@ -36,6 +33,24 @@ const ratings = [
 export default function Ratings() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
+  const { data } = useGoogleReviews();
+
+  const ratings = [
+    {
+      platform: "Google Reviews",
+      rating: data?.rating != null ? `${data.rating.toFixed(1)}/5` : "Google",
+      details:
+        data?.totalReviews != null
+          ? `Based on ${data.totalReviews.toLocaleString("en-NG")} reviews`
+          : "Read our reviews",
+      href: data?.mapsUrl || GOOGLE_REVIEWS_SEARCH_URL,
+      icon: "🔍",
+      color: "from-blue-900 to-blue-800",
+      textColor: "text-blue-700",
+      accentColor: "bg-blue-500",
+    },
+    ...STATIC_RATINGS.map((item) => ({ ...item, href: null as string | null })),
+  ];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -106,7 +121,18 @@ export default function Ratings() {
 
                 {/* Details */}
                 <p className="text-gray-600 font-light text-sm mb-4">
-                  {item.details}
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline"
+                    >
+                      {item.details}
+                    </a>
+                  ) : (
+                    item.details
+                  )}
                 </p>
 
                 {/* Bottom accent line */}

@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, KeyRound } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash, faKey } from "@fortawesome/free-solid-svg-icons";
+
+// Return to the admin page that sent us here (e.g. a scanned check-in QR
+// code). Only same-site /admin paths are honoured, never external URLs.
+function postLoginPath() {
+  const next = new URLSearchParams(window.location.search).get("next") || "";
+  return /^\/admin(\/[A-Za-z0-9\-/]*)?$/.test(next) ? next : "/admin/operations";
+}
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -70,7 +78,7 @@ export default function AdminLoginPage() {
         return;
       }
 
-      router.push("/admin/operations");
+      router.push(postLoginPath());
     } catch {
       setError("Unable to login. Please try again.");
       setFailedLoginAttempts((prev) => prev + 1);
@@ -110,7 +118,7 @@ export default function AdminLoginPage() {
       setRecoveryKey("");
       setNewRecoveryPassword("");
       setRecoveryIdentifier("");
-      router.push("/admin/operations");
+      router.push(postLoginPath());
     } catch {
       setRecoveryError("Unable to recover account. Please try again.");
     } finally {
@@ -160,7 +168,11 @@ export default function AdminLoginPage() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? (
+                  <FontAwesomeIcon icon={faEyeSlash} className="h-[18px] w-[18px]" />
+                ) : (
+                  <FontAwesomeIcon icon={faEye} className="h-[18px] w-[18px]" />
+                )}
               </button>
             </div>
           </div>
@@ -168,7 +180,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700 text-white rounded-lg py-3 font-semibold disabled:opacity-60"
+            className="w-full bg-blue-900 hover:bg-blue-800 text-white rounded-lg py-3 font-semibold disabled:opacity-60"
           >
             {isLoading ? "Signing in..." : "Sign In"}
           </button>
@@ -185,7 +197,7 @@ export default function AdminLoginPage() {
               }}
               className="w-full text-left flex items-center gap-2 text-amber-300 hover:text-amber-200 text-sm"
             >
-              <KeyRound size={16} /> Emergency SUPER_ADMIN recovery
+              <FontAwesomeIcon icon={faKey} className="h-4 w-4" /> Emergency SUPER_ADMIN recovery
             </button>
 
             {showRecoveryForm && (

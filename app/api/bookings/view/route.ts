@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBookingByReference } from "@/lib/services/booking";
+import { rateLimitByIp, tooManyRequests } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
+    const rate = await rateLimitByIp(request.headers, "api:bookings:view", 20, 60_000);
+    if (!rate.allowed) return tooManyRequests(rate);
+
     const searchParams = request.nextUrl.searchParams;
     const ref = searchParams.get("ref");
     const email = searchParams.get("email");
@@ -32,10 +36,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Error fetching booking:", error);
     return NextResponse.json(
-      {
-        error:
-          error instanceof Error ? error.message : "Failed to fetch booking",
-      },
+      { error: "Failed to fetch booking" },
       { status: 500 },
     );
   }

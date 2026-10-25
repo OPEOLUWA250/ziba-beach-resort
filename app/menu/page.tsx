@@ -2,14 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Cormorant_Garamond } from "next/font/google";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-});
 
 interface MenuItem {
   id: string;
@@ -27,8 +21,6 @@ interface MenuCategory {
   isActive: boolean;
   items: MenuItem[];
 }
-
-type MenuProps = {};
 
 export default function Menu() {
   const [categories, setCategories] = useState<MenuCategory[]>([]);
@@ -214,7 +206,7 @@ export default function Menu() {
               Reserve your table or book your stay at Ziba Beach Resort
             </p>
             <Link href="/day-pass">
-              <button className="bg-linear-to-br from-white to-blue-50 text-blue-900 px-10 py-4 rounded-lg font-light hover:shadow-lg transition-all duration-300 hover:from-blue-50 hover:to-white text-lgxt-lg cursor-pointer">
+              <button className="bg-white hover:bg-blue-50 text-blue-900 px-10 py-4 rounded-lg font-light hover:shadow-lg transition-all duration-300 text-lgxt-lg cursor-pointer">
                 Make a Reservation
               </button>
             </Link>

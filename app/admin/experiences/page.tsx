@@ -1,15 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Plus,
-  Edit,
-  Trash2,
-  X,
-  Check,
-  Loader,
-  AlertCircle,
-} from "lucide-react";
+  faPlus,
+  faPenToSquare,
+  faTrashCan,
+  faXmark,
+  faCheck,
+  faSpinner,
+  faCircleExclamation,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   getAllExperiences,
   createExperience,
@@ -111,7 +112,7 @@ const ExperienceCard = ({
             disabled={isUpdating}
             className="w-full py-2 px-3 rounded-lg font-semibold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
           >
-            <Edit size={16} />
+            <FontAwesomeIcon icon={faPenToSquare} className="h-4 w-4" />
             Edit
           </button>
           <button
@@ -119,7 +120,7 @@ const ExperienceCard = ({
             disabled={isUpdating}
             className="w-full py-2 px-3 rounded-lg font-semibold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white"
           >
-            <Trash2 size={16} />
+            <FontAwesomeIcon icon={faTrashCan} className="h-4 w-4" />
             Delete
           </button>
         </div>
@@ -137,7 +138,7 @@ const ExperienceCard = ({
                 onClick={() => setShowDeleteModal(false)}
                 className="text-white hover:bg-white/20 p-1 rounded transition"
               >
-                <X size={20} />
+                <FontAwesomeIcon icon={faXmark} className="h-5 w-5" />
               </button>
             </div>
             <div className="p-6 space-y-6">
@@ -160,9 +161,12 @@ const ExperienceCard = ({
                   className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition disabled:opacity-50 font-semibold flex items-center justify-center gap-2"
                 >
                   {isUpdating ? (
-                    <Loader size={18} className="animate-spin" />
+                    <FontAwesomeIcon
+                      icon={faSpinner}
+                      className="h-4.5 w-4.5 animate-spin"
+                    />
                   ) : (
-                    <Trash2 size={18} />
+                    <FontAwesomeIcon icon={faTrashCan} className="h-4.5 w-4.5" />
                   )}
                   Delete
                 </button>
@@ -315,10 +319,10 @@ export default function ExperiencesManagement() {
           </div>
           <button
             onClick={handleAddNew}
-            className="bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center gap-2"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center gap-2"
             disabled={isUpdating}
           >
-            <Plus size={20} />
+            <FontAwesomeIcon icon={faPlus} className="h-5 w-5" />
             Add Experience
           </button>
         </div>
@@ -354,9 +358,9 @@ export default function ExperiencesManagement() {
         {/* Error Message */}
         {errorMessage && (
           <div className="mb-6 p-4 bg-red-900/20 border border-red-500/50 rounded-xl flex items-start gap-3">
-            <AlertCircle
-              size={20}
-              className="text-red-400 shrink-0 mt-0.5"
+            <FontAwesomeIcon
+              icon={faCircleExclamation}
+              className="text-red-400 shrink-0 mt-0.5 h-5 w-5"
             />
             <div>
               <p className="text-red-400 font-semibold">Error</p>
@@ -368,15 +372,18 @@ export default function ExperiencesManagement() {
         {/* Loading State */}
         {isLoading ? (
           <div className="text-center py-16">
-            <Loader
-              size={48}
-              className="mx-auto mb-4 text-gray-500 animate-spin"
+            <FontAwesomeIcon
+              icon={faSpinner}
+              className="mx-auto mb-4 text-gray-500 animate-spin h-12 w-12"
             />
             <p className="text-gray-400 text-lg">Loading experiences...</p>
           </div>
         ) : experiences.length === 0 ? (
           <div className="text-center py-16">
-            <AlertCircle size={48} className="mx-auto mb-4 text-gray-600" />
+            <FontAwesomeIcon
+              icon={faCircleExclamation}
+              className="mx-auto mb-4 text-gray-600 h-12 w-12"
+            />
             <p className="text-gray-400 text-lg mb-2">No experiences found</p>
             <p className="text-gray-500 text-sm">
               Create your first experience to get started
@@ -481,7 +488,7 @@ export default function ExperiencesManagement() {
                   }}
                   className="text-white hover:bg-white/20 p-1 rounded transition"
                 >
-                  <X size={20} />
+                  <FontAwesomeIcon icon={faXmark} className="h-5 w-5" />
                 </button>
               </div>
               <div className="p-6 space-y-4 overflow-y-auto">
@@ -583,9 +590,12 @@ export default function ExperiencesManagement() {
                     className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition disabled:opacity-50 font-semibold flex items-center justify-center gap-2"
                   >
                     {isUpdating ? (
-                      <Loader size={18} className="animate-spin" />
+                      <FontAwesomeIcon
+                        icon={faSpinner}
+                        className="h-4.5 w-4.5 animate-spin"
+                      />
                     ) : (
-                      <Check size={18} />
+                      <FontAwesomeIcon icon={faCheck} className="h-4.5 w-4.5" />
                     )}
                     Save
                   </button>
@@ -596,7 +606,7 @@ export default function ExperiencesManagement() {
                     }}
                     className="w-full py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg transition font-semibold flex items-center justify-center gap-2"
                   >
-                    <X size={18} />
+                    <FontAwesomeIcon icon={faXmark} className="h-4.5 w-4.5" />
                     Cancel
                   </button>
                 </div>

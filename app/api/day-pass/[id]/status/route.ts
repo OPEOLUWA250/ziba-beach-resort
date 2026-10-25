@@ -1,78 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "@/lib/server/require-admin";
+import { transitionBookingStatus } from "@/lib/server/status-update";
+import { DAY_PASS_STATUS_TRANSITIONS } from "@/lib/security/validators";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Update day-pass booking status
+ * Update day-pass booking status (admin only)
  * Allowed status transitions:
  * - PENDING → CONFIRMED (admin approval)
  * - CONFIRMED → ACTIVATED (guest arrival - activate day pass)
  * - ACTIVATED → COMPLETED (guest checkout)
- * - Any → CANCELLED (admin cancellation)
+ * - Any non-final → CANCELLED (admin cancellation)
  */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const auth = await requireAdmin(request);
+    if (auth.response) return auth.response;
+
     const { id } = await params;
-    const body = await request.json();
-    const { status } = body;
-
-    if (!id || !status) {
-      return NextResponse.json(
-        { error: "Missing booking ID or status" },
-        { status: 400 },
-      );
-    }
-
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !serviceRoleKey) {
-      return NextResponse.json(
-        { error: "Server configuration error" },
-        { status: 500 },
-      );
-    }
-
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
-
-    // Update day-pass booking status
-    const { data, error } = await supabase
-      .from("day_pass_bookings")
-      .update({ payment_status: status })
-      .eq("id", id)
-      .select();
-
-    if (error) {
-      console.error("[Day-Pass Status Update] Database error:", error);
-      return NextResponse.json(
-        { error: `Failed to update booking: ${error.message}` },
-        { status: 500 },
-      );
-    }
-
-    if (!data || data.length === 0) {
-      return NextResponse.json(
-        { error: "Day-pass booking not found" },
-        { status: 404 },
-      );
-    }
-
-    console.log(`[Day-Pass Status Update] Booking ${id} updated to ${status}`);
-
-    return NextResponse.json({
-      success: true,
-      message: `Day-pass booking updated to ${status}`,
-      booking: data[0],
-    });
+    const body = await request.json().catch(() => ({}));
+    return await transitionBookingStatus("day_pass_bookings", id, body?.status, DAY_PASS_STATUS_TRANSITIONS);
   } catch (error: any) {
-    console.error("[Day-Pass Status Update] Error:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to update day-pass booking status" },
-      { status: 500 },
-    );
+    console.error("[Day-Pass Status Update] Error:", error?.message);
+    return NextResponse.json({ error: "Failed to update booking status" }, { status: 500 });
   }
 }

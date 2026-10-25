@@ -2,7 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Heart, Users, Briefcase, Camera } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHeart,
+  faUsers,
+  faBriefcase,
+  faCamera,
+} from "@fortawesome/free-solid-svg-icons";
 
 const highlights = [
   {
@@ -10,7 +16,7 @@ const highlights = [
     title: "Honeymoon Experience",
     description:
       "Create unforgettable romantic moments with our specially curated honeymoon packages. From sunset picnics to floating breakfasts and couple massages.",
-    icon: Heart,
+    icon: faHeart,
     gradient: "from-rose-500 to-pink-600",
     lightGradient: "from-rose-50 to-pink-50",
   },
@@ -19,7 +25,7 @@ const highlights = [
     title: "Team Bonding",
     description:
       "Strengthen relationships and boost team morale with our exclusive team bonding activities and experiences designed for corporate groups.",
-    icon: Users,
+    icon: faUsers,
     gradient: "from-blue-500 to-cyan-600",
     lightGradient: "from-blue-50 to-cyan-50",
   },
@@ -28,7 +34,7 @@ const highlights = [
     title: "Conference Hall",
     description:
       "Host your corporate events, seminars, and conferences in our world-class conference facilities with full amenities and support services.",
-    icon: Briefcase,
+    icon: faBriefcase,
     gradient: "from-purple-500 to-indigo-600",
     lightGradient: "from-purple-50 to-indigo-50",
   },
@@ -37,7 +43,7 @@ const highlights = [
     title: "Professional Photoshoot",
     description:
       "Capture your precious moments with our professional photography services. Perfect for special occasions, events, and creating lasting memories at Ziba.",
-    icon: Camera,
+    icon: faCamera,
     gradient: "from-indigo-500 to-purple-600",
     lightGradient: "from-indigo-50 to-purple-50",
   },
@@ -79,7 +85,7 @@ export default function ExperienceHighlights() {
           }`}
         >
           <h2 className="h2 text-blue-900 mb-6" style={headingFont}>
-            Celebrate Life's Moments
+            Celebrate Life&apos;s Moments
           </h2>
           <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
           <p className="text-lg text-gray-600 font-light max-w-2xl mx-auto">
@@ -91,7 +97,6 @@ export default function ExperienceHighlights() {
         {/* Highlights Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {highlights.map((item, idx) => {
-            const Icon = item.icon;
             return (
               <Link href="/experience" key={item.id}>
                 <div
@@ -120,7 +125,7 @@ export default function ExperienceHighlights() {
                     <div
                       className={`w-12 h-12 rounded-lg bg-linear-to-br ${item.gradient} flex items-center justify-center mb-4 transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500`}
                     >
-                      <Icon className="w-6 h-6 text-white" />
+                      <FontAwesomeIcon icon={item.icon} className="w-6 h-6 text-white" />
                     </div>
 
                     {/* Title */}
@@ -167,7 +172,7 @@ export default function ExperienceHighlights() {
           }}
         >
           <Link href="/experience">
-            <button className="px-10 py-4 bg-linear-to-r from-blue-900 to-blue-800 text-white font-light tracking-wide rounded-lg hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-xl">
+            <button className="px-10 py-4 bg-blue-900 hover:bg-blue-800 text-white font-light tracking-wide rounded-lg transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-xl">
               Explore All Experiences
             </button>
           </Link>

@@ -3,98 +3,48 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { Cormorant_Garamond } from "next/font/google";
 import { getRoomHeroImage } from "@/lib/room-images";
+import { ROOM_CATALOG, ROOM_IDS } from "@/lib/room-catalog";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const rooms = [
-  {
-    id: "room01",
-    name: "Beach Facing Room",
-    type: "Single",
-    description:
-      "Intimate overwater space with direct ocean access and floor-to-ceiling views.",
-    icon: "🌊",
-    features: ["Ocean Access", "Ceiling Windows", "Private Deck"],
-  },
-  {
-    id: "room02",
-    name: "Beach Facing Family Room",
-    type: "Family",
-    description:
-      "Spacious room perfect for families, featuring partial or full ocean views.",
-    icon: "👨‍👩‍👧‍👦",
-    features: ["Family Sized", "Ocean Views", "Spacious Layout"],
-  },
-  {
-    id: "room03",
-    name: "Beach Facing Family Room",
-    type: "Family",
-    description:
-      "Spacious room with full pool view, perfect for families seeking premium comfort.",
-    icon: "👨‍👩‍👧‍👦",
-    features: ["Full Pool View", "Family Friendly", "Premium Comfort"],
-  },
-  {
-    id: "room04",
-    name: "Beach Facing Connecting Room",
-    type: "Group",
-    description:
-      "Two adjoining rooms ideal for larger groups and extended families.",
-    icon: "🚪",
-    features: ["2 Adjoining Rooms", "Group Friendly", "Flexible Layout"],
-  },
-  {
-    id: "room05",
-    name: "Beach Facing Suite",
-    type: "Suite",
-    description:
-      "Spacious suite with living room and premium views overlooking the beach.",
-    icon: "🛋️",
-    features: ["Living Room", "Sofa Bed", "Beach View"],
-  },
-  {
-    id: "room06",
-    name: "Two Bedroom Apartment",
-    type: "Residence",
-    description:
-      "Spacious two-bedroom apartment with private pool and stunning ocean views.",
-    icon: "🏠",
-    features: ["2 Bedrooms", "Private Pool", "Ocean View"],
-  },
-  {
-    id: "room07",
-    name: "Overwater Terrace Room",
-    type: "Premium",
-    description:
-      "Premium terrace room with direct water access and exclusive amenities.",
-    icon: "🏝️",
-    features: ["Direct Water Access", "Private Terrace", "Premium Access"],
-  },
-  {
-    id: "room08",
-    name: "Overwater Terrace Suite",
-    type: "Luxury",
-    description:
-      "Spacious luxury suite with wooden deck and exclusive pool access.",
-    icon: "✨",
-    features: ["Wooden Deck", "Pool Access", "Luxury Suite"],
-  },
-  {
-    id: "room09",
-    name: "Ziba Black",
-    type: "Exclusive",
-    description:
-      "Our most exclusive suite with premium black design and maximum elegance.",
-    icon: "🖤",
-    features: ["Premium Design", "Exclusive Suite", "Maximum Luxury"],
-  },
-];
+function roomType(id: string, name: string) {
+  if (name.includes("Overwater")) return "Overwater";
+  if (name.includes("Apartment")) return "Apartment";
+  if (name.includes("Family")) return "Family";
+  if (name.includes("Suite")) return "Suite";
+  return id === "room09" ? "Signature" : "Beach Facing";
+}
+
+const TYPE_ICONS: Record<string, string> = {
+  Overwater: "🌊",
+  Apartment: "🏡",
+  Family: "👨‍👩‍👧‍👦",
+  Suite: "✨",
+  Signature: "🖤",
+  "Beach Facing": "🏖️",
+};
+
+// Card content is derived from the shared room catalogue (facts from the
+// resort's own room pages).
+const rooms = ROOM_IDS.map((id) => {
+  const room = ROOM_CATALOG[id];
+  const type = roomType(id, room.name);
+  return {
+    id,
+    name: room.name,
+    type,
+    description: room.description,
+    icon: TYPE_ICONS[type],
+    features: room.features.slice(0, 3),
+  };
+});
 
 export default function Rooms() {
   const [isVisible, setIsVisible] = useState(false);
@@ -261,7 +211,7 @@ export default function Rooms() {
                 >
                   <div className="flex items-center justify-center gap-2 w-full">
                     <span>View Room Details</span>
-                    <ArrowRight size={20} />
+                    <FontAwesomeIcon icon={faArrowRight} className="h-5 w-5" />
                   </div>
                 </Link>
               </div>

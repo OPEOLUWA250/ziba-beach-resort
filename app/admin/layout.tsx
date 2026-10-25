@@ -3,32 +3,37 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  LayoutDashboard,
-  Calendar,
-  DoorOpen,
-  Wrench,
-  LogOut,
-  Menu,
-  X,
-  ChevronRight,
-  ShieldCheck,
-  UtensilsCrossed,
-  BookOpen,
-  Zap,
-  Ticket,
-} from "lucide-react";
+  faGauge,
+  faCalendarDays,
+  faDoorOpen,
+  faWrench,
+  faRightFromBracket,
+  faBars,
+  faXmark,
+  faChevronRight,
+  faShieldHalved,
+  faUtensils,
+  faBookOpen,
+  faBolt,
+  faTicket,
+  faQrcode,
+  faChartLine,
+} from "@fortawesome/free-solid-svg-icons";
 
 const adminNavItems = [
-  { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { label: "Operations", href: "/admin/operations", icon: Wrench },
-  { label: "Bookings", href: "/admin/bookings", icon: Calendar },
-  { label: "Rooms", href: "/admin/rooms", icon: DoorOpen },
-  { label: "Experiences", href: "/admin/experiences", icon: Ticket },
-  { label: "Menus", href: "/admin/menus", icon: UtensilsCrossed },
-  { label: "Blog", href: "/admin/blog", icon: BookOpen },
-  { label: "Popups", href: "/admin/popups", icon: Zap },
-  { label: "Admin System", href: "/admin/users", icon: ShieldCheck },
+  { label: "Dashboard", href: "/admin", icon: faGauge },
+  { label: "Operations", href: "/admin/operations", icon: faWrench },
+  { label: "Day-Pass Check-in", href: "/admin/check-in", icon: faQrcode },
+  { label: "Bookings", href: "/admin/bookings", icon: faCalendarDays },
+  { label: "Insights", href: "/admin/insights", icon: faChartLine },
+  { label: "Rooms", href: "/admin/rooms", icon: faDoorOpen },
+  { label: "Experiences", href: "/admin/experiences", icon: faTicket },
+  { label: "Menus", href: "/admin/menus", icon: faUtensils },
+  { label: "Blog", href: "/admin/blog", icon: faBookOpen },
+  { label: "Popups", href: "/admin/popups", icon: faBolt },
+  { label: "Admin System", href: "/admin/users", icon: faShieldHalved },
 ];
 
 export default function AdminLayout({
@@ -38,7 +43,6 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
   const [adminProfile, setAdminProfile] = useState<{
@@ -207,14 +211,13 @@ export default function AdminLayout({
             onClick={() => setMobileMenuOpen(false)}
             className="md:hidden text-gray-400 hover:text-white"
           >
-            <X size={20} />
+            <FontAwesomeIcon icon={faXmark} className="h-5 w-5" />
           </button>
         </div>
 
         {/* Navigation */}
         <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {filteredNavItems.map((item) => {
-            const Icon = item.icon;
             const active = isActive(item.href);
 
             return (
@@ -228,9 +231,14 @@ export default function AdminLayout({
                     : "text-gray-400 hover:text-white hover:bg-gray-800/50"
                 }`}
               >
-                <Icon size={20} />
+                <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
                 <span className="font-medium">{item.label}</span>
-                {active && <ChevronRight size={16} className="ml-auto" />}
+                {active && (
+                  <FontAwesomeIcon
+                    icon={faChevronRight}
+                    className="ml-auto h-4 w-4"
+                  />
+                )}
               </Link>
             );
           })}
@@ -255,7 +263,7 @@ export default function AdminLayout({
             onClick={handleLogout}
             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-gray-300 hover:text-red-400 hover:bg-red-900/20 border border-transparent hover:border-red-900/50 transition-all duration-200 font-medium text-sm"
           >
-            <LogOut size={18} />
+            <FontAwesomeIcon icon={faRightFromBracket} className="h-4.5 w-4.5" />
             <span>Logout</span>
           </button>
         </div>
@@ -270,7 +278,7 @@ export default function AdminLayout({
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden text-gray-400 hover:text-white"
             >
-              <Menu size={24} />
+              <FontAwesomeIcon icon={faBars} className="h-6 w-6" />
             </button>
             <h2 className="text-2xl font-light text-white cormorant">
               Admin Dashboard

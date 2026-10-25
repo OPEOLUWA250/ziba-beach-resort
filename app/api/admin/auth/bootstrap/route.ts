@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimitByIp, tooManyRequests } from "@/lib/security/rate-limit";
 import { supabaseServer } from "@/lib/supabase/server";
 import {
   hashAdminPassword,
@@ -9,6 +10,9 @@ import {
 } from "@/lib/admin-auth";
 
 export async function POST(request: NextRequest) {
+  const rate = await rateLimitByIp(request.headers, "api:admin:bootstrap", 5, 15 * 60_000);
+  if (!rate.allowed) return tooManyRequests(rate);
+
   try {
     const body = await request.json();
     const { username, email, password } = body;
@@ -70,6 +74,15 @@ export async function POST(request: NextRequest) {
       .select("id, username, email, role")
       .single();
 
+    // A concurrent bootstrap won the race: the partial unique index
+    // idx_admin_users_single_super_admin rejects a second SUPER_ADMIN.
+    if (insertError?.code === "23505") {
+      return NextResponse.json(
+        { error: "SUPER_ADMIN already exists" },
+        { status: 409 },
+      );
+    }
+
     if (insertError || !created) {
       throw insertError || new Error("Failed to create SUPER_ADMIN");
     }
@@ -98,9 +111,9 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error: any) {
-    console.error("Error bootstrapping admin:", error);
+    console.error("Error bootstrapping admin:", error?.message);
     return NextResponse.json(
-      { error: error.message || "Failed to bootstrap admin" },
+      { error: "Failed to bootstrap admin" },
       { status: 500 },
     );
   }

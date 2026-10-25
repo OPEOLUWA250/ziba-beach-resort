@@ -1,5 +1,6 @@
+import { requireAdmin } from "@/lib/server/require-admin";
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { supabaseServer, isSupabaseConfigured } from "@/lib/supabase/server";
 
 export async function GET(
@@ -51,6 +52,9 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     // Check if Supabase is configured
     if (!isSupabaseConfigured()) {
@@ -185,7 +189,6 @@ export async function PUT(
         code: error.code,
         details: error.details,
         hint: error.hint,
-        status: error.status,
       });
       return NextResponse.json(
         {
@@ -252,6 +255,9 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     // Check if Supabase is configured
     if (!isSupabaseConfigured()) {

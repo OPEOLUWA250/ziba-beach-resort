@@ -10,7 +10,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const rate = rateLimitByIp(
+    const rate = await rateLimitByIp(
       request.headers,
       "api:user:register",
       15,

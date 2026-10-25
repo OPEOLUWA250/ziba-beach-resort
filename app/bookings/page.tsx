@@ -4,11 +4,17 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import PageHero from "@/components/page-hero";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { getRoomHeroImage } from "@/lib/room-images";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { getAllRooms } from "@/lib/services/rooms";
+import {
+  ROOM_CATALOG,
+  ROOM_IDS,
+  formatPriceFrom,
+} from "@/lib/room-catalog";
 
 function PoliciesSection() {
   const [expandedPolicy, setExpandedPolicy] = useState<string | null>(
@@ -146,215 +152,59 @@ function PoliciesSection() {
 }
 
 export default function Stay() {
-  // Static room configuration data
-  const roomConfig = {
-    room01: {
-      number: "01",
-      name: "Beach Facing Room",
-      size: "19m²",
-      capacity: "Up to 3 guests",
-      bedding: "1 King size bed",
-      view: "Balcony with partial pool view",
-    },
-    room02: {
-      number: "02",
-      name: "Beach Facing Family Room",
-      size: "26m²",
-      capacity: "Up to 6 guests",
-      bedding: "1 King + 1 Bunk with pull-out",
-      view: "Partial pool view",
-    },
-    room03: {
-      number: "03",
-      name: "Beach Facing Family Room",
-      size: "26m²",
-      capacity: "Up to 6 guests",
-      bedding: "1 King + 1 Bunk with pull-out",
-      view: "Full pool view",
-    },
-    room04: {
-      number: "04",
-      name: "Beach Facing Connecting Room",
-      size: "32m²",
-      capacity: "Up to 3 guests",
-      bedding: "1 King or Twin (2 units)",
-      view: "Pool view overlooking beach",
-    },
-    room05: {
-      number: "05",
-      name: "Beach Facing Suite",
-      size: "Living room",
-      capacity: "Up to 3 guests",
-      bedding: "1 King + 1 Sofa bed",
-      view: "Full view overlooking beach",
-    },
-    room06: {
-      number: "06",
-      name: "Two Bedroom Apartment",
-      size: "Open Living Area",
-      capacity: "Up to 6 guests",
-      bedding: "2 King + 1 Sofa bed",
-      view: "Private pool & ocean view",
-    },
-    room07: {
-      number: "07",
-      name: "Overwater Terrace Room",
-      size: "24m²",
-      capacity: "2 adults",
-      bedding: "1 King size bed",
-      view: "Direct water access",
-    },
-    room08: {
-      number: "08",
-      name: "Overwater Terrace Suite",
-      size: "32m²",
-      capacity: "Up to 3 guests",
-      bedding: "1 King size bed",
-      view: "Wooden deck with pool access",
-    },
-    room09: {
-      number: "09",
-      name: "Ziba Black",
-      size: "19m²",
-      capacity: "Up to 3 guests",
-      bedding: "1 King size bed",
-      view: "Pool view overlooking beach",
-    },
-  };
+  // Room facts come from the shared catalogue; the rooms table (managed in
+  // the admin) overrides the "from" price and marks rooms fully booked.
+  const catalogRooms = ROOM_IDS.map((roomId) => {
+    const room = ROOM_CATALOG[roomId];
+    return {
+      roomId,
+      number: room.number,
+      name: room.name,
+      size: room.size,
+      capacity: room.capacity,
+      bedding: room.bedding,
+      view: room.view,
+      price: formatPriceFrom(room.priceFrom),
+      originalPrice: room.priceFrom,
+      status: "available",
+      isFullyBooked: false,
+    };
+  });
 
   // State for live data
-  const [allRooms, setAllRooms] = useState<any[]>([]);
+  const [allRooms, setAllRooms] = useState<any[]>(catalogRooms);
   const [loading, setLoading] = useState(true);
 
   // Fetch live rooms data
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        console.log("📍 Starting to fetch rooms from Supabase...");
-        const rooms = await getAllRooms();
-        console.log("📍 Fetched rooms:", rooms);
+        const dbRooms = await getAllRooms();
+        const byId = new Map((dbRooms || []).map((r: any) => [r.id, r]));
 
-        if (!rooms || rooms.length === 0) {
-          console.warn("⚠️ No rooms returned from Supabase, using fallback");
-          setAllRooms([
-            {
-              ...roomConfig.room01,
-              roomId: "room01",
-              price: "from ₦202,000",
-              status: "available",
-            },
-            {
-              ...roomConfig.room02,
-              roomId: "room02",
-              price: "from ₦225,000",
-              status: "available",
-            },
-            {
-              ...roomConfig.room03,
-              roomId: "room03",
-              price: "from ₦247,500",
-              status: "available",
-            },
-            {
-              ...roomConfig.room04,
-              roomId: "room04",
-              price: "from ₦202,500",
-              status: "available",
-            },
-            {
-              ...roomConfig.room05,
-              roomId: "room05",
-              price: "from ₦231,750",
-              status: "available",
-            },
-            {
-              ...roomConfig.room06,
-              roomId: "room06",
-              price: "from ₦450,000",
-              status: "available",
-            },
-            {
-              ...roomConfig.room07,
-              roomId: "room07",
-              price: "from ₦213,750",
-              status: "available",
-            },
-            {
-              ...roomConfig.room08,
-              roomId: "room08",
-              price: "from ₦258,750",
-              status: "available",
-            },
-            {
-              ...roomConfig.room09,
-              roomId: "room09",
-              price: "from ₦202,500",
-              status: "available",
-            },
-          ]);
-          setLoading(false);
-          return;
-        }
-
-        const allRoomsData = [];
-
-        // Map Supabase data with room config
-        rooms.forEach((dbRoom: any) => {
-          const roomId = dbRoom.id;
-          const config = roomConfig[roomId as keyof typeof roomConfig];
-          console.log(`Processing room ${roomId}:`, {
-            config: !!config,
-            status: dbRoom.status,
-            price: dbRoom.pricengan,
-          });
-
-          if (config) {
-            const room = {
-              roomId,
-              ...config,
-              price: `from ₦${(dbRoom.pricengn || 0).toLocaleString()}`,
-              status: dbRoom.status,
-              originalPrice: dbRoom.pricengn || 0,
+        setAllRooms(
+          catalogRooms.map((room) => {
+            const dbRoom: any = byId.get(room.roomId);
+            if (!dbRoom) return room;
+            const price = Number(dbRoom.pricengn) || room.originalPrice;
+            return {
+              ...room,
+              price: formatPriceFrom(price),
+              originalPrice: price,
+              status: dbRoom.status || "available",
               isFullyBooked: dbRoom.status === "fully-booked",
             };
-
-            allRoomsData.push(room);
-            console.log(`✓ Added room: ${roomId} (status: ${dbRoom.status})`);
-          } else {
-            console.warn(`⚠️ No config found for room ${roomId}`);
-          }
-        });
-
-        console.log(`📊 Total rooms: ${allRoomsData.length}`);
-        setAllRooms(allRoomsData);
-      } catch (error) {
-        console.error("❌ Error fetching rooms:", error);
-        // Fallback to static prices if fetch fails
-        const fallbackRooms = [
-          { ...roomConfig.room01, roomId: "room01", price: "from ₦202,000" },
-          { ...roomConfig.room02, roomId: "room02", price: "from ₦225,000" },
-          { ...roomConfig.room03, roomId: "room03", price: "from ₦247,500" },
-          { ...roomConfig.room04, roomId: "room04", price: "from ₦202,500" },
-          { ...roomConfig.room05, roomId: "room05", price: "from ₦231,750" },
-          { ...roomConfig.room06, roomId: "room06", price: "from ₦450,000" },
-          { ...roomConfig.room07, roomId: "room07", price: "from ₦213,750" },
-          { ...roomConfig.room08, roomId: "room08", price: "from ₦258,750" },
-          { ...roomConfig.room09, roomId: "room09", price: "from ₦202,500" },
-        ];
-        console.log("Using fallback rooms (error occured)");
-        setAllRooms(
-          fallbackRooms.map((r) => ({
-            ...r,
-            status: "available",
-            isFullyBooked: false,
-          })),
+          }),
         );
+      } catch (error) {
+        console.error("Error fetching rooms:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchRooms();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const specialPackagesMessage = `Hi Ziba Beach Resort,
@@ -499,9 +349,9 @@ Thank you!`;
                         <span className="text-base font-semibold">
                           View Room Details
                         </span>
-                        <ArrowRight
-                          size={20}
-                          className="transition-transform duration-300"
+                        <FontAwesomeIcon
+                          icon={faArrowRight}
+                          className="h-5 w-5 transition-transform duration-300"
                         />
                       </Link>
                     </div>
@@ -520,7 +370,7 @@ Thank you!`;
                 className="text-5xl font-light text-blue-900 mb-4 text-center"
                 style={{ fontFamily: "Cormorant Garamond" }}
               >
-                What's Included In Your Stay
+                What&apos;s Included In Your Stay
               </h2>
               <div className="w-16 h-0.5 mx-auto bg-linear-to-r from-transparent via-blue-400 to-transparent" />
             </div>
@@ -608,16 +458,16 @@ Thank you!`;
               </h2>
               <p className="text-base sm:text-lg text-gray-700 font-light leading-relaxed max-w-3xl mx-auto mb-6">
                 Escape to paradise with our exclusive day pass and enjoy a full
-                day of sun, sand, and serenity. Whether it's a splash in the
+                day of sun, sand, and serenity. Whether it&apos;s a splash in the
                 pool, a stroll on the beach, picturesque pictures, ocean views
                 or just the magic of time away in an absolutely serene
-                environment, Ziba Beach Resort has it all. It's time to escape
+                environment, Ziba Beach Resort has it all. It&apos;s time to escape
                 to paradise.
               </p>
               <div className="flex justify-center mb-8">
                 <Link
                   href="/day-pass"
-                  className="inline-block bg-linear-to-br from-blue-900 to-blue-800 text-white px-10 py-3 rounded-lg font-light hover:from-blue-800 hover:to-blue-700 transition-all duration-300 hover:shadow-lg"
+                  className="inline-block bg-blue-900 hover:bg-blue-800 text-white px-10 py-3 rounded-lg font-light transition-all duration-300 hover:shadow-lg"
                 >
                   View Full Day Pass Rates →
                 </Link>
@@ -682,7 +532,7 @@ Thank you!`;
                   </div>
 
                   <button
-                    className="w-full bg-linear-to-br from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light"
+                    className="w-full bg-blue-900 hover:bg-blue-800 text-white py-4 rounded-lg transition font-light"
                     onClick={() =>
                       (window.location.href = "/day-pass#regular-tickets")
                     }
@@ -743,7 +593,7 @@ Thank you!`;
                   </div>
 
                   <button
-                    className="w-full bg-linear-to-br from-blue-900 to-blue-800 text-white py-4 rounded-lg hover:from-blue-800 hover:to-blue-700 transition font-light"
+                    className="w-full bg-blue-900 hover:bg-blue-800 text-white py-4 rounded-lg transition font-light"
                     onClick={() =>
                       (window.location.href = "/day-pass#premium-tickets")
                     }
@@ -897,7 +747,10 @@ Thank you!`;
         </section>
 
         {/* POLICIES & HOUSE RULES SECTION */}
-        <section className="px-4 sm:px-6 lg:px-8 py-28 bg-linear-to-br from-blue-50 via-white to-pink-50 overflow-hidden">
+        <section
+          id="policies"
+          className="scroll-mt-28 px-4 sm:px-6 lg:px-8 py-28 bg-linear-to-br from-blue-50 via-white to-pink-50 overflow-hidden"
+        >
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <h2

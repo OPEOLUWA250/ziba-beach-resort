@@ -1,302 +1,21 @@
 "use client";
 
-import Header from "@/components/header";
 import Footer from "@/components/footer";
-import { ChevronLeft } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft, faLock } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { use, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
 import RoomGalleryCarousel from "@/components/room-gallery-carousel";
 import { getRoomImages } from "@/lib/room-images";
 import { getRoomById } from "@/lib/services/rooms";
-
-interface Room {
-  id: string;
-  number: string;
-  name: string;
-  size: string;
-  capacity: string;
-  price: string;
-  description: string;
-  bedding: string;
-  features: string[];
-  amenities: string[];
-  images: string[];
-}
-
-const rooms: { [key: string]: Room } = {
-  room01: {
-    id: "room01",
-    number: "01",
-    name: "Beach Facing Room",
-    size: "19m²",
-    capacity: "Up to 3 guests: 2 adults or 2 adults and a child",
-    price: "from ₦202,000 / night",
-    description:
-      "Experience the essence of beach luxury with stunning ocean views and direct access to our pristine shoreline. Perfect for couples or small families seeking an intimate getaway.",
-    bedding: "1 King size bed",
-    features: [
-      "Balcony with partial pool view overlooking the beach",
-      "Direct beach access",
-      "Rainfall shower",
-      "Air conditioning",
-      "Smart TV with streaming",
-      "Premium toiletries",
-    ],
-    amenities: [
-      "WiFi",
-      "Minibar",
-      "Room Service",
-      "Daily Housekeeping",
-      "Safe Deposit Box",
-      "Wake-up Service",
-      "24/7 Concierge",
-      "Beach Towel Service",
-    ],
-    images: ["/Ziba-hero.jpg"],
-  },
-  room02: {
-    id: "room02",
-    number: "02",
-    name: "Beach Facing Family Room",
-    size: "26m²",
-    capacity: "Up to 6 guests: 4 adults or 2 adults and up to 4 children",
-    price: "from ₦225,000 / night",
-    description:
-      "Partial View - Spacious family accommodation with flexible sleeping arrangements, perfect for creating unforgettable memories with loved ones.",
-    bedding: "1 King size bed and 1 bunk bed with a pull-out bed",
-    features: [
-      "Balcony with partial pool view overlooking the beach",
-      "Extra sleeping capacity",
-      "Rainfall shower",
-      "Air conditioning",
-      "Dual climate zones",
-      "Multiple power outlets",
-    ],
-    amenities: [
-      "WiFi",
-      "Minibar",
-      "Kids Welcome Package",
-      "Childminding Service Available",
-      "Room Service",
-      "Family Beach Amenities",
-      "Game Console",
-      "Beach Equipment",
-    ],
-    images: ["/Ziba-hero.jpg"],
-  },
-  room03: {
-    id: "room03",
-    number: "03",
-    name: "Beach Facing Family Room",
-    size: "26m²",
-    capacity: "Up to 6 guests: 4 adults or 2 adults and up to 4 children",
-    price: "from ₦247,500 / night",
-    description:
-      "Full View - Premium family space with expansive pool and ocean views, offering the perfect backdrop for quality family time.",
-    bedding: "1 King size bed and 1 bunk bed with a pull-out bed",
-    features: [
-      "Balcony with full pool view overlooking the beach",
-      "Panoramic ocean views",
-      "Spacious layout",
-      "Rainfall shower",
-      "Air conditioning",
-      "Multiple entertainment options",
-    ],
-    amenities: [
-      "WiFi",
-      "Minibar",
-      "Kids Welcome Package",
-      "Childminding Service",
-      "Premium Room Service",
-      "Family Activities",
-      "Telescope for Stargazing",
-      "Beach Equipment Package",
-    ],
-    images: ["/Ziba-hero.jpg"],
-  },
-  room04: {
-    id: "room04",
-    number: "04",
-    name: "Beach Facing Connecting Room",
-    size: "32m²",
-    capacity: "Up to 3 guests: 2 adults or 2 adults and a child",
-    price: "from ₦202,500 / night",
-    description:
-      "Two interconnected rooms offering flexibility and privacy. Perfect for groups or families needing separate spaces with ease of access.",
-    bedding:
-      "1 King size bed or twin beds sold individually. Choose 2 units to get both rooms",
-    features: [
-      "Balcony with pool view overlooking the beach",
-      "Connecting door between rooms",
-      "Flexible sleeping options",
-      "Dual rainfall showers",
-      "Air conditioning",
-      "Separate spaces for privacy",
-    ],
-    amenities: [
-      "WiFi in both units",
-      "Minibars",
-      "Room Service",
-      "Priority Housekeeping",
-      "24/7 Concierge",
-      "Family Entertainment",
-      "Beach Equipment",
-      "Priority Dining",
-    ],
-    images: ["/Ziba-hero.jpg"],
-  },
-  room05: {
-    id: "room05",
-    number: "05",
-    name: "Beach Facing Suite",
-    size: "Living room",
-    capacity: "Up to 3 guests",
-    price: "from ₦231,750 / night",
-    description:
-      "Sophisticated luxury living with dedicated living room and sleeping quarters. An ideal choice for those seeking the ultimate in space and comfort.",
-    bedding: "1 King size bed and 1 sofa bed",
-    features: [
-      "Balcony with full view overlooking the beach",
-      "Separate living room area",
-      "Rainfall shower and soaking tub",
-      "Air conditioning throughout",
-      "Premium entertainment system",
-      "Work desk area",
-    ],
-    amenities: [
-      "WiFi",
-      "Premium Minibar",
-      "24/7 Room Service",
-      "Butler Service Available",
-      "Concierge",
-      "Nespresso Machine",
-      "Premium Toiletries",
-      "Newspaper Delivery",
-    ],
-    images: ["/Ziba-hero.jpg"],
-  },
-  room06: {
-    id: "room06",
-    number: "06",
-    name: "Two Bedroom Apartment",
-    size: "Open style Living Area",
-    capacity: "Up to 6 guests",
-    price: "from ₦450,000 / night",
-    description:
-      "The epitome of luxury and space. A full apartment experience with private pool, two bedrooms, and comprehensive amenities for the most discerning travelers.",
-    bedding: "2 rooms with 2 King size beds and 1 sofa bed",
-    features: [
-      "Private pool",
-      "Open-style living area",
-      "Two separate bedrooms",
-      "Multiple bathrooms",
-      "Full kitchen facilities",
-      "Dual rainfall showers",
-    ],
-    amenities: [
-      "WiFi throughout",
-      "Premium Minibar",
-      "24/7 Concierge",
-      "Chef Service Available",
-      "Private Butler",
-      "Laundry Service",
-      "Private Beach Cabana",
-      "Entertainment System",
-    ],
-    images: ["/Ziba-hero.jpg"],
-  },
-  room07: {
-    id: "room07",
-    number: "07",
-    name: "Overwater Terrace Room",
-    size: "24m²",
-    capacity: "2 adults",
-    price: "from ₦213,750 / night",
-    description:
-      "Suspended over crystal-clear waters, this intimate sanctuary offers the unique experience of waking to ocean views and direct water access from your private terrace.",
-    bedding: "1 King size bed",
-    features: [
-      "Wooden deck with direct access to overwater pool",
-      "Glass floor panels for marine viewing",
-      "Private swimming area",
-      "Outdoor shower",
-      "Luxury rainfall shower indoors",
-      "Romantic ambiance",
-    ],
-    amenities: [
-      "WiFi",
-      "Premium Minibar",
-      "24/7 Room Service",
-      "Romantic Turndown Service",
-      "Snorkeling Equipment",
-      "Telescope",
-      "Premium Toiletries",
-      "Champagne Service",
-    ],
-    images: ["/Ziba-hero.jpg"],
-  },
-  room08: {
-    id: "room08",
-    number: "08",
-    name: "Overwater Terrace Suite",
-    size: "32m²",
-    capacity: "Up to 3 guests",
-    price: "from ₦258,750 / night",
-    description:
-      "The ultimate water-based luxury. This expansive suite features a dedicated living room and bedroom suspended over the ocean, offering unparalleled views and experiences.",
-    bedding: "1 King size bed",
-    features: [
-      "Wooden deck with direct access to overwater pool",
-      "Spacious living room on water",
-      "Glass floor viewing areas",
-      "Private infinity pool edge",
-      "Dual rainfall showers",
-      "Outdoor entertainment space",
-    ],
-    amenities: [
-      "WiFi",
-      "Premium Minibar",
-      "24/7 Butler Service",
-      "Personalized Concierge",
-      "Snorkeling & Water Sports",
-      "Premium Entertainment System",
-      "Spa Bath",
-      "Breakfast on Terrace",
-    ],
-    images: ["/Ziba-hero.jpg"],
-  },
-  room09: {
-    id: "room09",
-    number: "09",
-    name: "Ziba Black",
-    size: "19m²",
-    capacity: "Up to 3 guests: 2 adults or 2 adults and a child",
-    price: "from ₦202,500 / night",
-    description:
-      "Elegantly designed with sophisticated aesthetics. This distinctive room combines modern luxury with beach accessibility, offering a unique retreat experience.",
-    bedding: "1 King size bed",
-    features: [
-      "Balcony with pool view overlooking the beach",
-      "Contemporary design elements",
-      "Rainfall shower",
-      "Air conditioning",
-      "Smart lighting system",
-      "Premium furnishings",
-    ],
-    amenities: [
-      "WiFi",
-      "Premium Minibar",
-      "Room Service",
-      "Daily Housekeeping",
-      "Safe Deposit Box",
-      "Concierge Service",
-      "Beach Access",
-      "Turndown Service",
-    ],
-    images: ["/Ziba-hero.jpg"],
-  },
-};
+import {
+  ROOM_CATALOG,
+  STAY_POLICY_HIGHLIGHTS,
+  formatPriceFrom,
+} from "@/lib/room-catalog";
+import { IPMS_BOOKING_URL, whatsappLink } from "@/lib/booking-links";
+import { track } from "@/lib/analytics";
 
 export default function RoomDetail({
   params,
@@ -305,11 +24,11 @@ export default function RoomDetail({
 }) {
   const resolvedParams = use(params);
   const roomId = resolvedParams.roomId;
-  const staticRoom = rooms[roomId];
+  const staticRoom = ROOM_CATALOG[roomId];
   const [showFullyBookedMessage, setShowFullyBookedMessage] = useState(false);
   const [livePrice, setLivePrice] = useState<number | null>(null);
-  const [roomStatus, setRoomStatus] = useState<string>("available");
-  const [loading, setLoading] = useState(true);
+  const [, setRoomStatus] = useState<string>("available");
+  const [, setLoading] = useState(true);
 
   // Fetch live price from Supabase
   useEffect(() => {
@@ -344,13 +63,74 @@ export default function RoomDetail({
     );
   }
 
-  // Check if room is fully booked
-  const isFullyBooked = roomStatus === "fully-booked";
-
-  // Handle direct redirect to IPMS247
+  // Room stays are booked on the resort's IPMS booking engine.
   const handleBookNow = () => {
-    window.location.href = "https://live.ipms247.com/booking/book-rooms-zibaresort";
+    track("room_book_click", { context: "room-page", room: room.name });
+    window.location.href = IPMS_BOOKING_URL;
   };
+
+  const priceLabel = formatPriceFrom(livePrice || room.priceFrom);
+  const inquiryHref = whatsappLink(
+    `Hello Ziba Beach Resort, I'm interested in the ${room.name}. Please share availability and rates for my dates.`,
+  );
+
+  // Shared by the mobile card and the desktop sidebar. Everything listed here
+  // comes from the room page or the Resort Policies — no marketing promises.
+  const bookingPanel = (
+    <>
+      <div>
+        <p className="text-3xl font-light text-gray-900">{priceLabel}</p>
+        <p className="text-sm text-gray-600 font-light">
+          per night · live rates and availability on our booking engine
+        </p>
+      </div>
+
+      <div className="flex gap-3">
+        <button
+          onClick={handleBookNow}
+          className="flex-1 py-4 rounded-lg transition font-light flex items-center justify-center gap-2 bg-blue-900 hover:bg-blue-800 text-white hover:shadow-lg"
+        >
+          Book Now
+          <span>→</span>
+        </button>
+        <a
+          href={inquiryHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 border-2 border-gray-900 text-gray-900 py-4 rounded-lg hover:bg-gray-50 transition font-light text-center"
+        >
+          Inquiry
+        </a>
+      </div>
+
+      {room.notes && room.notes.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-2">
+          {room.notes.map((note) => (
+            <p key={note} className="text-sm font-light text-gray-800">
+              {note}
+            </p>
+          ))}
+        </div>
+      )}
+
+      <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
+        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+          Good to Know
+        </h3>
+        <div className="space-y-2 text-sm font-light text-gray-700">
+          {STAY_POLICY_HIGHLIGHTS.map((item) => (
+            <p key={item}>• {item}</p>
+          ))}
+        </div>
+        <Link
+          href="/bookings#policies"
+          className="inline-block text-sm text-blue-700 hover:underline"
+        >
+          Read the full resort policies
+        </Link>
+      </div>
+    </>
+  );
 
   return (
     <>
@@ -360,7 +140,7 @@ export default function RoomDetail({
           <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
             <div className="bg-linear-to-r from-red-500 to-red-600 px-6 py-8">
               <div className="flex justify-between items-start mb-3">
-                <Lock size={40} className="text-white" />
+                <FontAwesomeIcon icon={faLock} className="w-10 h-10 text-white" />
                 <button
                   onClick={() => setShowFullyBookedMessage(false)}
                   className="text-white hover:bg-white/20 p-1 rounded transition"
@@ -372,7 +152,7 @@ export default function RoomDetail({
             </div>
             <div className="p-6 space-y-4">
               <p className="text-gray-700 font-light text-center">
-                This wonderful room is currently fully booked. We're sure you'll
+                This wonderful room is currently fully booked. We&apos;re sure you&apos;ll
                 love it! Please check back soon or contact our team.
               </p>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -411,13 +191,14 @@ export default function RoomDetail({
             href="/bookings"
             className="absolute top-6 left-6 z-50 flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg backdrop-blur-sm transition-colors"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <FontAwesomeIcon icon={faChevronLeft} className="w-5 h-5" />
             <span className="font-light">Back</span>
           </Link>
           <div className="absolute inset-0">
-            <img
+            <Image
               src={getRoomImages(room.id).hero}
               alt={`${room.name} - Hero Image`}
+              fill
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-black/40"></div>
@@ -469,7 +250,7 @@ export default function RoomDetail({
               href="/bookings"
               className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-light transition"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <FontAwesomeIcon icon={faChevronLeft} className="w-5 h-5" />
               Back to Rooms
             </Link>
           </div>
@@ -499,46 +280,7 @@ export default function RoomDetail({
         <section className="px-4 sm:px-6 lg:px-8 py-8 md:hidden">
           <div className="max-w-6xl mx-auto">
             <div className="bg-linear-to-b from-blue-50 to-white border-2 border-blue-200 rounded-2xl p-8 space-y-6">
-              <div>
-                <p className="text-sm text-gray-600 font-light italic">
-                  Pricing available exclusively on IPMS247 for current rates
-                </p>
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={handleBookNow}
-                  className="flex-1 py-4 rounded-lg transition font-light flex items-center justify-center gap-2 bg-linear-to-r from-blue-900 to-blue-800 text-white hover:from-blue-800 hover:to-blue-700 hover:shadow-lg"
-                >
-                  Book Now
-                  <span>→</span>
-                </button>
-                <button className="flex-1 border-2 border-gray-900 text-gray-900 py-4 rounded-lg hover:bg-gray-50 transition font-light">
-                  Inquiry
-                </button>
-              </div>
-
-              <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
-                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-                  Quick Info
-                </h3>
-                <div className="space-y-2 text-sm font-light text-gray-700">
-                  <p>✓ Breakfast Included</p>
-                  <p>✓ Free WiFi</p>
-                  <p>✓ Airport Transfers Available</p>
-                  <p>✓ 24/7 Concierge</p>
-                  <p>✓ Free Cancellation (7 days before)</p>
-                </div>
-              </div>
-
-              <div className="bg-linear-to-br from-amber-50 to-white border border-amber-200 rounded-xl p-4">
-                <p className="text-sm font-light text-gray-700 leading-relaxed">
-                  <strong className="font-semibold">
-                    Best Price Guarantee:
-                  </strong>{" "}
-                  Get the best rate when you book directly with us.
-                </p>
-              </div>
+              {bookingPanel}
             </div>
           </div>
         </section>
@@ -600,6 +342,9 @@ export default function RoomDetail({
                   </h2>
                   <p className="text-lg text-gray-700 font-light leading-relaxed bg-gray-50 p-6 rounded-xl border border-gray-200">
                     {room.bedding}
+                    <span className="block text-base text-gray-600 mt-2">
+                      {room.view}
+                    </span>
                   </p>
                 </div>
 
@@ -653,46 +398,7 @@ export default function RoomDetail({
               {/* Right: Sidebar - Desktop Only */}
               <div className="hidden md:block">
                 <div className="bg-linear-to-b from-blue-50 to-white border-2 border-blue-200 rounded-2xl p-8 sticky top-20 space-y-6">
-                  <div>
-                    <p className="text-sm text-gray-600 font-light italic">
-                      Pricing available exclusively on IPMS247 for current rates
-                    </p>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <button
-                      onClick={handleBookNow}
-                      className="flex-1 py-4 rounded-lg transition font-light flex items-center justify-center gap-2 bg-linear-to-r from-blue-900 to-blue-800 text-white hover:from-blue-800 hover:to-blue-700 hover:shadow-lg"
-                    >
-                      Book Now
-                      <span>→</span>
-                    </button>
-                    <button className="flex-1 border-2 border-gray-900 text-gray-900 py-4 rounded-lg hover:bg-gray-50 transition font-light">
-                      Inquiry
-                    </button>
-                  </div>
-
-                  <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
-                    <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-                      Quick Info
-                    </h3>
-                    <div className="space-y-2 text-sm font-light text-gray-700">
-                      <p>✓ Breakfast Included</p>
-                      <p>✓ Free WiFi</p>
-                      <p>✓ Airport Transfers Available</p>
-                      <p>✓ 24/7 Concierge</p>
-                      <p>✓ Free Cancellation (7 days before)</p>
-                    </div>
-                  </div>
-
-                  <div className="bg-linear-to-br from-amber-50 to-white border border-amber-200 rounded-xl p-4">
-                    <p className="text-sm font-light text-gray-700 leading-relaxed">
-                      <strong className="font-semibold">
-                        Best Price Guarantee:
-                      </strong>{" "}
-                      Get the best rate when you book directly with us.
-                    </p>
-                  </div>
+                  {bookingPanel}
                 </div>
               </div>
             </div>

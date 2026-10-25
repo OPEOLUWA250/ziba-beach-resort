@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { IPMS_BOOKING_URL } from "@/lib/booking-links";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
@@ -48,7 +49,7 @@ export default function BookingCards() {
           </h2>
           <div className="w-16 h-0.5 mx-auto mb-6 sm:mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
           <p className="text-base sm:text-lg text-gray-600 font-light max-w-2xl mx-auto px-2">
-            Whether you're looking for a luxurious overnight escape or a day of
+            Whether you&apos;re looking for a luxurious overnight escape or a day of
             exploration, we have the perfect option for you.
           </p>
         </div>
@@ -142,9 +143,9 @@ export default function BookingCards() {
                 </ul>
 
                 {/* Button */}
-                <Link href="/product/day-pass/" className="block">
+                <Link href="/day-pass" className="block">
                   <button
-                    className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-3 sm:px-6 py-2.5 sm:py-3 lg:py-4 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn text-xs sm:text-sm"
+                    className="w-full bg-blue-900 hover:bg-blue-800 text-white px-3 sm:px-6 py-2.5 sm:py-3 lg:py-4 font-light tracking-wide transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn text-xs sm:text-sm"
                     style={{ boxShadow: "0 4px 15px rgba(15, 23, 42, 0.3)" }}
                   >
                     <span className="relative flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap">
@@ -256,9 +257,9 @@ export default function BookingCards() {
                 </ul>
 
                 {/* Button */}
-                <a href="https://live.ipms247.com/booking/book-rooms-zibaresort" target="_blank" rel="noopener noreferrer" className="block">
+                <a href={IPMS_BOOKING_URL} target="_blank" rel="noopener noreferrer" className="block">
                   <button
-                    className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-3 sm:px-6 py-2.5 sm:py-3 lg:py-4 font-light tracking-wide hover:from-blue-800 hover:to-blue-900 transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn text-xs sm:text-sm"
+                    className="w-full bg-blue-900 hover:bg-blue-800 text-white px-3 sm:px-6 py-2.5 sm:py-3 lg:py-4 font-light tracking-wide transition-all duration-500 transform hover:scale-105 active:scale-95 rounded-lg shadow-lg hover:shadow-2xl buttonGlow group/btn text-xs sm:text-sm"
                     style={{ boxShadow: "0 4px 15px rgba(15, 23, 42, 0.3)" }}
                   >
                     <span className="relative flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap">

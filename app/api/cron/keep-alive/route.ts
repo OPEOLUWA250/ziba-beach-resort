@@ -1,6 +1,6 @@
-import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
+import { isCronAuthorized } from "@/lib/server/cron-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -8,16 +8,9 @@ export const dynamic = "force-dynamic";
 // activity. Tables are ones every environment has.
 const TABLES = ["rooms", "bookings"] as const;
 
-function isAuthorized(request: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) return false;
-  const header = request.headers.get("authorization") || "";
-  const expected = `Bearer ${secret}`;
-  return (
-    header.length === expected.length &&
-    crypto.timingSafeEqual(Buffer.from(header), Buffer.from(expected))
-  );
-}
+// Funnel analytics are only useful for recent trends; cap table growth on
+// the free tier's 500 MB.
+const ANALYTICS_RETENTION_DAYS = 180;
 
 /**
  * Scheduled by vercel.json. Free-tier Supabase projects are paused after 7
@@ -25,7 +18,7 @@ function isAuthorized(request: NextRequest) {
  * Vercel Cron sends `Authorization: Bearer $CRON_SECRET`.
  */
 export async function GET(request: NextRequest) {
-  if (!isAuthorized(request)) {
+  if (!isCronAuthorized(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -42,6 +35,14 @@ export async function GET(request: NextRequest) {
     results[table] = error ? error.message : "ok";
     if (error) ok = false;
   }
+
+  // Housekeeping; a missing table (migration not applied) is not a failure.
+  const cutoff = new Date(Date.now() - ANALYTICS_RETENTION_DAYS * 86_400_000).toISOString();
+  const { error: pruneError } = await supabaseServer
+    .from("analytics_events")
+    .delete()
+    .lt("created_at", cutoff);
+  results.analytics_prune = pruneError ? pruneError.code || pruneError.message : "ok";
 
   console.log("[KeepAlive]", JSON.stringify(results));
   return NextResponse.json(

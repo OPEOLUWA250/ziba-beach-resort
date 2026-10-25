@@ -2,7 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Plus, Minus, Trash2, Calendar } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faPlus,
+  faMinus,
+  faTrash,
+  faCalendar,
+} from "@fortawesome/free-solid-svg-icons";
 import { format } from "date-fns";
 
 interface CartItem {
@@ -164,7 +171,7 @@ export default function DayPassCart() {
           onClick={() => router.back()}
           className="mb-6 flex items-center gap-2 text-blue-900 hover:text-blue-800 transition-colors"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <FontAwesomeIcon icon={faChevronLeft} className="w-5 h-5" />
           <span className="font-medium">Back to Products</span>
         </button>
 
@@ -189,24 +196,24 @@ export default function DayPassCart() {
                 {cart.items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between pb-4 border-b border-gray-200 last:border-b-0"
+                    className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-gray-200 last:border-b-0"
                   >
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <p className="font-semibold text-gray-900">{item.name}</p>
                       <p className="text-sm text-gray-600">
                         ₦{item.price.toLocaleString()} each
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2 bg-gray-100 rounded-lg">
+                    <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
+                      <div className="flex items-center gap-2 bg-gray-100 rounded-lg shrink-0">
                         <button
                           onClick={() =>
                             updateQuantity(item.id, item.quantity - 1)
                           }
                           className="p-2 hover:bg-gray-200 transition"
                         >
-                          <Minus className="w-4 h-4" />
+                          <FontAwesomeIcon icon={faMinus} className="w-4 h-4" />
                         </button>
                         <span className="w-8 text-center font-semibold">
                           {item.quantity}
@@ -217,19 +224,19 @@ export default function DayPassCart() {
                           }
                           className="p-2 hover:bg-gray-200 transition"
                         >
-                          <Plus className="w-4 h-4" />
+                          <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
                         </button>
                       </div>
 
-                      <p className="text-right min-w-24 font-bold text-gray-900">
+                      <p className="text-right sm:min-w-24 font-bold text-gray-900 shrink-0">
                         ₦{(item.price * item.quantity).toLocaleString()}
                       </p>
 
                       <button
                         onClick={() => removeItem(item.id)}
-                        className="p-2 hover:bg-red-100 rounded-lg transition text-red-600"
+                        className="p-2 hover:bg-red-100 rounded-lg transition text-red-600 shrink-0"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <FontAwesomeIcon icon={faTrash} className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -243,7 +250,7 @@ export default function DayPassCart() {
                 When would you like to visit?
               </h2>
               <div className="flex items-center gap-3">
-                <Calendar className="w-5 h-5 text-blue-900" />
+                <FontAwesomeIcon icon={faCalendar} className="w-5 h-5 text-blue-900" />
                 <input
                   type="date"
                   value={cart.visitDate || ""}

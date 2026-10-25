@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/server/require-admin";
 import { NextRequest, NextResponse } from "next/server";
 import {
   getAllMenus,
@@ -26,6 +27,10 @@ export async function GET(request: NextRequest) {
   try {
     // Check if this is an admin request
     const isAdmin = request.nextUrl.searchParams.get("admin") === "true";
+    if (isAdmin) {
+      const auth = await requireAdmin(request);
+      if (auth.response) return auth.response;
+    }
 
     // Fetch menus (all items for admin, only available for public)
     const menus = isAdmin ? await getAllMenusForAdmin() : await getAllMenus();
@@ -119,6 +124,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const body = await request.json();
 

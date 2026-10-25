@@ -1,4 +1,9 @@
 import { NextResponse } from "next/server";
+import { fetchWithTimeout } from "@/lib/server/http";
+
+// Cache the feed for an hour: avoids hitting Instagram Graph API rate limits
+// on every page view, and serves the cached copy while it revalidates.
+export const revalidate = 3600;
 
 interface InstagramPost {
   id: string;
@@ -31,7 +36,11 @@ export async function GET() {
     // Fetch media from Instagram Graph API
     const mediaUrl = `https://graph.instagram.com/${businessAccountId}/media?fields=id,caption,media_type,media_url,thumbnail_url,timestamp,like_count,comments_count,permalink&access_token=${accessToken}`;
 
-    const response = await fetch(mediaUrl);
+    const response = await fetchWithTimeout(
+      mediaUrl,
+      { next: { revalidate: 3600 } },
+      5000,
+    );
 
     if (!response.ok) {
       console.error("Instagram API error:", response.statusText);
@@ -61,7 +70,7 @@ export async function GET() {
     // Process and format the media data
     const posts: InstagramPost[] = data.data
       .filter((media: any) => media.media_type !== "VIDEO")
-      .map((media: any, index: number) => {
+      .map((media: any) => {
         // Format the timestamp
         const postDate = new Date(media.timestamp);
         const now = new Date();

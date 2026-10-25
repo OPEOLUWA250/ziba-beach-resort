@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { PopupData } from "@/lib/services/popups";
 
 export function PopupModal() {
@@ -97,7 +98,7 @@ export function PopupModal() {
               onClick={() => setIsOpen(false)}
               className="absolute top-2 right-2 sm:top-3 sm:right-3 z-20 p-2 sm:p-2.5 bg-white hover:bg-gray-100 rounded-full transition text-gray-900 hover:text-black shadow-2xl hover:shadow-xl hover:scale-110 active:scale-95"
             >
-              <X size={32} strokeWidth={2.5} />
+              <FontAwesomeIcon icon={faXmark} className="h-8 w-8" />
             </button>
 
             {popup.featured_image ? (

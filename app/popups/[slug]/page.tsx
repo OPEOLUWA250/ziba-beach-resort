@@ -1,4 +1,6 @@
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { PopupData } from "@/lib/services/popups";
 import { supabaseServer } from "@/lib/supabase/server";
 import { PopupHero } from "@/components/popup-hero";
@@ -67,13 +69,13 @@ export default async function PopupDetailsPage({
             Not Found
           </h1>
           <p className="text-gray-500 mb-8">
-            The popup you're looking for doesn't exist.
+            The popup you&apos;re looking for doesn&apos;t exist.
           </p>
           <button
             onClick={() => window.history.back()}
             className="inline-flex items-center gap-2 px-6 py-3 border border-blue-900 text-blue-900 hover:bg-blue-50 transition rounded-lg"
           >
-            <ArrowLeft size={18} />
+            <FontAwesomeIcon icon={faArrowLeft} className="w-[18px] h-[18px]" />
             Back
           </button>
         </div>

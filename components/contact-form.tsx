@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { track } from "@/lib/analytics";
 
 type ContactFormData = {
   fullName: string;
@@ -51,6 +52,7 @@ export default function ContactForm() {
     const prefilledMessage = `Hello Ziba Beach Resort, I have a new contact inquiry.\n\nName: ${formData.fullName}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nSubject: ${formData.subject}\n\nMessage:\n${formData.message}`;
     const whatsappUrl = `https://wa.me/2347047300013?text=${encodeURIComponent(prefilledMessage)}`;
 
+    track("whatsapp_click", { context: "contact-form" });
     window.open(whatsappUrl, "_blank", "noopener,noreferrer");
     setFormData(initialFormData);
   };

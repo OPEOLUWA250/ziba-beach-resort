@@ -15,7 +15,7 @@ const LOCKOUT_DURATION_MINUTES = 15;
 
 export async function POST(request: NextRequest) {
   try {
-    const rate = rateLimitByIp(request.headers, "api:admin:login", 15, 60_000);
+    const rate = await rateLimitByIp(request.headers, "api:admin:login", 15, 60_000);
     if (!rate.allowed) {
       return NextResponse.json(
         { error: "Too many login attempts. Try again shortly." },

@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Award, MapPin, Users } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faAward,
+  faLocationDot,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
 
 export default function AboutUs() {
@@ -82,7 +87,7 @@ export default function AboutUs() {
                 : "opacity-0 translate-y-10"
             }`}
           >
-            We've redefined what it means to experience true luxury in West
+            We&apos;ve redefined what it means to experience true luxury in West
             Africa.
           </p>
         </div>
@@ -100,7 +105,10 @@ export default function AboutUs() {
           >
             <div className="flex justify-center mb-6">
               <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center hover:bg-blue-100 transition-all duration-500 hover:shadow-lg">
-                <Award size={32} className="text-blue-900" strokeWidth={1.5} />
+                <FontAwesomeIcon
+                  icon={faAward}
+                  className="h-8 w-8 text-blue-900"
+                />
               </div>
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-3">
@@ -122,14 +130,17 @@ export default function AboutUs() {
           >
             <div className="flex justify-center mb-6">
               <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center hover:bg-blue-100 transition-all duration-500 hover:shadow-lg">
-                <MapPin size={32} className="text-blue-900" strokeWidth={1.5} />
+                <FontAwesomeIcon
+                  icon={faLocationDot}
+                  className="h-8 w-8 text-blue-900"
+                />
               </div>
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-3">
               Prime Location
             </h3>
             <p className="text-gray-600 font-light leading-relaxed">
-              Located on Nigeria's most beautiful stretch of coastline
+              Located on Nigeria&apos;s most beautiful stretch of coastline
             </p>
           </div>
 
@@ -144,7 +155,10 @@ export default function AboutUs() {
           >
             <div className="flex justify-center mb-6">
               <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center hover:bg-blue-100 transition-all duration-500 hover:shadow-lg">
-                <Users size={32} className="text-blue-900" strokeWidth={1.5} />
+                <FontAwesomeIcon
+                  icon={faUsers}
+                  className="h-8 w-8 text-blue-900"
+                />
               </div>
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-3">

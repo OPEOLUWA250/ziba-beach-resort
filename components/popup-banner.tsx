@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowRight } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { PopupData } from "@/lib/services/popups";
 import Link from "next/link";
 
@@ -84,7 +85,7 @@ export function PopupBanner() {
                 className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-linear-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-semibold rounded-lg transition w-fit mt-4"
               >
                 Learn More
-                <ArrowRight size={20} />
+                <FontAwesomeIcon icon={faArrowRight} className="h-5 w-5" />
               </Link>
             </div>
           </div>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 export function PopupBackButton({
   variant = "link",
@@ -33,7 +34,7 @@ export function PopupBackButton({
         onClick={handleBack}
         className="inline-flex items-center gap-2 px-6 py-3 border border-blue-900 text-blue-900 hover:bg-blue-50 transition rounded-lg"
       >
-        <ArrowLeft size={18} />
+        <FontAwesomeIcon icon={faArrowLeft} className="h-4.5 w-4.5" />
         Back
       </button>
     );
@@ -44,7 +45,7 @@ export function PopupBackButton({
       onClick={handleBack}
       className="inline-flex items-center gap-2 text-blue-900/60 hover:text-blue-900 mb-12 transition text-sm"
     >
-      <ArrowLeft size={16} />
+      <FontAwesomeIcon icon={faArrowLeft} className="h-4 w-4" />
       Back
     </button>
   );

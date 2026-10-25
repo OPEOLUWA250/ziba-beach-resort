@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
+import { getSessionAdmin } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
 // Get all rooms (admin view - no status filter)
 export async function GET(request: NextRequest) {
   try {
+    const actor = await getSessionAdmin(request);
+    if (!actor) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { data: rooms, error } = await supabaseServer
       .from("rooms")
       .select("*")

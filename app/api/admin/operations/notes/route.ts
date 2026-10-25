@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
+import { getSessionAdmin } from "@/lib/admin-auth";
 
 export async function GET(request: NextRequest) {
   try {
+    const actor = await getSessionAdmin(request);
+    if (!actor) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const bookingId = request.nextUrl.searchParams.get("bookingId");
 
     if (bookingId) {
@@ -34,6 +40,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const actor = await getSessionAdmin(request);
+    if (!actor) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const {
       bookingId,

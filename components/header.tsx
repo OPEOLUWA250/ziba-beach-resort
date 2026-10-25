@@ -1,10 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { IPMS_BOOKING_URL } from "@/lib/booking-links";
+import { track } from "@/lib/analytics";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, ShoppingCart, MoonStar, Sun } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBars,
+  faXmark,
+  faCartShopping,
+  faMoon,
+  faSun,
+} from "@fortawesome/free-solid-svg-icons";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -37,7 +46,7 @@ export default function Header() {
               0,
             );
             setCartCount(total);
-          } catch (err) {
+          } catch {
             setCartCount(0);
           }
         }
@@ -64,7 +73,8 @@ export default function Header() {
   const handleBookingChoice = (type: "night" | "day") => {
     setShowBookingChoiceModal(false);
     if (type === "night") {
-      window.location.href = "https://live.ipms247.com/booking/book-rooms-zibaresort";
+      track("room_book_click", { context: "header" });
+      window.location.href = IPMS_BOOKING_URL;
       return;
     }
     router.push("/day-pass");
@@ -134,9 +144,9 @@ export default function Header() {
             href="/day-pass/cart"
             className="relative p-2.5 rounded-lg hover:bg-white/10 transition-colors"
           >
-            <ShoppingCart
-              size={20}
-              className="text-gray-900 hover:text-blue-900 transition-colors"
+            <FontAwesomeIcon
+              icon={faCartShopping}
+              className="h-5 w-5 text-gray-900 hover:text-blue-900 transition-colors"
             />
             {cartCount > 0 && (
               <span className="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
@@ -146,7 +156,7 @@ export default function Header() {
           </Link>
           <button
             onClick={handleBookNow}
-            className="px-7 py-2.5 bg-linear-to-r from-blue-900 to-blue-800 text-white text-sm font-medium tracking-normal rounded-lg hover:from-blue-800 hover:to-blue-700 transition-all duration-200 hover:shadow-md"
+            className="px-7 py-2.5 bg-blue-900 hover:bg-blue-800 text-white text-sm font-medium tracking-normal rounded-lg transition-all duration-200 hover:shadow-md"
           >
             Book Now
           </button>
@@ -158,9 +168,9 @@ export default function Header() {
             href="/day-pass/cart"
             className="relative p-2.5 rounded-lg hover:bg-slate-900/5 transition-colors"
           >
-            <ShoppingCart
-              size={22}
-              className="text-gray-900 hover:text-blue-900 transition-colors"
+            <FontAwesomeIcon
+              icon={faCartShopping}
+              className="h-5.5 w-5.5 text-gray-900 hover:text-blue-900 transition-colors"
             />
             {cartCount > 0 && (
               <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center drop-shadow-md">
@@ -172,7 +182,11 @@ export default function Header() {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="transition-colors duration-300 p-2 text-gray-900 hover:text-blue-900"
           >
-            {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            {mobileMenuOpen ? (
+              <FontAwesomeIcon icon={faXmark} className="h-7 w-7" />
+            ) : (
+              <FontAwesomeIcon icon={faBars} className="h-7 w-7" />
+            )}
           </button>
         </div>
       </div>
@@ -205,7 +219,7 @@ export default function Header() {
             {/* Mobile Book Now Button */}
             <button
               onClick={handleBookNow}
-              className="w-full bg-linear-to-r from-blue-900 to-blue-800 text-white px-6 py-3 font-light tracking-wide hover:from-blue-800 hover:to-blue-700 transition mt-4 rounded-lg"
+              className="w-full bg-blue-900 hover:bg-blue-800 text-white px-6 py-3 font-light tracking-wide transition mt-4 rounded-lg"
             >
               Book Now
             </button>
@@ -229,7 +243,7 @@ export default function Header() {
                 className="group border-2 border-blue-200 rounded-xl p-5 text-center flex flex-col items-center hover:border-blue-900 hover:shadow-lg transition-all duration-300"
               >
                 <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-900 flex items-center justify-center mb-3 group-hover:bg-blue-900 group-hover:text-white transition-colors duration-300">
-                  <MoonStar size={18} />
+                  <FontAwesomeIcon icon={faMoon} className="h-4.5 w-4.5" />
                 </div>
                 <h4 className="text-lg font-semibold text-gray-900 mb-1">
                   Night Experience
@@ -244,7 +258,7 @@ export default function Header() {
                 className="group border-2 border-blue-200 rounded-xl p-5 text-center flex flex-col items-center hover:border-blue-900 hover:shadow-lg transition-all duration-300"
               >
                 <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-900 flex items-center justify-center mb-3 group-hover:bg-blue-900 group-hover:text-white transition-colors duration-300">
-                  <Sun size={18} />
+                  <FontAwesomeIcon icon={faSun} className="h-4.5 w-4.5" />
                 </div>
                 <h4 className="text-lg font-semibold text-gray-900 mb-1">
                   Day Experience

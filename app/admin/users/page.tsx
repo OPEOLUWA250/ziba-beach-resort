@@ -1,17 +1,18 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  AlertCircle,
-  CheckCircle2,
-  Edit2,
-  Eye,
-  EyeOff,
-  Plus,
-  Shield,
-  Trash2,
-  Users,
-} from "lucide-react";
+  faCircleExclamation,
+  faCircleCheck,
+  faPenToSquare,
+  faEye,
+  faEyeSlash,
+  faPlus,
+  faShield,
+  faTrashCan,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
 
 interface AdminUser {
   id: string;
@@ -220,21 +221,21 @@ export default function AdminSystemPage() {
             onClick={() => setShowCreate(true)}
             className="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2"
           >
-            <Plus size={16} /> New Admin
+            <FontAwesomeIcon icon={faPlus} className="h-4 w-4" /> New Admin
           </button>
         )}
       </div>
 
       {message && (
         <div className="bg-green-900/30 border border-green-900/50 rounded-lg p-4 flex items-center gap-3">
-          <CheckCircle2 size={18} className="text-green-400" />
+          <FontAwesomeIcon icon={faCircleCheck} className="text-green-400 h-4.5 w-4.5" />
           <p className="text-green-400">{message}</p>
         </div>
       )}
 
       {error && (
         <div className="bg-red-900/30 border border-red-900/50 rounded-lg p-4 flex items-center gap-3">
-          <AlertCircle size={18} className="text-red-400" />
+          <FontAwesomeIcon icon={faCircleExclamation} className="text-red-400 h-4.5 w-4.5" />
           <p className="text-red-400">{error}</p>
         </div>
       )}
@@ -263,7 +264,7 @@ export default function AdminSystemPage() {
 
       <div className="bg-gray-800 border border-gray-700 rounded-2xl overflow-hidden">
         <div className="bg-gray-950 p-4 border-b border-gray-700 flex items-center gap-2">
-          <Users size={18} className="text-blue-400" />
+          <FontAwesomeIcon icon={faUsers} className="text-blue-400 h-4.5 w-4.5" />
           <h2 className="text-white font-semibold">Admin Users</h2>
         </div>
         {loading ? (
@@ -333,7 +334,7 @@ export default function AdminSystemPage() {
                               className="p-2 rounded-md bg-blue-900/30 text-blue-300 hover:bg-blue-900/50"
                               title="Edit admin"
                             >
-                              <Edit2 size={14} />
+                              <FontAwesomeIcon icon={faPenToSquare} className="h-3.5 w-3.5" />
                             </button>
                             {user.role !== "SUPER_ADMIN" && (
                               <button
@@ -342,14 +343,14 @@ export default function AdminSystemPage() {
                                 title="Delete admin"
                                 disabled={saving}
                               >
-                                <Trash2 size={14} />
+                                <FontAwesomeIcon icon={faTrashCan} className="h-3.5 w-3.5" />
                               </button>
                             )}
                           </>
                         )}
                         {!isSuperAdmin && (
                           <span className="text-xs text-gray-500 flex items-center gap-1">
-                            <Shield size={12} /> SUPER_ADMIN only
+                            <FontAwesomeIcon icon={faShield} className="h-3 w-3" /> SUPER_ADMIN only
                           </span>
                         )}
                       </div>
@@ -404,7 +405,11 @@ export default function AdminSystemPage() {
                 onClick={() => setShowCreatePassword(!showCreatePassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
               >
-                {showCreatePassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showCreatePassword ? (
+                  <FontAwesomeIcon icon={faEyeSlash} className="h-4.5 w-4.5" />
+                ) : (
+                  <FontAwesomeIcon icon={faEye} className="h-4.5 w-4.5" />
+                )}
               </button>
             </div>
             <div>
@@ -480,7 +485,11 @@ export default function AdminSystemPage() {
                 onClick={() => setShowEditPassword(!showEditPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
               >
-                {showEditPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showEditPassword ? (
+                  <FontAwesomeIcon icon={faEyeSlash} className="h-4.5 w-4.5" />
+                ) : (
+                  <FontAwesomeIcon icon={faEye} className="h-4.5 w-4.5" />
+                )}
               </button>
             </div>
             <div>

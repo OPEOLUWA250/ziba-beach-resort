@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase/client";
+import { supabaseServer as supabase } from "@/lib/supabase/server";
 
 export async function getAllMenus() {
   try {

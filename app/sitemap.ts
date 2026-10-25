@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { ROOM_IDS } from "@/lib/room-catalog";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl =
@@ -7,7 +8,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const publicRoutes = [
     "",
-    "/booking",
     "/bookings",
     "/day-pass",
     "/experience",
@@ -16,8 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/blog",
     "/contact",
     "/view-booking",
-    "/honeymoon",
-    "/popups",
+    ...ROOM_IDS.map((id) => `/bookings/rooms/${id}`),
   ];
 
   return publicRoutes.map((route) => ({

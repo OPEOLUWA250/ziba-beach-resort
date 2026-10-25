@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Trash2, Edit2, Plus, Search, Eye } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faTrashCan,
+  faPenToSquare,
+  faPlus,
+  faMagnifyingGlass,
+  faEye,
+} from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { PopupForm } from "./popup-form";
 import { PopupData } from "@/lib/services/popups";
@@ -42,28 +49,6 @@ export default function AdminPopupsPage() {
       alert(`Error loading popups: ${error.message}`);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  // Deactivate all other active popups when setting one to ACTIVE
-  const deactivateOthersIfNeeded = async (newFormData: any) => {
-    if (newFormData.status === "ACTIVE") {
-      // Deactivate all other ACTIVE popups
-      const activePopups = popups.filter(
-        (p) => p.status === "ACTIVE" && p.id !== newFormData.id,
-      );
-
-      for (const popup of activePopups) {
-        try {
-          await fetch(`/api/popups/${popup.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: "INACTIVE" }),
-          });
-        } catch (error) {
-          console.error("Error deactivating popup:", error);
-        }
-      }
     }
   };
 
@@ -232,14 +217,17 @@ export default function AdminPopupsPage() {
           onClick={() => setShowCreateForm(true)}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
         >
-          <Plus size={20} />
+          <FontAwesomeIcon icon={faPlus} className="h-5 w-5" />
           New Popup
         </button>
       </div>
 
       {/* Search */}
       <div className="relative">
-        <Search size={20} className="absolute left-3 top-3 text-gray-400" />
+        <FontAwesomeIcon
+          icon={faMagnifyingGlass}
+          className="absolute left-3 top-3 text-gray-400 h-5 w-5"
+        />
         <input
           type="text"
           placeholder="Search popups by title or slug..."
@@ -308,7 +296,7 @@ export default function AdminPopupsPage() {
                       className="p-2 text-green-400 hover:bg-green-900/20 rounded transition"
                       title="View Popup Details"
                     >
-                      <Eye size={18} />
+                      <FontAwesomeIcon icon={faEye} className="h-4.5 w-4.5" />
                     </Link>
                     <button
                       onClick={() => {
@@ -318,7 +306,7 @@ export default function AdminPopupsPage() {
                       className="p-2 text-blue-400 hover:bg-blue-900/20 rounded transition disabled:opacity-50"
                       title="Edit"
                     >
-                      <Edit2 size={18} />
+                      <FontAwesomeIcon icon={faPenToSquare} className="h-4.5 w-4.5" />
                     </button>
                     <button
                       onClick={() => handleDeletePopup(popup.id)}
@@ -326,7 +314,7 @@ export default function AdminPopupsPage() {
                       className="p-2 text-red-400 hover:bg-red-900/20 rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Delete"
                     >
-                      <Trash2 size={18} />
+                      <FontAwesomeIcon icon={faTrashCan} className="h-4.5 w-4.5" />
                     </button>
                   </div>
                 </div>

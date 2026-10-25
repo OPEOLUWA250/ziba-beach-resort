@@ -1,7 +1,12 @@
+import { requireAdmin } from "@/lib/server/require-admin";
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase/client";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function POST(request: NextRequest) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     console.log("Starting popups table migration...");
 
@@ -40,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     // Use the service role key to run the migration - but we can't execute raw SQL directly
     // Instead, let's just check if the table exists by trying to query it
-    const { data: checkTable, error: checkError } = await supabase
+    const { error: checkError } = await supabase
       .from("popups")
       .select("id")
       .limit(1);
@@ -77,9 +82,13 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(request: NextRequest) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
-    const { data, error } = await supabase.from("popups").select("*").limit(1);
+    const { error } = await supabase.from("popups").select("*").limit(1);
 
     if (error) {
       return NextResponse.json(

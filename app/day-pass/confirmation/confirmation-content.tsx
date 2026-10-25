@@ -1,10 +1,19 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
-import { Check, AlertCircle, Loader2, Copy } from "lucide-react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCheck,
+  faCircleExclamation,
+  faSpinner,
+  faCopy,
+  faDownload,
+} from "@fortawesome/free-solid-svg-icons";
 import { format } from "date-fns";
 import Confetti from "@/components/confetti";
+import { downloadReceiptPDF } from "@/lib/pdf-utils";
 
 interface DayPassBooking {
   id: string;
@@ -22,9 +31,10 @@ interface DayPassBooking {
 export default function DayPassConfirmationContent() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId");
-  const paystackReference = searchParams.get("ref");
+  const paymentRef = searchParams.get("ref") || "";
   const [copiedLink, setCopiedLink] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   const [booking, setBooking] = useState<DayPassBooking | null>(null);
   const [loading, setLoading] = useState(true);
@@ -56,7 +66,9 @@ export default function DayPassConfirmationContent() {
           console.log(
             `[Confirmation] Attempt ${attemptCount}/${maxRetries} to fetch booking ${bookingId}`,
           );
-          const res = await fetch(`/api/day-pass/${bookingId}`);
+          const res = await fetch(
+            `/api/day-pass/${bookingId}?ref=${encodeURIComponent(paymentRef)}`,
+          );
 
           if (!res.ok) {
             const errorText = await res.text();
@@ -149,11 +161,29 @@ export default function DayPassConfirmationContent() {
     }
   };
 
+  const handleDownloadReceipt = async () => {
+    if (!booking || downloading) return;
+    setDownloading(true);
+    try {
+      const success = await downloadReceiptPDF(
+        "daypass-receipt-container",
+        `Ziba-DayPass-Receipt-${booking.referenceCode}`,
+      );
+      if (!success) {
+        alert(
+          "Couldn't download the receipt. Please try again or use the print option from your browser.",
+        );
+      }
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-blue-900 animate-spin mx-auto mb-4" />
+          <FontAwesomeIcon icon={faSpinner} className="w-12 h-12 text-blue-900 animate-spin mx-auto mb-4" />
           <p className="text-gray-600">Loading your receipt...</p>
         </div>
       </div>
@@ -163,7 +193,7 @@ export default function DayPassConfirmationContent() {
   if (error || !booking) {
     return (
       <div className="text-center max-w-md">
-        <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+        <FontAwesomeIcon icon={faCircleExclamation} className="w-12 h-12 text-red-600 mx-auto mb-4" />
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
           {error ? "Something went wrong" : "Booking not found"}
         </h1>
@@ -189,7 +219,7 @@ export default function DayPassConfirmationContent() {
           <div className="bg-linear-to-r from-blue-600 to-blue-700 text-white p-4 text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <div className="relative">
-                <Check className="w-5 h-5 animate-check-pulse" />
+                <FontAwesomeIcon icon={faCheck} className="w-5 h-5 animate-check-pulse" />
                 <div className="absolute inset-0 rounded-full bg-white/20 animate-ping" />
               </div>
               <h1 className="text-xl sm:text-2xl font-bold">Confirmed!</h1>
@@ -206,6 +236,21 @@ export default function DayPassConfirmationContent() {
               </p>
               <p className="font-mono font-bold text-blue-900 text-sm break-all">
                 {booking.referenceCode}
+              </p>
+            </div>
+
+            {/* Check-in QR (same-origin image, so it is captured in the PDF) */}
+            <div className="flex flex-col items-center bg-white p-3 rounded border border-gray-200">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`/api/day-pass/${booking.id}/qr`}
+                alt={`Check-in QR code for ${booking.referenceCode}`}
+                width={180}
+                height={180}
+                className="w-44 h-44"
+              />
+              <p className="text-blue-900 font-semibold text-xs mt-1">
+                Show this QR code at the gate
               </p>
             </div>
 
@@ -282,7 +327,7 @@ export default function DayPassConfirmationContent() {
                   Payment Status
                 </span>
                 <span className="px-3 py-1.5 rounded text-xs font-bold bg-green-600 text-white flex items-center gap-1.5">
-                  <Check size={14} />
+                  <FontAwesomeIcon icon={faCheck} className="w-3.5 h-3.5" />
                   Confirmed
                 </span>
               </div>
@@ -313,25 +358,42 @@ export default function DayPassConfirmationContent() {
                 +234 704 730 0013
               </a>
             </p>
-            <button
-              onClick={copyReceiptLink}
-              className="w-full bg-linear-to-r from-blue-600 to-blue-500 text-white py-2 rounded font-semibold hover:from-blue-700 hover:to-blue-600 transition-all duration-200 flex items-center justify-center gap-2 text-sm"
-            >
-              <Copy size={16} />
-              Copy Link to Receipt
-            </button>
-            <a
-              href="/"
-              className="block w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition-colors text-center text-sm"
-            >
-              Home
-            </a>
+            {/* data-html2canvas-ignore: these are page actions, not part of
+                the receipt itself, so they must not appear in the PDF/print
+                capture of #daypass-receipt-container */}
+            <div data-html2canvas-ignore="true" className="space-y-2">
+              <button
+                onClick={handleDownloadReceipt}
+                disabled={downloading}
+                className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2 rounded font-semibold transition-all duration-200 flex items-center justify-center gap-2 text-sm"
+              >
+                <FontAwesomeIcon
+                  icon={downloading ? faSpinner : faDownload}
+                  className={downloading ? "w-4 h-4 animate-spin" : "w-4 h-4"}
+                />
+                {downloading ? "Preparing PDF..." : "Download Receipt"}
+              </button>
+              <button
+                onClick={copyReceiptLink}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold transition-all duration-200 flex items-center justify-center gap-2 text-sm"
+              >
+                <FontAwesomeIcon icon={faCopy} className="w-4 h-4" />
+                Copy Link to Receipt
+              </button>
+              <Link
+                href="/"
+                className="block w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition-colors text-center text-sm"
+              >
+                Home
+              </Link>
+            </div>
           </div>
         </div>
 
         {/* Actions Hint */}
         <p className="text-center text-gray-500 text-xs mt-4">
-          💡 Copy this receipt link to save or share your booking receipt
+          💡 Download your receipt as a PDF, or copy the link to save and
+          share it
         </p>
         {copiedLink && (
           <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-60 bg-emerald-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm font-semibold animate-in fade-in slide-in-from-bottom-2 duration-200">

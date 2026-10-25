@@ -5,22 +5,20 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { format } from "date-fns";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  AlertCircle,
-  CheckCircle,
-  Calendar,
-  Users,
-  DollarSign,
-  Search,
-  Receipt,
-  Loader2,
-  X,
-  Printer,
-  Download,
-  Mail,
-  CreditCard,
-  MapPin,
-} from "lucide-react";
+  faCircleExclamation,
+  faCircleCheck,
+  faCalendar,
+  faUsers,
+  faDollarSign,
+  faMagnifyingGlass,
+  faReceipt,
+  faSpinner,
+  faXmark,
+  faPrint,
+  faEnvelope,
+} from "@fortawesome/free-solid-svg-icons";
 
 interface RoomBooking {
   id: string;
@@ -74,7 +72,7 @@ export function ViewBookingContentNew() {
   const [bookingType, setBookingType] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [searching, setSearching] = useState(false);
+  const [, setSearching] = useState(false);
 
   // Auto-search if URL has parameters
   useEffect(() => {
@@ -158,13 +156,13 @@ export function ViewBookingContentNew() {
   };
 
   const statusIcons: Record<string, React.ReactNode> = {
-    PENDING: <AlertCircle className="w-5 h-5" />,
-    RESERVED: <CheckCircle className="w-5 h-5" />,
-    CONFIRMED: <CheckCircle className="w-5 h-5" />,
-    PAID: <CheckCircle className="w-5 h-5" />,
-    ACTIVATED: <CheckCircle className="w-5 h-5" />,
-    COMPLETED: <CheckCircle className="w-5 h-5" />,
-    CANCELLED: <X className="w-5 h-5" />,
+    PENDING: <FontAwesomeIcon icon={faCircleExclamation} className="w-5 h-5" />,
+    RESERVED: <FontAwesomeIcon icon={faCircleCheck} className="w-5 h-5" />,
+    CONFIRMED: <FontAwesomeIcon icon={faCircleCheck} className="w-5 h-5" />,
+    PAID: <FontAwesomeIcon icon={faCircleCheck} className="w-5 h-5" />,
+    ACTIVATED: <FontAwesomeIcon icon={faCircleCheck} className="w-5 h-5" />,
+    COMPLETED: <FontAwesomeIcon icon={faCircleCheck} className="w-5 h-5" />,
+    CANCELLED: <FontAwesomeIcon icon={faXmark} className="w-5 h-5" />,
   };
 
   // Render search form
@@ -174,7 +172,7 @@ export function ViewBookingContentNew() {
         {/* Icon Header */}
         <div className="text-center mb-5">
           <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl mb-4 shadow-lg">
-            <Receipt className="w-7 h-7 text-white" />
+            <FontAwesomeIcon icon={faReceipt} className="w-7 h-7 text-white" />
           </div>
           <h1
             className="text-3xl sm:text-4xl font-light text-gray-900 mb-2"
@@ -212,7 +210,7 @@ export function ViewBookingContentNew() {
                 className="w-full px-4 py-3 pr-11 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all text-base font-mono"
                 disabled={loading}
               />
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
             </div>
             <p className="mt-2 text-sm text-gray-500">
               Format:{" "}
@@ -242,14 +240,14 @@ export function ViewBookingContentNew() {
                 className="w-full px-4 py-3 pr-11 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
                 disabled={loading}
               />
-              <Mail className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <FontAwesomeIcon icon={faEnvelope} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             </div>
           </div>
 
           {/* Error Message */}
           {error && (
             <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 flex items-start gap-3 animate-slideIn">
-              <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
+              <FontAwesomeIcon icon={faCircleExclamation} className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
               <p className="text-red-700 text-sm">{error}</p>
             </div>
           )}
@@ -258,16 +256,16 @@ export function ViewBookingContentNew() {
           <button
             onClick={() => handleSearch()}
             disabled={loading || !searchRef.trim()}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-5 rounded-xl transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-base"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-5 rounded-xl transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-base"
           >
             {loading ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <FontAwesomeIcon icon={faSpinner} className="w-5 h-5 animate-spin" />
                 Searching...
               </>
             ) : (
               <>
-                <Search className="w-5 h-5" />
+                <FontAwesomeIcon icon={faMagnifyingGlass} className="w-5 h-5" />
                 Find Receipt
               </>
             )}
@@ -314,7 +312,7 @@ export function ViewBookingContentNew() {
         <div className="bg-white rounded-2xl shadow-xl p-5 sm:p-7 mb-4">
           <div className="text-center mb-5">
             <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-full mb-4 shadow-lg animate-bounce-once">
-              <CheckCircle className="w-7 h-7 text-white" />
+              <FontAwesomeIcon icon={faCircleCheck} className="w-7 h-7 text-white" />
             </div>
             <h1
               className="text-3xl sm:text-4xl font-light text-gray-900 mb-2"
@@ -363,7 +361,7 @@ export function ViewBookingContentNew() {
           {/* Guest Info */}
           <div className="mb-5 pb-5 border-b border-gray-200">
             <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <Users className="w-4 h-4 text-blue-600" />
+              <FontAwesomeIcon icon={faUsers} className="w-4 h-4 text-blue-600" />
               Guest Information
             </h3>
             <div className="grid sm:grid-cols-2 gap-3">
@@ -397,7 +395,7 @@ export function ViewBookingContentNew() {
           {/* Stay Details */}
           <div className="mb-5 pb-5 border-b border-gray-200">
             <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-blue-600" />
+              <FontAwesomeIcon icon={faCalendar} className="w-4 h-4 text-blue-600" />
               Stay Details
             </h3>
             <div className="grid sm:grid-cols-3 gap-3">
@@ -432,7 +430,7 @@ export function ViewBookingContentNew() {
           {/* Payment Details */}
           <div className="mb-5">
             <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-blue-600" />
+              <FontAwesomeIcon icon={faDollarSign} className="w-4 h-4 text-blue-600" />
               Payment Details
             </h3>
             <div className="space-y-2">
@@ -489,21 +487,21 @@ export function ViewBookingContentNew() {
               onClick={handlePrint}
               className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all text-sm font-medium"
             >
-              <Printer className="w-4 h-4" />
+              <FontAwesomeIcon icon={faPrint} className="w-4 h-4" />
               Print
             </button>
             <button
               onClick={() => setBooking(null)}
               className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-xl transition-all text-sm font-medium"
             >
-              <Search className="w-4 h-4" />
+              <FontAwesomeIcon icon={faMagnifyingGlass} className="w-4 h-4" />
               New Search
             </button>
             <a
               href="mailto:bookings@zibabeachresort.com"
               className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-xl transition-all text-sm font-medium"
             >
-              <Mail className="w-4 h-4" />
+              <FontAwesomeIcon icon={faEnvelope} className="w-4 h-4" />
               Contact Us
             </a>
           </div>
@@ -522,7 +520,7 @@ export function ViewBookingContentNew() {
         <div className="bg-white rounded-2xl shadow-xl p-5 sm:p-7 mb-4">
           <div className="text-center mb-5">
             <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-full mb-4 shadow-lg animate-bounce-once">
-              <CheckCircle className="w-7 h-7 text-white" />
+              <FontAwesomeIcon icon={faCircleCheck} className="w-7 h-7 text-white" />
             </div>
             <h1
               className="text-3xl sm:text-4xl font-light text-gray-900 mb-2"
@@ -569,7 +567,7 @@ export function ViewBookingContentNew() {
           {/* Guest Info */}
           <div className="mb-5 pb-5 border-b border-gray-200">
             <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <Users className="w-4 h-4 text-blue-600" />
+              <FontAwesomeIcon icon={faUsers} className="w-4 h-4 text-blue-600" />
               Guest Information
             </h3>
             <div className="grid sm:grid-cols-2 gap-3">
@@ -597,7 +595,7 @@ export function ViewBookingContentNew() {
           {/* Visit Details */}
           <div className="mb-5 pb-5 border-b border-gray-200">
             <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-blue-600" />
+              <FontAwesomeIcon icon={faCalendar} className="w-4 h-4 text-blue-600" />
               Visit Details
             </h3>
             <div className="text-center p-4 bg-blue-50 rounded-xl">
@@ -639,7 +637,7 @@ export function ViewBookingContentNew() {
           {/* Payment Summary */}
           <div>
             <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-blue-600" />
+              <FontAwesomeIcon icon={faDollarSign} className="w-4 h-4 text-blue-600" />
               Payment Summary
             </h3>
             <div className="space-y-2">
@@ -676,21 +674,21 @@ export function ViewBookingContentNew() {
               onClick={handlePrint}
               className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all text-sm font-medium"
             >
-              <Printer className="w-4 h-4" />
+              <FontAwesomeIcon icon={faPrint} className="w-4 h-4" />
               Print
             </button>
             <button
               onClick={() => setBooking(null)}
               className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-xl transition-all text-sm font-medium"
             >
-              <Search className="w-4 h-4" />
+              <FontAwesomeIcon icon={faMagnifyingGlass} className="w-4 h-4" />
               New Search
             </button>
             <a
               href="mailto:bookings@zibabeachresort.com"
               className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-xl transition-all text-sm font-medium"
             >
-              <Mail className="w-4 h-4" />
+              <FontAwesomeIcon icon={faEnvelope} className="w-4 h-4" />
               Contact Us
             </a>
           </div>
@@ -706,7 +704,7 @@ export function ViewBookingContentNew() {
         {loading ? (
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center">
-              <Loader2 className="w-16 h-16 text-blue-600 animate-spin mx-auto mb-4" />
+              <FontAwesomeIcon icon={faSpinner} className="w-16 h-16 text-blue-600 animate-spin mx-auto mb-4" />
               <p className="text-gray-600 text-lg">Loading your booking...</p>
             </div>
           </div>

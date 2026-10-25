@@ -1354,7 +1354,7 @@ async function seedMenus() {
     for (let i = 0; i < MENU_ITEMS.length; i += batchSize) {
       const batch = MENU_ITEMS.slice(i, i + batchSize);
 
-      const { error: insertError, data } = await supabase
+      const { error: insertError } = await supabase
         .from("menus")
         .insert(batch)
         .select();
