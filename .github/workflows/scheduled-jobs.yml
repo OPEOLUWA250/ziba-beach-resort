@@ -1,0 +1,65 @@
+# Daily jobs for the site, run by GitHub instead of Vercel Cron.
+# Vercel crons were removed on 2026-11-08: with them in vercel.json every
+# deploy failed instantly (the account's Hobby cron allowance is used up by
+# other projects), so nothing after 2026-10-25 reached production.
+#
+# Each job calls the site's own cron endpoint with the same secret Vercel
+# Cron used to send, so the endpoints didn't change.
+#
+# Required repository secret (Settings > Secrets and variables > Actions):
+#   CRON_SECRET   the same value as CRON_SECRET in the Vercel project
+# Optional repository variable:
+#   SITE_URL      defaults to https://ziba-beach-resort.vercel.app
+name: Scheduled jobs
+
+on:
+  schedule:
+    # Same times (UTC) the Vercel crons used.
+    - cron: "0 3 * * *"   # reconcile payments
+    - cron: "0 15 * * *"  # Supabase keep-alive
+    - cron: "0 16 * * *"  # guest emails
+  workflow_dispatch:
+    inputs:
+      job:
+        description: "Job to run now"
+        required: true
+        type: choice
+        options: [reconcile-payments, keep-alive, guest-emails]
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Pick the job for this schedule
+        id: pick
+        run: |
+          case "${{ github.event_name }}:${{ github.event.schedule }}" in
+            "schedule:0 3 * * *")  job=reconcile-payments ;;
+            "schedule:0 15 * * *") job=keep-alive ;;
+            "schedule:0 16 * * *") job=guest-emails ;;
+            workflow_dispatch:*)   job="${{ github.event.inputs.job }}" ;;
+            *) echo "::error::No job for '${{ github.event.schedule }}'"; exit 1 ;;
+          esac
+          echo "job=$job" >> "$GITHUB_OUTPUT"
+
+      - name: Call /api/cron/${{ steps.pick.outputs.job }}
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://ziba-beach-resort.vercel.app' }}
+          JOB: ${{ steps.pick.outputs.job }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::The CRON_SECRET repository secret is not set"
+            exit 1
+          fi
+          status=$(curl -sS -o response.json -w "%{http_code}" \
+            --retry 2 --retry-delay 20 --max-time 300 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "${SITE_URL%/}/api/cron/$JOB")
+          echo "HTTP $status"
+          cat response.json; echo
+          if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
+            echo "::error::/api/cron/$JOB failed (HTTP $status)"
+            exit 1
+          fi
