@@ -1,4 +1,6 @@
-$PAYSTACK_SECRET = "sk_test_09a0b8dd608b54f21ebe3f06620bb2819b508c6a"
+# Read from the environment: this file is in a public repository.
+$PAYSTACK_SECRET = $env:PAYSTACK_SECRET_KEY
+if (-not $PAYSTACK_SECRET) { Write-Error "Set PAYSTACK_SECRET_KEY first"; exit 1 }
 
 Write-Host "🔍 Verifying Paystack Payments..." -ForegroundColor Cyan
 Write-Host "=================================" -ForegroundColor Cyan

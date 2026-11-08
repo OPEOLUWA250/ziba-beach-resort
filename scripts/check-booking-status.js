@@ -1,8 +1,13 @@
 const { createClient } = require("@supabase/supabase-js");
 
-const supabaseUrl = "https://jipzgcoitrknaojtjork.supabase.co";
-const supabaseServiceKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImppcHpnY29pdHJrbmFvanRqb3JrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjI2ODI1MiwiZXhwIjoyMDg3ODQ0MjUyfQ.a4NzO_YNEjHCL9fx4MkH8MRuSEkTKBBVAEUWi-oRSXE";
+// Never paste keys here: this file is in a public repository. Run with the
+// values from .env.local, e.g. node --env-file=.env.local scripts/check-booking-status.js
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error("Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (see .env.local).");
+  process.exit(1);
+}
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 

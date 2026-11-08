@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { clientIp } from "@/lib/server/client-ip";
 import { fetchWithTimeout } from "@/lib/server/http";
 
 /**
@@ -14,17 +15,6 @@ type RateResult = { allowed: boolean; retryAfterSeconds: number };
 
 const MAX_MEMORY_KEYS = 5000;
 const store = new Map<string, Entry>();
-
-function getClientIp(headers: Headers): string {
-  // Vercel sets x-real-ip / x-forwarded-for itself, overwriting client values.
-  const realIp = headers.get("x-real-ip");
-  if (realIp) return realIp.trim();
-
-  const forwarded = headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-
-  return "unknown";
-}
 
 function pruneMemory(now: number) {
   if (store.size < MAX_MEMORY_KEYS) return;
@@ -97,17 +87,30 @@ async function redisLimit(
   }
 }
 
+/**
+ * Counts one hit against `key:subject` and says whether it's still within
+ * the limit. The subject can be anything: an address, an account, a code.
+ */
+export async function rateLimitByKey(
+  key: string,
+  subject: string,
+  maxRequests: number,
+  windowMs: number,
+): Promise<RateResult> {
+  const bucketKey = `ratelimit:${key}:${subject}`;
+  return (
+    (await redisLimit(bucketKey, maxRequests, windowMs)) ??
+    memoryLimit(bucketKey, maxRequests, windowMs)
+  );
+}
+
 export async function rateLimitByIp(
   headers: Headers,
   key: string,
   maxRequests: number,
   windowMs: number,
 ): Promise<RateResult> {
-  const bucketKey = `ratelimit:${key}:${getClientIp(headers)}`;
-  return (
-    (await redisLimit(bucketKey, maxRequests, windowMs)) ??
-    memoryLimit(bucketKey, maxRequests, windowMs)
-  );
+  return rateLimitByKey(key, clientIp(headers), maxRequests, windowMs);
 }
 
 export function tooManyRequests(rate: RateResult, message = "Too many requests. Please retry shortly.") {

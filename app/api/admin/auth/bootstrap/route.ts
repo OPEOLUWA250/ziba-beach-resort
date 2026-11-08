@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimitByIp, tooManyRequests } from "@/lib/security/rate-limit";
 import { supabaseServer } from "@/lib/supabase/server";
+import { clientIp as readClientIp } from "@/lib/server/client-ip";
+import { BodyTooLargeError, readJsonBody } from "@/lib/server/body";
 import {
+  adminCookieOptions,
   hashAdminPassword,
   validatePasswordPolicy,
   signAdminSession,
@@ -14,12 +17,29 @@ export async function POST(request: NextRequest) {
   if (!rate.allowed) return tooManyRequests(rate);
 
   try {
-    const body = await request.json();
-    const { username, email, password } = body;
+    const body = (await readJsonBody(request, 4 * 1024)) as Record<string, unknown> | null;
+    const username = typeof body?.username === "string" ? body.username.trim() : "";
+    const email = typeof body?.email === "string" ? body.email.trim() : "";
+    const password = typeof body?.password === "string" ? body.password : "";
 
     if (!username || !email || !password) {
       return NextResponse.json(
         { error: "username, email and password are required" },
+        { status: 400 },
+      );
+    }
+
+    if (
+      !/^[A-Za-z0-9._-]{3,40}$/.test(username) ||
+      !/^[^s@]+@[^s@]+.[^s@]+$/.test(email) ||
+      email.length > 254 ||
+      password.length > 128
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Use a 3-40 character username (letters, numbers, . _ -), a valid email and a password of at most 128 characters",
+        },
         { status: 400 },
       );
     }
@@ -55,9 +75,7 @@ export async function POST(request: NextRequest) {
     const passwordHash = await hashAdminPassword(password);
     const sessionId = generateSessionId();
     const clientIp =
-      request.headers.get("x-forwarded-for")?.split(",")[0] ||
-      request.headers.get("x-real-ip") ||
-      "unknown";
+      readClientIp(request.headers);
 
     const { data: created, error: insertError } = await supabaseServer
       .from("admin_users")
@@ -101,16 +119,13 @@ export async function POST(request: NextRequest) {
       message: "SUPER_ADMIN bootstrapped successfully",
     });
 
-    response.cookies.set(getSessionCookieName(), token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 12,
-    });
+    response.cookies.set(getSessionCookieName(), token, adminCookieOptions());
 
     return response;
   } catch (error: any) {
+    if (error instanceof BodyTooLargeError) {
+      return NextResponse.json({ error: "Request too large" }, { status: 413 });
+    }
     console.error("Error bootstrapping admin:", error?.message);
     return NextResponse.json(
       { error: "Failed to bootstrap admin" },

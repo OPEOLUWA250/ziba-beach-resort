@@ -44,6 +44,8 @@ export default function DayPassCheckout() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [fullName, setFullName] = useState("");
+  // Bot trap: hidden from people, so it stays empty unless a bot fills it in.
+  const [companyWebsite, setCompanyWebsite] = useState("");
   const [error, setError] = useState("");
   const [showPaymentMethodModal, setShowPaymentMethodModal] = useState(false);
   const [pendingBooking, setPendingBooking] = useState<any>(null);
@@ -131,6 +133,7 @@ export default function DayPassCheckout() {
           items: cart.items,
           totalAmount: cart.totalAmount,
           source: getSessionSource(),
+          company_website: companyWebsite,
         }),
       });
 
@@ -405,6 +408,19 @@ export default function DayPassCheckout() {
                 )}
 
                 <form onSubmit={handleOpenPaymentMethod} className="space-y-4">
+                  <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+                    <label>
+                      Company website (leave empty)
+                      <input
+                        type="text"
+                        name="company_website"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={companyWebsite}
+                        onChange={(e) => setCompanyWebsite(e.target.value)}
+                      />
+                    </label>
+                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Full Name *

@@ -10,3 +10,11 @@ node_modules/
 .DS_Store
 # TypeScript incremental build cache
 tsconfig.tsbuildinfo
+
+# Claude Code personal settings
+.claude/settings.local.json
+# Local logs
+*.log
+# Local security check files (scripts/security)
+.env.sectest
+.sectest-outbox.jsonl

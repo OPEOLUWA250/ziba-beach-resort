@@ -27,7 +27,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Single-session enforcement: verify session ID matches database
-    if (admin.current_session_token !== session.sessionId) {
+    if (
+      !admin.current_session_token ||
+      admin.current_session_token !== session.sessionId
+    ) {
       return NextResponse.json(
         {
           error:
@@ -43,8 +46,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, admin: adminData });
   } catch (error: any) {
+    console.error("[admin/me]", error?.message);
     return NextResponse.json(
-      { error: error.message || "Failed to fetch session" },
+      { error: "Failed to fetch session" },
       { status: 500 },
     );
   }

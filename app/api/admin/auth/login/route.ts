@@ -1,17 +1,33 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { rateLimitByIp } from "@/lib/security/rate-limit";
+import { rateLimitByIp, rateLimitByKey } from "@/lib/security/rate-limit";
 import { adminLoginSchema } from "@/lib/security/validators";
+import { clientIp } from "@/lib/server/client-ip";
+import { BodyTooLargeError, readJsonBody } from "@/lib/server/body";
 import {
+  adminCookieOptions,
+  burnPasswordCheck,
   verifyAdminPassword,
   signAdminSession,
   getSessionCookieName,
   generateSessionId,
+  logAdminAudit,
 } from "@/lib/admin-auth";
 
-// Rate limiting configuration
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCKOUT_DURATION_MINUTES = 15;
+
+// One answer for every wrong guess (unknown account, wrong password, disabled
+// account), so the response never says which usernames exist.
+const invalid = () =>
+  NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+const locked = () =>
+  NextResponse.json(
+    {
+      error: `Too many failed attempts. Try again in ${LOCKOUT_DURATION_MINUTES} minutes.`,
+    },
+    { status: 423 },
+  );
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,7 +42,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    const body = await readJsonBody(request, 4 * 1024);
     const parsed = adminLoginSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
@@ -36,129 +52,98 @@ export async function POST(request: NextRequest) {
     }
 
     const { identifier, password } = parsed.data;
+    const normalizedIdentifier = identifier.trim().toLowerCase();
+    const ip = clientIp(request.headers);
 
-    const normalizedIdentifier = String(identifier).trim().toLowerCase();
-
-    // Lookup admin by email or username
+    const columns =
+      "id, username, email, role, status, password_hash, failed_login_attempts, locked_until";
     const { data: byEmail } = await supabaseServer
       .from("admin_users")
-      .select(
-        "id, username, email, role, status, password_hash, failed_login_attempts, locked_until",
-      )
+      .select(columns)
       .eq("email", normalizedIdentifier)
       .maybeSingle();
 
     let admin = byEmail;
-
     if (!admin) {
       const { data: byUsername } = await supabaseServer
         .from("admin_users")
-        .select(
-          "id, username, email, role, status, password_hash, failed_login_attempts, locked_until",
-        )
-        .eq("username", identifier)
+        .select(columns)
+        .eq("username", identifier.trim())
         .maybeSingle();
       admin = byUsername;
     }
 
     if (!admin) {
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 },
+      // Unknown accounts lock out after the same number of tries as real
+      // ones, and take as long to refuse, so the two look identical.
+      const guesses = await rateLimitByKey(
+        "admin:login:unknown",
+        normalizedIdentifier,
+        MAX_LOGIN_ATTEMPTS,
+        LOCKOUT_DURATION_MINUTES * 60_000,
       );
+      if (!guesses.allowed) return locked();
+      await burnPasswordCheck(password);
+      return invalid();
     }
 
-    // Check if account is temporarily locked
-    if (admin.locked_until) {
-      const lockoutEnd = new Date(admin.locked_until);
-      if (lockoutEnd > new Date()) {
-        const minutesLeft = Math.ceil(
-          (lockoutEnd.getTime() - Date.now()) / 60000,
-        );
-        return NextResponse.json(
-          {
-            error: `Account locked due to multiple failed attempts. Try again in ${minutesLeft} minutes.`,
-          },
-          { status: 423 }, // 423 Locked
-        );
-      } else {
-        // Lockout expired, reset counter
-        await supabaseServer
-          .from("admin_users")
-          .update({ failed_login_attempts: 0, locked_until: null })
-          .eq("id", admin.id);
-      }
+    if (admin.locked_until && new Date(admin.locked_until) > new Date()) {
+      return locked();
     }
 
-    if (admin.status !== "active") {
-      return NextResponse.json(
-        { error: `Account is ${admin.status}` },
-        { status: 403 },
-      );
-    }
-
-    const validPassword = await verifyAdminPassword(
-      password,
-      admin.password_hash,
-    );
+    const validPassword = await verifyAdminPassword(password, admin.password_hash);
 
     if (!validPassword) {
-      // Increment failed login attempts
-      const newAttempts = (admin.failed_login_attempts || 0) + 1;
-      const updates: any = { failed_login_attempts: newAttempts };
-
-      // Lock account if max attempts reached
+      // A lock that has run out starts the count again.
+      const lockExpired =
+        admin.locked_until && new Date(admin.locked_until) <= new Date();
+      const newAttempts = (lockExpired ? 0 : admin.failed_login_attempts || 0) + 1;
+      const updates: Record<string, unknown> = {
+        failed_login_attempts: newAttempts,
+        locked_until: null,
+      };
       if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
-        const lockUntil = new Date(
-          Date.now() + LOCKOUT_DURATION_MINUTES * 60 * 1000,
-        );
-        updates.locked_until = lockUntil.toISOString();
+        updates.locked_until = new Date(
+          Date.now() + LOCKOUT_DURATION_MINUTES * 60_000,
+        ).toISOString();
       }
 
-      await supabaseServer
-        .from("admin_users")
-        .update(updates)
-        .eq("id", admin.id);
+      await supabaseServer.from("admin_users").update(updates).eq("id", admin.id);
 
-      if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
-        return NextResponse.json(
-          {
-            error: `Account locked for ${LOCKOUT_DURATION_MINUTES} minutes due to multiple failed login attempts.`,
-          },
-          { status: 423 },
-        );
-      }
-
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 },
+      // Written after the reply, so a known account doesn't answer any slower.
+      const adminId = admin.id as string;
+      after(() =>
+        logAdminAudit({
+          actorAdminId: adminId,
+          action: "AUTH_LOGIN_FAILED",
+          metadata: { ip, attempts: newAttempts, locked: newAttempts >= MAX_LOGIN_ATTEMPTS },
+        }),
       );
+
+      return newAttempts >= MAX_LOGIN_ATTEMPTS ? locked() : invalid();
     }
 
-    // Generate unique session ID for single-session enforcement
-    const sessionId = generateSessionId();
-    const clientIp =
-      request.headers.get("x-forwarded-for")?.split(",")[0] ||
-      request.headers.get("x-real-ip") ||
-      "unknown";
+    // The right password for a disabled account still gets the generic answer.
+    if (admin.status !== "active") return invalid();
 
-    // Update database with new session (invalidates old sessions)
+    // A new session id ends every earlier session for this account.
+    const sessionId = generateSessionId();
     await supabaseServer
       .from("admin_users")
       .update({
         last_login: new Date().toISOString(),
         current_session_token: sessionId,
         session_created_at: new Date().toISOString(),
-        session_ip_address: clientIp,
-        failed_login_attempts: 0, // Reset on successful login
-        locked_until: null, // Clear any lock
+        session_ip_address: ip,
+        failed_login_attempts: 0,
+        locked_until: null,
       })
       .eq("id", admin.id);
 
-    await supabaseServer.from("admin_audit_logs").insert({
-      actor_admin_id: admin.id,
+    await logAdminAudit({
+      actorAdminId: admin.id,
       action: "AUTH_LOGIN",
-      metadata: { identifier, ip: clientIp },
+      metadata: { identifier: normalizedIdentifier, ip },
     });
 
     const token = signAdminSession({
@@ -166,7 +151,7 @@ export async function POST(request: NextRequest) {
       username: admin.username,
       email: admin.email,
       role: admin.role,
-      sessionId, // Include session ID in token
+      sessionId,
     });
 
     const response = NextResponse.json({
@@ -178,21 +163,16 @@ export async function POST(request: NextRequest) {
         role: admin.role,
       },
     });
-
-    response.cookies.set(getSessionCookieName(), token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 12,
-    });
-
+    response.cookies.set(getSessionCookieName(), token, adminCookieOptions());
     return response;
-  } catch (error: any) {
-    console.error("Error logging in admin:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to login" },
-      { status: 500 },
+  } catch (error) {
+    if (error instanceof BodyTooLargeError) {
+      return NextResponse.json({ error: "Invalid login payload" }, { status: 413 });
+    }
+    console.error(
+      "Error logging in admin:",
+      error instanceof Error ? error.message : error,
     );
+    return NextResponse.json({ error: "Failed to login" }, { status: 500 });
   }
 }

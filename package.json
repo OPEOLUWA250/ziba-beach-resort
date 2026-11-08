@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "seed:menus": "tsx scripts/seed-menus.ts",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "security:setup": "node scripts/security/setup.mjs",
+    "security:check": "node scripts/security/check.mjs",
+    "security:cleanup": "node scripts/security/cleanup.mjs"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "7.2.0",
@@ -58,7 +61,7 @@
     "html2pdf.js": "^0.14.0",
     "input-otp": "1.4.2",
     "jsonwebtoken": "^9.0.0",
-    "next": "16.1.6",
+    "next": "16.4.5",
     "next-themes": "^0.4.6",
     "qrcode": "^1.5.4",
     "react": "19.2.4",
@@ -84,7 +87,7 @@
     "@types/react-dom": "19.2.3",
     "@types/uuid": "^10.0.0",
     "eslint": "9.39.5",
-    "eslint-config-next": "16.1.6",
+    "eslint-config-next": "16.4.5",
     "postcss": "^8.5",
     "tailwindcss": "^4.2.0",
     "tsx": "^4.21.0",

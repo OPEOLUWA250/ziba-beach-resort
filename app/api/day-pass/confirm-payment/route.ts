@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimitByIp, tooManyRequests } from "@/lib/security/rate-limit";
 import { confirmPaymentSchema } from "@/lib/security/validators";
+import { BodyTooLargeError, readJsonBody } from "@/lib/server/body";
 import { confirmBookingPayment, HTTP_STATUS_FOR_OUTCOME } from "@/lib/server/payments";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
       return tooManyRequests(rate, "Too many payment confirmation attempts. Please retry shortly.");
     }
 
-    const parsed = confirmPaymentSchema.safeParse(await request.json());
+    const parsed = confirmPaymentSchema.safeParse(await readJsonBody(request, 2 * 1024));
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Invalid payload", details: parsed.error.flatten() },
@@ -35,6 +36,9 @@ export async function POST(request: NextRequest) {
       { status: HTTP_STATUS_FOR_OUTCOME[result.outcome] },
     );
   } catch (error: any) {
+    if (error instanceof BodyTooLargeError) {
+      return NextResponse.json({ error: "Request too large" }, { status: 413 });
+    }
     console.error("[Day-Pass Confirm Payment] Error:", error?.message);
     return NextResponse.json({ error: "Failed to confirm payment" }, { status: 500 });
   }

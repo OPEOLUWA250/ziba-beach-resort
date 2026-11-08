@@ -2,7 +2,12 @@
 
 const { createClient } = require("@supabase/supabase-js");
 
-const PAYSTACK_SECRET = "sk_test_09a0b8dd608b54f21ebe3f06620bb2819b508c6a";
+// Read from the environment: this file is in a public repository.
+const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY;
+if (!PAYSTACK_SECRET) {
+  console.error("Set PAYSTACK_SECRET_KEY (see .env.local).");
+  process.exit(1);
+}
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 

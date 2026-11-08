@@ -2,7 +2,10 @@ import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimitByIp, tooManyRequests } from "@/lib/security/rate-limit";
 import { supabaseServer } from "@/lib/supabase/server";
+import { clientIp as readClientIp } from "@/lib/server/client-ip";
+import { BodyTooLargeError, readJsonBody } from "@/lib/server/body";
 import {
+  adminCookieOptions,
   generateSessionId,
   getSessionCookieName,
   hashAdminPassword,
@@ -26,16 +29,11 @@ export async function POST(request: NextRequest) {
   if (!rate.allowed) return tooManyRequests(rate);
 
   try {
-    const body = await request.json();
-    const {
-      recoveryKey,
-      newPassword,
-      identifier,
-    }: {
-      recoveryKey?: string;
-      newPassword?: string;
-      identifier?: string;
-    } = body;
+    const body = ((await readJsonBody(request, 4 * 1024)) ?? {}) as Record<string, unknown>;
+    const text = (value: unknown) => (typeof value === "string" ? value : undefined);
+    const recoveryKey = text(body.recoveryKey);
+    const newPassword = text(body.newPassword);
+    const identifier = text(body.identifier);
 
     if (!recoveryKey || !newPassword) {
       return NextResponse.json(
@@ -44,7 +42,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!validatePasswordPolicy(newPassword)) {
+    if (
+      typeof newPassword !== "string" ||
+      newPassword.length > 128 ||
+      !validatePasswordPolicy(newPassword)
+    ) {
       return NextResponse.json(
         {
           error:
@@ -110,9 +112,7 @@ export async function POST(request: NextRequest) {
     const passwordHash = await hashAdminPassword(newPassword);
     const sessionId = generateSessionId();
     const clientIp =
-      request.headers.get("x-forwarded-for")?.split(",")[0] ||
-      request.headers.get("x-real-ip") ||
-      "unknown";
+      readClientIp(request.headers);
 
     const { error: updateError } = await supabaseServer
       .from("admin_users")
@@ -154,19 +154,16 @@ export async function POST(request: NextRequest) {
       message: "SUPER_ADMIN account recovered successfully",
     });
 
-    response.cookies.set(getSessionCookieName(), token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 12,
-    });
+    response.cookies.set(getSessionCookieName(), token, adminCookieOptions());
 
     return response;
   } catch (error: any) {
-    console.error("Error recovering SUPER_ADMIN:", error);
+    if (error instanceof BodyTooLargeError) {
+      return NextResponse.json({ error: "Request too large" }, { status: 413 });
+    }
+    console.error("Error recovering SUPER_ADMIN:", error?.message);
     return NextResponse.json(
-      { error: error.message || "Failed to recover SUPER_ADMIN" },
+      { error: "Failed to recover SUPER_ADMIN" },
       { status: 500 },
     );
   }

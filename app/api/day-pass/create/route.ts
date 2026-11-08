@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { getSessionAdmin } from "@/lib/admin-auth";
 import { sendDayPassEmail } from "@/lib/server/day-pass-emails";
 import { rateLimitByIp, tooManyRequests } from "@/lib/security/rate-limit";
+import { BodyTooLargeError, readJsonBody, trippedHoneypot } from "@/lib/server/body";
 import { dayPassCreateSchema } from "@/lib/security/validators";
 import {
   generateDayPassReference,
@@ -11,6 +12,9 @@ import {
 
 export const dynamic = "force-dynamic";
 
+// A real booking is well under 4 KB even with every add-on in the cart.
+const MAX_BODY_BYTES = 16 * 1024;
+
 export async function POST(request: NextRequest) {
   try {
     const rate = await rateLimitByIp(request.headers, "api:daypass:create", 30, 60_000);
@@ -18,7 +22,11 @@ export async function POST(request: NextRequest) {
       return tooManyRequests(rate, "Too many booking attempts. Please retry shortly.");
     }
 
-    const body = await request.json();
+    const body = await readJsonBody(request, MAX_BODY_BYTES);
+    // Bots that fill in the hidden box get the same answer as a typo.
+    if (trippedHoneypot(body)) {
+      return NextResponse.json({ error: "Invalid day-pass payload" }, { status: 400 });
+    }
     const parsed = dayPassCreateSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
@@ -163,6 +171,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(response);
   } catch (err: any) {
+    if (err instanceof BodyTooLargeError) {
+      return NextResponse.json({ error: "Booking request too large" }, { status: 413 });
+    }
     console.error("[Day-Pass Create] Error:", err?.message);
     return NextResponse.json({ error: "Failed to create booking" }, { status: 500 });
   }

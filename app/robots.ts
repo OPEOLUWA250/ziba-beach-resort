@@ -9,7 +9,16 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/admin/*", "/admin-login", "/api/*"],
+        disallow: [
+          "/admin",
+          "/admin/*",
+          "/admin-login",
+          "/api/*",
+          "/view-booking",
+          "/day-pass/checkout",
+          "/day-pass/confirmation",
+          "/day-pass/cart",
+        ],
       },
     ],
     sitemap: [`${siteUrl}/sitemap.xml`],

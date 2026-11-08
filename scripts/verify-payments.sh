@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Paystack Secret Key
-PAYSTACK_SECRET="sk_test_09a0b8dd608b54f21ebe3f06620bb2819b508c6a"
+# Paystack secret key, read from the environment (this file is in a public repository).
+PAYSTACK_SECRET="${PAYSTACK_SECRET_KEY:?Set PAYSTACK_SECRET_KEY first}"
 
 # References from the screenshot (update these with actual references from your DB)
 REFERENCES=(

@@ -98,25 +98,3 @@ export const adminLoginSchema = z.object({
   identifier: z.string().trim().min(3).max(120),
   password: z.string().min(8).max(128),
 });
-
-export const userLoginSchema = z.object({
-  email: emailSchema,
-  password: z.string().min(6).max(128),
-});
-
-export const userRegisterSchema = z.object({
-  email: emailSchema,
-  password: z
-    .string()
-    .min(8)
-    .max(128)
-    .regex(
-      /^(?=.*[A-Za-z])(?=.*\d).+$/,
-      "Password must include letters and numbers",
-    ),
-  firstName: z.string().trim().min(1).max(60).optional(),
-  lastName: z.string().trim().min(1).max(60).optional(),
-  phone: phoneSchema.optional(),
-  country: z.string().trim().min(2).max(80).optional(),
-  currency: z.string().trim().min(3).max(10).optional(),
-});

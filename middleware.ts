@@ -18,20 +18,18 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // Security headers (CSP, frame blocking, HSTS…) are set for every path in
+  // next.config.mjs, so they also cover pages this middleware skips.
   const response = NextResponse.next();
-  response.headers.set("X-Frame-Options", "DENY");
-  response.headers.set("X-Content-Type-Options", "nosniff");
-  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  response.headers.set(
-    "Permissions-Policy",
-    'camera=(), microphone=(), geolocation=(), payment=(self "https://checkout.paystack.com" "https://js.paystack.co" "https://standard.paystack.co")',
-  );
 
-  if (process.env.NODE_ENV === "production") {
-    response.headers.set(
-      "Strict-Transport-Security",
-      "max-age=31536000; includeSubDomains; preload",
-    );
+  // Admin pages and booking/receipt pages hold guest details: browsers and
+  // shared computers mustn't keep a copy.
+  if (
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/view-booking") ||
+    pathname.startsWith("/day-pass/confirmation")
+  ) {
+    response.headers.set("Cache-Control", "no-store, private");
   }
 
   // Default API responses to no-store, except public GET endpoints that set

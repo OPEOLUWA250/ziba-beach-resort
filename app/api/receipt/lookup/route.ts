@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     const rate = await rateLimitByIp(request.headers, "api:receipt:lookup", 20, 60_000);
     if (!rate.allowed) return tooManyRequests(rate);
 
-    if (!ref) {
+    if (!ref || ref.length > 120 || (email && email.length > 254)) {
       return NextResponse.json(
         { error: "Reference number is required" },
         { status: 400 },
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
 
     // Search Room Bookings
     if (isZibaRef) {
-      console.log("[Receipt Lookup] Searching room bookings for:", ref);
+      
       console.log(
         "[Receipt Lookup] isZibaRef:",
         isZibaRef,
@@ -138,7 +138,7 @@ export async function GET(request: NextRequest) {
 
     // Search Day-Pass Bookings
     if (!booking && isZibaRef) {
-      console.log("[Receipt Lookup] Searching day-pass bookings for:", ref);
+      
       const { data, error } = await supabase
         .from("day_pass_bookings")
         .select("*")
@@ -178,7 +178,7 @@ export async function GET(request: NextRequest) {
 
     // Search by Paystack Reference (across all booking types)
     if (!booking && isPaystackRef) {
-      console.log("[Receipt Lookup] Searching by Paystack reference:", ref);
+      
       // Try room bookings first
       const { data: roomData, error: roomError } = await supabase
         .from("bookings")
@@ -296,7 +296,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (!booking) {
-      console.log("[Receipt Lookup] No booking found for reference:", ref);
+      
       return NextResponse.json(
         {
           error: email
@@ -320,11 +320,13 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("[Receipt Lookup] Unexpected error:", error);
+    console.error(
+      "[Receipt Lookup] Unexpected error:",
+      error instanceof Error ? error.message : error,
+    );
     return NextResponse.json(
       {
-        error:
-          error instanceof Error ? error.message : "Failed to fetch booking",
+        error: "Failed to fetch booking",
       },
       { status: 500 },
     );

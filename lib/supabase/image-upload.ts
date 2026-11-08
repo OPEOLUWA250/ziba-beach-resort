@@ -1,4 +1,16 @@
-import { supabase } from "./client";
+/*
+ * Image uploads for the admin editors. Files go to /api/admin/uploads, which
+ * checks the admin session and stores them with the server's key, so the
+ * public key in the browser never needs permission to change storage.
+ */
+
+const VALID_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const MAX_SIZE = 5 * 1024 * 1024;
+
+async function errorFrom(response: Response, fallback: string) {
+  const data = await response.json().catch(() => null);
+  return new Error((data && typeof data.error === "string" && data.error) || fallback);
+}
 
 /**
  * Upload an image to Supabase Storage
@@ -10,53 +22,26 @@ export async function uploadImage(
   file: File,
   bucket: string = "blog-images",
 ): Promise<string> {
-  try {
-    // Validate file
-    if (!file) {
-      throw new Error("No file selected");
-    }
-
-    // Validate file type
-    const validTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-    if (!validTypes.includes(file.type)) {
-      throw new Error(
-        "Invalid file type. Please upload JPEG, PNG, WebP, or GIF",
-      );
-    }
-
-    // Validate file size (max 5MB)
-    const maxSize = 5 * 1024 * 1024;
-    if (file.size > maxSize) {
-      throw new Error("File size exceeds 5MB limit");
-    }
-
-    // Generate unique filename
-    const timestamp = Date.now();
-    const random = Math.random().toString(36).substring(7);
-    const filename = `${timestamp}-${random}-${file.name}`;
-
-    // Upload to Supabase Storage
-    const { error } = await supabase.storage
-      .from(bucket)
-      .upload(`blog/${filename}`, file, {
-        cacheControl: "3600",
-        upsert: false,
-      });
-
-    if (error) {
-      throw new Error(`Upload failed: ${error.message}`);
-    }
-
-    // Get public URL - Supabase format
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-    const publicUrl = `${supabaseUrl}/storage/v1/object/public/${bucket}/blog/${filename}`;
-
-    console.log("Image uploaded:", publicUrl);
-    return publicUrl;
-  } catch (error) {
-    console.error("Error uploading image:", error);
-    throw error;
+  if (!file) throw new Error("No file selected");
+  // Quick checks for a friendly message; the server checks the bytes too.
+  if (!VALID_TYPES.includes(file.type)) {
+    throw new Error("Invalid file type. Please upload JPEG, PNG, WebP, or GIF");
   }
+  if (file.size > MAX_SIZE) throw new Error("File size exceeds 5MB limit");
+
+  const form = new FormData();
+  form.append("file", file);
+  form.append("bucket", bucket);
+
+  const response = await fetch("/api/admin/uploads", {
+    method: "POST",
+    body: form,
+    credentials: "same-origin",
+  });
+  if (!response.ok) throw await errorFrom(response, "Upload failed");
+
+  const { url } = (await response.json()) as { url: string };
+  return url;
 }
 
 /**
@@ -68,19 +53,11 @@ export async function deleteImage(
   imageUrl: string,
   bucket: string = "blog-images",
 ): Promise<void> {
-  try {
-    // Extract filename from URL
-    const urlParts = imageUrl.split("/");
-    const filename = urlParts[urlParts.length - 1];
-    const filepath = `blog/${filename}`;
-
-    const { error } = await supabase.storage.from(bucket).remove([filepath]);
-
-    if (error) {
-      throw new Error(`Delete failed: ${error.message}`);
-    }
-  } catch (error) {
-    console.error("Error deleting image:", error);
-    throw error;
-  }
+  const response = await fetch("/api/admin/uploads", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url: imageUrl, bucket }),
+    credentials: "same-origin",
+  });
+  if (!response.ok) throw await errorFrom(response, "Delete failed");
 }
