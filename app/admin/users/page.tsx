@@ -1,4 +1,5 @@
 "use client";
+import { confirmCard } from "@/components/notice-center";
 
 import React, { useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -183,7 +184,7 @@ export default function AdminSystemPage() {
 
   const handleDelete = async (user: AdminUser) => {
     if (!isSuperAdmin) return;
-    if (!window.confirm(`Delete admin ${user.username}?`)) return;
+    if (!(await confirmCard({ title: `Delete admin ${user.username}?`, message: "They'll lose access to the admin straight away.", confirmLabel: "Delete admin", destructive: true }))) return;
 
     try {
       setSaving(true);

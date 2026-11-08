@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/components/notice-center";
 
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -84,7 +85,7 @@ export function PopupForm({
       }));
       setImagePreview(imageUrl);
     } catch (error: any) {
-      alert(`Error uploading image: ${error.message}`);
+      notify.error("Couldn't upload the image", error.message);
     } finally {
       setIsUploadingImage(false);
     }
@@ -140,7 +141,7 @@ export function PopupForm({
       !formData.content ||
       !formData.featured_image
     ) {
-      alert("All fields are required");
+      notify.info("Please fill in every field", "Title, slug, excerpt, content and an image are all needed.");
       return;
     }
 

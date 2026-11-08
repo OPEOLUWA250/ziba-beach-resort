@@ -4,8 +4,30 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Baby,
+  Check,
+  Clapperboard,
+  DoorOpen,
+  Flame,
+  Gamepad2,
+  Gift,
+  Minus,
+  Plus,
+  ShoppingBag,
+  Umbrella,
+  Waves,
+  Sun,
+} from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
+import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import PageHero from "@/components/page-hero";
+import SectionHeading from "@/components/section-heading";
+import { whatsappLink } from "@/lib/booking-links";
+import { RESORT } from "@/lib/site";
+import { addOnImage } from "@/lib/day-pass-images";
 import { track } from "@/lib/analytics";
 
 interface CartItem {
@@ -28,6 +50,7 @@ export default function DayPass() {
   const [cart, setCart] = useState<Record<string, number>>({});
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   // Fetch products from database
   useEffect(() => {
@@ -56,8 +79,10 @@ export default function DayPass() {
         }));
 
         setProducts(mappedProducts);
+        if (!Array.isArray(data) || data.length === 0) setLoadError(true);
       } catch (error) {
         console.error("Error loading products:", error);
+        setLoadError(true);
       } finally {
         setIsLoading(false);
       }
@@ -169,76 +194,114 @@ export default function DayPass() {
     (p) => p.category === "experiences",
   );
 
+  const cartItems = Object.entries(cart)
+    .map(([id, qty]) => ({ product: products.find((p) => p.id === id), qty }))
+    .filter((i) => i.product && i.qty > 0);
+  const cartCount = cartItems.reduce((sum, i) => sum + i.qty, 0);
+  const cartTotal = cartItems.reduce((sum, i) => sum + (i.product?.price || 0) * i.qty, 0);
+  // Lets the floating WhatsApp button sit above the cart bar.
+  useEffect(() => {
+    document.body.toggleAttribute("data-bottom-bar", cartCount > 0);
+    return () => document.body.removeAttribute("data-bottom-bar");
+  }, [cartCount]);
+
+  const fromPrice = ticketProducts.length
+    ? Math.min(...ticketProducts.map((p) => p.price).filter((p) => p > 0))
+    : null;
+
+  const COVERS = [
+    { icon: DoorOpen, title: "Entrance", text: "Access to the resort for the day" },
+    { icon: Waves, title: "Swimming pool", text: "General pool access" },
+    { icon: Sun, title: "The beach", text: "Direct beach access" },
+    { icon: Umbrella, title: "Pool cabanas", text: "Shade by the pool" },
+    { icon: Clapperboard, title: "3pm cinema", text: "A film screening every day" },
+    { icon: Gamepad2, title: "Games room", text: "Indoor games" },
+    { icon: Baby, title: "Children's playground", text: "For younger guests" },
+    { icon: Flame, title: "Firepit", text: "As the evening cools" },
+  ];
+
+  const RULES = [
+    "One pass per guest",
+    "No outside food or drinks",
+    "No pets",
+    "General pools only: the overwater pool is for room guests",
+    "10am–6pm, and please leave by 6:30pm",
+    "Subject to availability; blackout dates may apply",
+  ];
+
   return (
     <>
       <Header />
       <main className="bg-white">
-        {/* HERO SECTION */}
-        <section className="relative w-full h-screen bg-gray-900 overflow-hidden flex items-center py-20">
-          <div className="absolute inset-0">
-            <Image
-              src="/day-experience.jpg"
-              alt="Day Pass Hero"
-              fill
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black/50"></div>
-          </div>
-
-          <div className="relative z-10 px-4 sm:px-6 lg:px-8 w-full">
-            <div className="max-w-3xl mx-auto text-center text-white">
-              <h1
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-white mb-6"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
-              >
-                Day Pass
-              </h1>
-              <p className="text-lg sm:text-xl lg:text-2xl text-gray-100 font-light mb-8">
-                Spend 8 hours by the beach with us at Ziba
+        <PageHero
+          eyebrow="Day pass"
+          title="A day by the sea"
+          subtitle="Eight hours of pools, beach, food and fun at Ziba, every day from 10am to 6pm."
+          imageUrl="/day-experience.jpg"
+          imageAlt="Guests on the beach at Ziba"
+        >
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <a
+              href="#tickets"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-blue-950 transition hover:bg-blue-50"
+            >
+              Choose tickets
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+            {fromPrice && (
+              <p className="text-sm font-light text-white/90">
+                From ₦{fromPrice.toLocaleString("en-NG")} per adult
               </p>
-              <p className="text-base sm:text-lg text-gray-200 font-light mb-10">
-                Available daily • 10:00am – 6:00pm
-              </p>
-              <div className="w-24 h-1 bg-white mx-auto"></div>
-            </div>
+            )}
           </div>
+        </PageHero>
 
-          {/* Scroll Down Indicator */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <div className="text-white text-center">
-              <p className="text-sm font-light mb-2">Explore More</p>
-              <svg
-                className="w-6 h-6 mx-auto"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                />
-              </svg>
-            </div>
-          </div>
-        </section>
-
-        {/* PRODUCTS SECTION */}
-        <section className="px-4 sm:px-6 lg:px-8 py-28 bg-white">
-          <div className="max-w-7xl mx-auto">
+        {/* TICKETS & ADD-ONS */}
+        <section id="tickets" className="scroll-mt-28 px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
+          <div className="mx-auto max-w-7xl space-y-20">
             {isLoading ? (
-              <div className="text-center py-20">
-                <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent mb-4"></div>
-                <p className="text-gray-600">Loading experiences...</p>
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-label="Loading tickets">
+                {[0, 1, 2, 3, 4, 5].map((n) => (
+                  <div key={n} className="h-64 animate-pulse rounded-3xl bg-slate-100" />
+                ))}
+              </div>
+            ) : loadError || products.length === 0 ? (
+              <div className="mx-auto max-w-2xl rounded-3xl bg-[#f7f4ee] px-6 py-12 text-center sm:px-12">
+                <h2 className="font-cormorant text-4xl font-medium text-blue-950">
+                  We can&apos;t show tickets right now
+                </h2>
+                <p className="mt-4 font-light leading-relaxed text-slate-600">
+                  Please try again in a few minutes, or book your day pass with
+                  us directly. We&apos;re happy to help.
+                </p>
+                <div className="mt-8 flex flex-wrap justify-center gap-3">
+                  <a
+                    href={whatsappLink("Hello Ziba, I'd like to book a day pass.")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => track("whatsapp_click", { context: "day_pass_unavailable" })}
+                    className="inline-flex items-center gap-2 rounded-full bg-blue-950 px-6 py-3.5 text-sm font-semibold text-white hover:bg-blue-900"
+                  >
+                    <FontAwesomeIcon icon={faWhatsapp} className="h-4 w-4" />
+                    Book on WhatsApp
+                  </a>
+                  <a
+                    href={`tel:${RESORT.phones[0].replace(/\s/g, "")}`}
+                    onClick={() => track("phone_click", { context: "day_pass_unavailable" })}
+                    className="inline-flex items-center rounded-full border border-slate-300 px-6 py-3.5 text-sm font-semibold text-slate-900 hover:border-blue-950"
+                  >
+                    Call {RESORT.phones[0]}
+                  </a>
+                </div>
               </div>
             ) : (
               <>
-                {/* REGULAR TICKETS SECTION */}
-                <div className="mb-20" id="regular-tickets">
-                  <h2 className="h2 text-blue-900 mb-12">Day Pass Tickets</h2>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12">
+                <div id="regular-tickets" className="scroll-mt-28">
+                  <SectionHeading align="left" eyebrow="Tickets" title="Day pass tickets">
+                    Access to the pools, beach and facilities from 10am to 6pm.
+                    Infants come free.
+                  </SectionHeading>
+                  <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {regularTickets.map((product) => (
                       <ProductCard
                         key={product.id}
@@ -251,29 +314,21 @@ export default function DayPass() {
                   </div>
                 </div>
 
-                {/* PREMIUM PLUS TICKETS SECTION */}
                 {plusTickets.length > 0 && (
-                  <div className="mb-20" id="premium-tickets">
-                    <div className="mb-12">
-                      <div className="flex items-center gap-3 mb-4">
-                        <h2 className="h2 text-blue-900">Premium Tickets</h2>
-                        <span className="inline-block px-3 py-1 bg-blue-100 text-blue-900 text-xs font-semibold rounded-full">
-                          PLUS BENEFITS
-                        </span>
-                      </div>
-                      <p className="text-gray-600 font-light mb-6">
-                        Upgrade your day pass with complimentary meals and
-                        premium experiences
-                      </p>
-                      <a
-                        href="/menu#ticket-plus-meals"
-                        className="inline-block bg-blue-900 hover:bg-blue-800 text-white text-sm font-medium py-2.5 px-6 rounded-lg transition-colors"
+                  <div id="premium-tickets" className="scroll-mt-28">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                      <SectionHeading align="left" eyebrow="Plus tickets" title="With a meal and a drink">
+                        Everything in a day pass, plus one meal and a drink
+                        (cocktail, mocktail, soft drink or beer).
+                      </SectionHeading>
+                      <Link
+                        href="/menu#daypass-menu"
+                        className="shrink-0 text-sm font-semibold text-blue-900 underline-offset-4 hover:underline"
                       >
-                        View Meal Options
-                      </a>
+                        See the meal options
+                      </Link>
                     </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                       {plusTickets.map((product) => (
                         <ProductCard
                           key={product.id}
@@ -287,127 +342,98 @@ export default function DayPass() {
                   </div>
                 )}
 
-                {/* EXPERIENCES SECTION */}
-                <div className="mb-20">
-                  <h2 className="h2 text-blue-900 mb-12">Add-On Experiences</h2>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                    {experienceProducts.map((product) => (
-                      <ProductCard
-                        key={product.id}
-                        product={product}
-                        quantity={getQuantity(product.id)}
-                        onIncrease={() => updateQuantity(product.id, 1)}
-                        onDecrease={() => updateQuantity(product.id, -1)}
-                      />
-                    ))}
+                {experienceProducts.length > 0 && (
+                  <div>
+                    <SectionHeading align="left" eyebrow="Add-ons" title="Make a day of it">
+                      Add an experience to your visit.
+                    </SectionHeading>
+                    <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                      {experienceProducts.map((product) => (
+                        <ProductCard
+                          key={product.id}
+                          image={addOnImage(product.name)}
+                          product={product}
+                          quantity={getQuantity(product.id)}
+                          onIncrease={() => updateQuantity(product.id, 1)}
+                          onDecrease={() => updateQuantity(product.id, -1)}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                <Link
+                  href="/gift"
+                  className="group flex items-center justify-between gap-6 rounded-3xl border border-slate-200 px-6 py-6 transition hover:border-blue-900 sm:px-8"
+                >
+                  <span className="flex items-center gap-4">
+                    <Gift className="h-6 w-6 text-blue-800" strokeWidth={1.5} aria-hidden="true" />
+                    <span>
+                      <span className="block font-medium text-slate-900">Buying for someone else?</span>
+                      <span className="block text-sm font-light text-slate-600">
+                        Gift a day pass with a personal message.
+                      </span>
+                    </span>
+                  </span>
+                  <ArrowRight className="h-5 w-5 shrink-0 text-blue-900 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                </Link>
               </>
             )}
-
-            {/* ORDER SUMMARY - REMOVED - Use header cart icon instead */}
           </div>
         </section>
 
         {/* WHAT YOUR DAY PASS COVERS */}
-        <section className="px-4 sm:px-6 lg:px-8 py-28 bg-linear-to-br from-blue-50 via-white to-pink-50">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2
-                className="text-5xl font-light text-blue-900 mb-4 text-center"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
-              >
-                What Your Day Pass Covers
-              </h2>
-              <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-              {[
-                {
-                  icon: "🚪",
-                  title: "Entrance",
-                  description: "Full resort access",
-                },
-                {
-                  icon: "🎬",
-                  title: "3pm Movie in Cinema",
-                  description: "Daily screening",
-                },
-                {
-                  icon: "🏊",
-                  title: "Swimming Pool",
-                  description: "General pool access",
-                },
-                {
-                  icon: "🎪",
-                  title: "Children's Playground",
-                  description: "Fun for kids",
-                },
-                {
-                  icon: "🔥",
-                  title: "Fire Pit",
-                  description: "Evening relaxation",
-                },
-                {
-                  icon: "🎮",
-                  title: "Games Room",
-                  description: "Indoor entertainment",
-                },
-                {
-                  icon: "☀️",
-                  title: "Pool Cabanas",
-                  description: "Shaded comfort",
-                },
-                {
-                  icon: "🏖️",
-                  title: "Beachfront Access",
-                  description: "Direct beach entry",
-                },
-              ].map((item, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white border-2 border-gray-200 rounded-2xl p-6 text-center hover:border-blue-300 hover:shadow-lg transition-all duration-300"
-                >
-                  <div className="text-5xl mb-4">{item.icon}</div>
-                  <h3 className="font-semibold text-gray-900 mb-2">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 font-light">
-                    {item.description}
-                  </p>
-                </div>
+        <section className="bg-[#f7f4ee] px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
+          <div className="mx-auto max-w-7xl">
+            <SectionHeading eyebrow="Included" title="What your day pass covers" />
+            <ul className="mt-14 grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
+              {COVERS.map(({ icon: Icon, title, text }) => (
+                <li key={title} className="text-center">
+                  <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white">
+                    <Icon className="h-6 w-6 text-blue-800" strokeWidth={1.5} aria-hidden="true" />
+                  </span>
+                  <h3 className="mt-4 font-medium text-slate-900">{title}</h3>
+                  <p className="mt-1 text-sm font-light text-slate-600">{text}</p>
+                </li>
               ))}
-            </div>
+            </ul>
 
-            {/* Important Policies & Guidelines */}
-            <div className="bg-white border-2 border-blue-200 rounded-2xl p-8 shadow-lg">
-              <h3
-                className="text-3xl font-light text-blue-900 mb-6 text-center"
-                style={{ fontFamily: "Cormorant Garamond, serif" }}
-              >
-                Important Policies & Guidelines
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  "No outside food & beverage allowed",
-                  "One pass required per guest",
-                  "No pets allowed",
-                  "Only general pool access included. Overwater pool excluded",
-                  "Time Access: 10am - 6:00pm strictly. Exit by 6:30pm",
-                  "Subject to availability & blackout dates may apply",
-                ].map((policy, idx) => (
-                  <div key={idx} className="flex items-start gap-3">
-                    <span className="text-green-600 text-xl mt-0.5">✓</span>
-                    <p className="text-gray-700 font-light flex-1">{policy}</p>
-                  </div>
+            <div className="mx-auto mt-16 max-w-4xl rounded-3xl bg-white p-8 sm:p-10">
+              <h3 className="font-cormorant text-3xl font-medium text-blue-950">Good to know</h3>
+              <ul className="mt-6 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+                {RULES.map((rule) => (
+                  <li key={rule} className="flex gap-3 text-[15px] font-light text-slate-700">
+                    <Check className="mt-1 h-4 w-4 shrink-0 text-blue-800" strokeWidth={2} aria-hidden="true" />
+                    {rule}
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           </div>
         </section>
       </main>
+
+      {/* Cart summary, once something is in it */}
+      {cartCount > 0 && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 sm:px-8 lg:px-12">
+            <p className="flex items-center gap-3 text-sm text-slate-700">
+              <ShoppingBag className="h-5 w-5 text-blue-900" strokeWidth={1.5} aria-hidden="true" />
+              <span>
+                {cartCount} {cartCount === 1 ? "item" : "items"} ·{" "}
+                <span className="font-semibold text-slate-900">₦{cartTotal.toLocaleString("en-NG")}</span>
+              </span>
+            </p>
+            <Link
+              href="/day-pass/cart"
+              className="inline-flex items-center gap-2 rounded-full bg-blue-950 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-900"
+            >
+              Review &amp; pay
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+      )}
       <Footer />
     </>
   );
@@ -419,66 +445,81 @@ interface ProductCardProps {
     name: string;
     price: number;
     description?: string;
+    age_group?: string;
   };
   quantity: number;
   onIncrease: () => void;
   onDecrease: () => void;
+  /** Add-ons show a photo of the experience. */
+  image?: string;
 }
 
-function ProductCard({
-  product,
-  quantity,
-  onIncrease,
-  onDecrease,
-}: ProductCardProps) {
+function ProductCard({ product, quantity, onIncrease, onDecrease, image }: ProductCardProps) {
+  const selected = quantity > 0;
   return (
-    <div className="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-300 flex flex-col h-full p-7">
-      {/* Title */}
-      <h4 className="text-gray-900 mb-3 text-lg font-medium">
-        {product.name}
-      </h4>
-
-      {/* Description */}
-      <p className="text-sm text-gray-600 font-light mb-6 grow">
-        {product.description || "A premium experience at Ziba Beach Resort."}
-      </p>
-
-      {/* Divider */}
-      <div className="w-full h-px bg-gray-200 mb-6"></div>
-
-      {/* Price */}
-      <div className="mb-6">
-        <p className="text-xs text-gray-500 font-light uppercase tracking-wider mb-1">
-          Price per person
-        </p>
-        <p className="text-2xl font-light text-gray-900">
-          ₦{product.price.toLocaleString()}
-        </p>
+    <div
+      className={`flex h-full flex-col overflow-hidden rounded-3xl border transition ${
+        selected ? "border-blue-900 bg-blue-50/40" : "border-slate-200 hover:border-slate-300"
+      }`}
+    >
+      {image && (
+        <div className="relative aspect-[4/3] bg-slate-100">
+          <Image
+            src={image}
+            alt={product.name}
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover"
+          />
+          {selected && (
+            <span className="absolute left-4 top-4 rounded-full bg-blue-950 px-3 py-1 text-xs font-semibold text-white">
+              {quantity} added
+            </span>
+          )}
+        </div>
+      )}
+      <div className="flex grow flex-col p-7">
+      <div className="flex items-start justify-between gap-4">
+        <h3 className="text-lg font-medium text-slate-900">{product.name}</h3>
+        {product.age_group && (
+          <span className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-light text-slate-600">
+            {product.age_group}
+          </span>
+        )}
       </div>
-
-      {/* Quantity Selector */}
-      <div className="flex items-center justify-between gap-4">
-        <span className="text-xs text-gray-600 font-light uppercase tracking-wider">
-          Qty
-        </span>
-        <div className="flex items-center gap-2 border border-gray-300 rounded-lg">
+      {product.description && product.description !== "Description coming soon." && (
+        <p className="mt-3 grow text-sm font-light leading-relaxed text-slate-600">{product.description}</p>
+      )}
+      <div className="mt-6 flex items-end justify-between gap-4 border-t border-slate-200 pt-5">
+        <div>
+          <p className="font-cormorant text-3xl font-medium text-blue-950">
+            {product.price > 0 ? `₦${product.price.toLocaleString("en-NG")}` : "Free"}
+          </p>
+          <p className="text-xs font-light text-slate-500">per person</p>
+        </div>
+        <div className="flex items-center rounded-full border border-slate-300">
           <button
+            type="button"
             onClick={onDecrease}
             disabled={quantity === 0}
-            className="p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-slate-100 disabled:opacity-30"
+            aria-label={`One fewer ${product.name}`}
           >
-            <FontAwesomeIcon icon={faMinus} className="w-4 h-4 text-gray-900" />
+            <Minus className="h-4 w-4" aria-hidden="true" />
           </button>
-          <span className="w-8 text-center font-light text-gray-900 text-sm">
+          <span className="w-8 text-center text-sm font-medium text-slate-900" aria-live="polite">
             {quantity}
           </span>
           <button
+            type="button"
             onClick={onIncrease}
-            className="p-2 hover:bg-gray-100 transition-colors"
+            className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-slate-100"
+            aria-label={`Add one ${product.name}`}
           >
-            <FontAwesomeIcon icon={faPlus} className="w-4 h-4 text-gray-900" />
+            <Plus className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
+      </div>
       </div>
     </div>
   );

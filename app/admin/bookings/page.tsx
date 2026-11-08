@@ -1,4 +1,5 @@
 "use client";
+import { confirmCard } from "@/components/notice-center";
 
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -1017,9 +1018,12 @@ export default function BookingsManagement() {
   const handleBulkDeleteRoomBookings = async () => {
     if (selectedRoomBookings.length === 0) return;
 
-    const shouldDelete = window.confirm(
-      `Delete ${selectedRoomBookings.length} selected room booking(s)? This cannot be undone.`,
-    );
+    const shouldDelete = await confirmCard({
+      title: `Delete ${selectedRoomBookings.length} room booking${selectedRoomBookings.length === 1 ? "" : "s"}?`,
+      message: "This can't be undone.",
+      confirmLabel: "Delete",
+      destructive: true,
+    });
 
     if (!shouldDelete) return;
 
@@ -1048,9 +1052,12 @@ export default function BookingsManagement() {
   const handleBulkDeleteDayPassBookings = async () => {
     if (selectedDayPassBookings.length === 0) return;
 
-    const shouldDelete = window.confirm(
-      `Delete ${selectedDayPassBookings.length} selected day-pass booking(s)? This cannot be undone.`,
-    );
+    const shouldDelete = await confirmCard({
+      title: `Delete ${selectedDayPassBookings.length} day-pass booking${selectedDayPassBookings.length === 1 ? "" : "s"}?`,
+      message: "This can't be undone.",
+      confirmLabel: "Delete",
+      destructive: true,
+    });
 
     if (!shouldDelete) return;
 

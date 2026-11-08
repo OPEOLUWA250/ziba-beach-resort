@@ -15,14 +15,15 @@ import {
   faSun,
 } from "@fortawesome/free-solid-svg-icons";
 
+// The logo links home; Blog and Receipt Lookup live in the footer.
 const navItems = [
-  { label: "Home", href: "/" },
   { label: "Rooms", href: "/bookings" },
   { label: "Day Pass", href: "/day-pass" },
+  { label: "Experiences", href: "/experience" },
+  { label: "Dining", href: "/menu" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Offers", href: "/offers" },
   { label: "Our Story", href: "/our-story" },
-  { label: "Experience", href: "/experience" },
-  { label: "Menu", href: "/menu" },
-  { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -112,14 +113,14 @@ export default function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex gap-2 text-sm font-medium tracking-normal items-center">
+        <nav className="hidden lg:flex gap-2 text-sm font-medium tracking-normal items-center">
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`px-4 py-2 transition-colors duration-200 relative group ${
+                className={`px-2.5 xl:px-4 py-2 transition-colors duration-200 relative group ${
                   isActive
                     ? "text-gray-900"
                     : "text-gray-900 hover:text-blue-900"
@@ -139,45 +140,49 @@ export default function Header() {
         </nav>
 
         {/* Desktop CTA Buttons */}
-        <div className="hidden md:flex items-center gap-3">
-          <Link
-            href="/day-pass/cart"
-            className="relative p-2.5 rounded-lg hover:bg-white/10 transition-colors"
-          >
-            <FontAwesomeIcon
-              icon={faCartShopping}
-              className="h-5 w-5 text-gray-900 hover:text-blue-900 transition-colors"
-            />
-            {cartCount > 0 && (
-              <span className="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </Link>
+        <div className="hidden lg:flex items-center gap-3">
+          {cartCount > 0 && (
+            <Link
+              href="/day-pass/cart"
+              className="relative p-2.5 rounded-lg hover:bg-white/10 transition-colors"
+            >
+              <FontAwesomeIcon
+                icon={faCartShopping}
+                className="h-5 w-5 text-gray-900 hover:text-blue-900 transition-colors"
+              />
+              {cartCount > 0 && (
+                <span className="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          )}
           <button
             onClick={handleBookNow}
-            className="px-7 py-2.5 bg-blue-900 hover:bg-blue-800 text-white text-sm font-medium tracking-normal rounded-lg transition-all duration-200 hover:shadow-md"
+            className="px-6 py-2.5 bg-blue-950 hover:bg-blue-900 text-white text-sm font-semibold rounded-full transition-colors duration-200"
           >
-            Book Now
+            Book now
           </button>
         </div>
 
         {/* Mobile Cart Icon and Menu Button */}
-        <div className="md:hidden flex items-center gap-2">
-          <Link
-            href="/day-pass/cart"
-            className="relative p-2.5 rounded-lg hover:bg-slate-900/5 transition-colors"
-          >
-            <FontAwesomeIcon
-              icon={faCartShopping}
-              className="h-5.5 w-5.5 text-gray-900 hover:text-blue-900 transition-colors"
-            />
-            {cartCount > 0 && (
-              <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center drop-shadow-md">
-                {cartCount}
-              </span>
-            )}
-          </Link>
+        <div className="lg:hidden flex items-center gap-2">
+          {cartCount > 0 && (
+            <Link
+              href="/day-pass/cart"
+              className="relative p-2.5 rounded-lg hover:bg-slate-900/5 transition-colors"
+            >
+              <FontAwesomeIcon
+                icon={faCartShopping}
+                className="h-5.5 w-5.5 text-gray-900 hover:text-blue-900 transition-colors"
+              />
+              {cartCount > 0 && (
+                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center drop-shadow-md">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          )}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="transition-colors duration-300 p-2 text-gray-900 hover:text-blue-900"
@@ -193,10 +198,10 @@ export default function Header() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-2xl rounded-b-2xl animate-slideDown">
+        <div className="lg:hidden bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-2xl rounded-b-2xl animate-slideDown">
           <div className="px-4 py-6 space-y-3">
             {navItems.map((item, index) => {
-              const isActive = pathname === item.href;
+              const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
               return (
                 <Link
                   key={item.href}

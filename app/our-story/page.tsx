@@ -4,6 +4,7 @@ import Header from "../../components/header";
 import Footer from "../../components/footer";
 import PageHero from "../../components/page-hero";
 import Ratings from "../../components/ratings";
+import ResortMap from "@/components/resort-map";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -143,9 +144,11 @@ export default function OurStory() {
     <>
       <Header />
       <PageHero
-        title="Our Story"
-        subtitle="Where nature's beauty meets pristine luxury."
-        imageUrl="/ziba-hero-images/our-story-hero.jpg"
+        eyebrow="Our story"
+        title="Nigeria's first overwater resort"
+        subtitle="On the beach at Okun Ajah, Lagos."
+        imageUrl="/ziba-hero-images/ziba-home/ziba-aerial-view-phase-2-grand-overwater-villa.jpg"
+        imageAlt="Ziba Beach Resort from the air"
       />
       <main className="bg-white">
         {/* The Resort Section */}
@@ -166,21 +169,17 @@ export default function OurStory() {
 
             <div className="space-y-8 text-center text-lg text-gray-700 font-light leading-relaxed max-w-3xl mx-auto">
               <p>
-                Welcome to Ziba Beach Resort, where nature&apos;s beauty is
-                represented in pristine luxury with your relaxation needs in
-                mind!
+                Welcome to Ziba Beach Resort, where the beauty of the coast
+                meets comfort, with your relaxation in mind.
               </p>
               <p>
-                You and your loved ones can now enjoy a stellar getaway
-                experience without breaking the bank to leave the shores of
-                Nigeria/Africa
+                You and your loved ones can enjoy a world-class getaway without
+                leaving Nigeria: no visas and no long flights.
               </p>
               <p>
-                Situated in Okun-Mopo, Lagos Nigeria, Ziba Beach Resort is an
-                all-inclusive resort entertaining adults and children likewise
-                and we pride ourselves in providing exceptional services that
-                will leave an unforgettable impact on the memories you seek to
-                create with yourself and loved ones.
+                On the beach at Okun Ajah, Lagos, Ziba welcomes adults and
+                children alike, and we take pride in service that helps you
+                make the memories you came for.
               </p>
             </div>
           </div>
@@ -216,6 +215,8 @@ export default function OurStory() {
             </div>
           </div>
         </section>
+
+        <ResortMap />
 
         <Ratings />
 
@@ -257,7 +258,7 @@ export default function OurStory() {
                   </div>
                   <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-60 group-hover:opacity-75 transition-all duration-300" />
                   <div className="absolute inset-0 flex flex-col justify-end p-6">
-                    <h3 className="h6 text-white group-hover:text-pink-300 transition-colors duration-300">
+                    <h3 className="h6 text-white group-hover:text-white transition-colors duration-300">
                       {room.name}
                     </h3>
                   </div>
@@ -275,7 +276,7 @@ export default function OurStory() {
                 style={headingFont}
                 className="h2 font-light text-blue-900 mb-4 text-center"
               >
-                World-Class Facilities
+                Facilities
               </h2>
               <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
               <p className="text-gray-600 font-light text-lg max-w-2xl mx-auto">

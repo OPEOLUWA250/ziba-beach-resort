@@ -1,161 +1,118 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { PopupData } from "@/lib/services/popups";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { ArrowRight, X } from "lucide-react";
+import type { PopupData } from "@/lib/services/popups";
 
+const dismissedKey = (id: string) => `ziba-popup-dismissed:${id}`;
+
+function wasDismissed(id: string) {
+  try {
+    return sessionStorage.getItem(dismissedKey(id)) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * The homepage offer (the active popup from the admin), shown as a small card
+ * that slides in at the corner after a little scrolling. It never covers the
+ * page, closes with × or Escape, and stays closed for the rest of the visit.
+ * (Still exported as PopupModal so existing imports keep working.)
+ */
 export function PopupModal() {
   const [popup, setPopup] = useState<PopupData | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasTriggered, setHasTriggered] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const fetchPopup = async () => {
-      try {
-        // Use absolute URL for production compatibility
-        const baseUrl =
-          typeof window !== "undefined"
-            ? window.location.origin
-            : process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-
-        const fetchUrl = `${baseUrl}/api/popups?active=true`;
-        console.log("[PopupModal] Fetching from:", fetchUrl);
-
-        const response = await fetch(fetchUrl, {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`API responded with status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("[PopupModal] API Response:", data);
-
-        if (data.success && data.popups && data.popups.length > 0) {
-          setPopup(data.popups[0]);
-          console.log("[PopupModal] Popup loaded:", data.popups[0].title);
-
-          // Check if coming from popup dedicated page via referrer
-          const fromPopupPage = document.referrer.includes("/popups/");
-          if (fromPopupPage) {
-            setHasTriggered(true); // Don't show if coming back from popup page
-          }
-        } else {
-          console.warn("[PopupModal] No active popups found", data);
-        }
-      } catch (error: any) {
-        const errorMsg = error?.message || "Unknown error";
-        console.error("[PopupModal] Error fetching popup:", errorMsg, error);
-      } finally {
-        setIsLoading(false);
-      }
+    let cancelled = false;
+    fetch("/api/popups?active=true", { headers: { Accept: "application/json" } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        const first: PopupData | undefined = data?.success ? data.popups?.[0] : undefined;
+        if (cancelled || !first?.id) return;
+        // Not again for someone who closed it, or who's just come back from its page.
+        if (wasDismissed(first.id) || document.referrer.includes(`/popups/${first.slug}`)) return;
+        setPopup(first);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
     };
-
-    // Delay fetch slightly to ensure page is fully loaded
-    const timer = setTimeout(fetchPopup, 100);
-    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    if (!popup || hasTriggered) return;
-
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      // Show popup after scrolling 300px down
-      if (scrollPosition > 300 && !hasTriggered) {
-        setIsOpen(true);
-        setHasTriggered(true);
-      }
+    if (!popup || open) return;
+    const onScroll = () => {
+      if (window.scrollY > 300) setOpen(true);
     };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [popup, open]);
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [popup, hasTriggered]);
+  const close = () => {
+    setOpen(false);
+    setPopup(null);
+    if (popup?.id) {
+      try {
+        sessionStorage.setItem(dismissedKey(popup.id), "1");
+      } catch {
+        // Private browsing: it simply may show again next visit.
+      }
+    }
+  };
 
-  // Don't render anything while loading or if no popup
-  if (isLoading) {
-    return null;
-  }
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
-  if (!popup) {
-    return null;
-  }
+  if (!popup || !open) return null;
 
   return (
-    <>
-      {/* Modal Overlay */}
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm">
-          <div className="relative bg-white max-w-md lg:max-w-5xl w-full h-[80vh] max-h-160 min-h-136 overflow-hidden rounded-2xl border border-blue-900/20 shadow-2xl">
-            {/* Close Button - Top Right of Modal */}
-            <button
-              onClick={() => setIsOpen(false)}
-              className="absolute top-2 right-2 sm:top-3 sm:right-3 z-20 p-2 sm:p-2.5 bg-white hover:bg-gray-100 rounded-full transition text-gray-900 hover:text-black shadow-2xl hover:shadow-xl hover:scale-110 active:scale-95"
-            >
-              <FontAwesomeIcon icon={faXmark} className="h-8 w-8" />
-            </button>
-
-            {popup.featured_image ? (
-              <div className="h-full grid grid-rows-[7fr_3fr] lg:grid-cols-2 lg:grid-rows-1">
-                {/* Image Section - 70% mobile emphasis, full-height desktop */}
-                <div className="relative overflow-hidden bg-linear-to-b from-slate-100 to-slate-200">
-                  <img
-                    src={popup.featured_image}
-                    alt={popup.title}
-                    className="w-full h-full object-cover object-center"
-                  />
-                </div>
-
-                {/* Text + CTA Section - 30% on mobile */}
-                <div className="p-5 sm:p-6 lg:p-10 flex flex-col justify-between gap-3 lg:gap-5">
-                  <div className="space-y-2 lg:space-y-4">
-                    <h3
-                      className="text-2xl lg:text-4xl font-light text-gray-900 cormorant leading-tight"
-                      style={{ fontFamily: "Cormorant Garamond, serif" }}
-                    >
-                      {popup.title}
-                    </h3>
-                    <p className="text-sm sm:text-base lg:text-lg text-gray-600 leading-relaxed font-light line-clamp-3 lg:line-clamp-6">
-                      {popup.excerpt}
-                    </p>
-                  </div>
-
-                  <a
-                    href={`/popups/${popup.slug}`}
-                    className="w-full px-4 py-3 lg:py-3.5 bg-blue-900 hover:bg-blue-800 text-white font-light text-center transition border border-blue-900 rounded-2xl inline-block"
-                  >
-                    {popup.modal_cta_text || "Learn More"}
-                  </a>
-                </div>
-              </div>
-            ) : (
-              <div className="h-full p-6 lg:p-10 flex flex-col justify-center gap-5">
-                <h3
-                  className="text-2xl lg:text-4xl font-light text-gray-900 cormorant leading-tight"
-                  style={{ fontFamily: "Cormorant Garamond, serif" }}
-                >
-                  {popup.title}
-                </h3>
-                <p className="text-base lg:text-lg text-gray-600 leading-relaxed font-light">
-                  {popup.excerpt}
-                </p>
-                <a
-                  href={`/popups/${popup.slug}`}
-                  className="w-full px-4 py-3 lg:py-3.5 bg-blue-900 hover:bg-blue-800 text-white font-light text-center transition border border-blue-900 rounded-2xl inline-block"
-                >
-                  {popup.modal_cta_text || "Learn More"}
-                </a>
-              </div>
-            )}
-          </div>
+    <aside
+      aria-label={`Offer: ${popup.title}`}
+      className="fixed bottom-4 left-4 right-[5.25rem] z-40 overflow-hidden rounded-3xl bg-white shadow-[0_24px_60px_-20px_rgba(2,6,23,0.45)] ring-1 ring-slate-900/5 animate-[offerIn_380ms_cubic-bezier(.2,.8,.2,1)] sm:bottom-7 sm:left-7 sm:right-auto sm:w-[22rem]"
+    >
+      {popup.featured_image && (
+        <div className="relative aspect-[16/9] bg-slate-100">
+          {/* Offer images are uploaded in the admin and may live on Supabase Storage. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={popup.featured_image} alt="" className="h-full w-full object-cover object-top" />
         </div>
       )}
-    </>
+      <button
+        type="button"
+        onClick={close}
+        aria-label="Close offer"
+        className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-sm transition hover:bg-white hover:text-slate-950"
+      >
+        <X className="h-4 w-4" />
+      </button>
+      <div className="p-5">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-blue-700">Offer</p>
+        <h2 className="mt-1.5 font-cormorant text-2xl font-medium leading-tight text-blue-950">{popup.title}</h2>
+        {popup.excerpt && (
+          <p className="mt-2 line-clamp-3 text-sm font-light leading-relaxed text-slate-600">{popup.excerpt.trim()}</p>
+        )}
+        <div className="mt-4 flex items-center gap-4">
+          <Link
+            href={`/popups/${popup.slug}`}
+            className="inline-flex items-center gap-1.5 rounded-full bg-blue-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-900"
+          >
+            {popup.modal_cta_text || "See the offer"}
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+          <button type="button" onClick={close} className="text-sm font-medium text-slate-500 hover:text-slate-800">
+            Not now
+          </button>
+        </div>
+      </div>
+      <style>{`@keyframes offerIn{from{opacity:0;transform:translateY(24px) scale(.98)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){[class*="animate-[offerIn"]{animation:none!important}}`}</style>
+    </aside>
   );
 }

@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { format } from "date-fns";
+import { CircleHelp } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleExclamation,
@@ -276,7 +277,8 @@ export function ViewBookingContentNew() {
         <div className="mt-5 pt-5 border-t border-gray-200">
           <div className="bg-blue-50 rounded-xl p-3 mb-3">
             <p className="text-sm text-blue-900 font-medium mb-2">
-              📝 Need help?
+              <CircleHelp className="mr-1.5 inline h-4 w-4 align-[-3px]" aria-hidden="true" />
+              Need help?
             </p>
             <p className="text-xs text-blue-800 mb-2">
               Your booking reference starts with{" "}

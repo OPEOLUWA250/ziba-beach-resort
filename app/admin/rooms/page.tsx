@@ -1,6 +1,8 @@
 "use client";
+import { confirmCard } from "@/components/notice-center";
 
 import React, { useState, useEffect } from "react";
+import { Ban, CalendarCheck, Check, Lock, Users, Wrench } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
@@ -49,11 +51,11 @@ const RoomCard = ({
   }, [displayPrice]);
 
   const statusConfig = {
-    booked: { color: "bg-blue-500", label: "Booked", icon: "📅" },
-    available: { color: "bg-blue-600", label: "Available", icon: "✓" },
-    maintenance: { color: "bg-blue-400", label: "Maintenance", icon: "🔧" },
-    blocked: { color: "bg-blue-300", label: "Blocked", icon: "🚫" },
-    "fully-booked": { color: "bg-blue-900", label: "Fully Booked", icon: "🔒" },
+    booked: { color: "bg-blue-500", label: "Booked", icon: CalendarCheck },
+    available: { color: "bg-blue-600", label: "Available", icon: Check },
+    maintenance: { color: "bg-blue-400", label: "Maintenance", icon: Wrench },
+    blocked: { color: "bg-blue-300", label: "Blocked", icon: Ban },
+    "fully-booked": { color: "bg-blue-900", label: "Fully Booked", icon: Lock },
   };
 
   const currentStatus =
@@ -95,12 +97,12 @@ const RoomCard = ({
           <div
             className={`${currentStatus.color} text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1`}
           >
-            <span>{currentStatus.icon}</span>
+            <currentStatus.icon className="h-3.5 w-3.5" aria-hidden="true" />
             {currentStatus.label}
           </div>
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-600">
-          <span>👥</span>
+          <Users className="h-4 w-4" aria-hidden="true" />
           <span>{room.capacity} guests max</span>
         </div>
       </div>
@@ -376,7 +378,7 @@ export default function RoomsManagement() {
   };
 
   const handleDelete = async (roomId: string) => {
-    if (!confirm("Are you sure you want to delete this room?")) return;
+    if (!(await confirmCard({ title: "Delete this room?", message: "This can't be undone.", confirmLabel: "Delete room", destructive: true }))) return;
 
     try {
       setIsUpdating(true);

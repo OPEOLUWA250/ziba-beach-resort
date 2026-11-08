@@ -364,7 +364,7 @@ export async function sendRoomConfirmationEmail(bookingId: string): Promise<Emai
           <div class="container">
             <!-- Header -->
             <div class="header">
-              <h1>✅ Payment Successful</h1>
+              <h1>Payment Successful</h1>
               <p>Ziba Beach Resort - Your Booking Receipt</p>
             </div>
 
@@ -380,7 +380,7 @@ export async function sendRoomConfirmationEmail(bookingId: string): Promise<Emai
               </div>
 
               <!-- View Receipt Button -->
-              <a href="${receiptUrl}" style="display: inline-block; width: 100%; background: #0066cc; color: white; padding: 14px; text-align: center; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; font-size: 16px; box-sizing: border-box;">📄 View & Download Receipt</a>
+              <a href="${receiptUrl}" style="display: inline-block; width: 100%; background: #0066cc; color: white; padding: 14px; text-align: center; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; font-size: 16px; box-sizing: border-box;">View & Download Receipt</a>
 
               <!-- Guest Information -->
               <div class="guest-section">
@@ -449,7 +449,7 @@ export async function sendRoomConfirmationEmail(bookingId: string): Promise<Emai
 
               <!-- Important Information -->
               <div class="important-box">
-                <div class="important-title">⚡ Important Check-In Information</div>
+                <div class="important-title">Important Check-In Information</div>
                 <ul>
                   <li><strong>Check-in Time:</strong> 3:00 PM</li>
                   <li><strong>Check-out Time:</strong> 12:00 PM</li>
@@ -489,7 +489,7 @@ export async function sendRoomConfirmationEmail(bookingId: string): Promise<Emai
     const response = await resend.emails.send({
       from: "bookings@zibabeachresort.com",
       to: email,
-      subject: `✅ Your Booking is Confirmed - Booking Reference: ${bookingReference}`,
+      subject: `Your Booking is Confirmed - Booking Reference: ${bookingReference}`,
       html: emailHtml,
     });
 

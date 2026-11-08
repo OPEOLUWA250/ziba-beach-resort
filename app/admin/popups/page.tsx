@@ -1,4 +1,5 @@
 "use client";
+import { confirmCard, notify } from "@/components/notice-center";
 
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -46,7 +47,7 @@ export default function AdminPopupsPage() {
       setPopups(data.popups || []);
     } catch (error: any) {
       console.error("Error loading popups:", error);
-      alert(`Error loading popups: ${error.message}`);
+      notify.error("Couldn't load popups", error.message);
     } finally {
       setIsLoading(false);
     }
@@ -86,12 +87,12 @@ export default function AdminPopupsPage() {
         );
       }
 
-      alert("Popup created successfully!");
+      notify.success("Popup created");
       setShowCreateForm(false);
       await fetchPopups();
     } catch (error: any) {
       console.error("Create popup error:", error);
-      alert(`Error: ${error.message}`);
+      notify.error("Couldn't create the popup", error.message);
     } finally {
       setIsFormLoading(false);
     }
@@ -133,20 +134,20 @@ export default function AdminPopupsPage() {
         );
       }
 
-      alert("Popup updated successfully!");
+      notify.success("Popup updated");
       setEditingPopup(null);
       setShowCreateForm(false);
       await fetchPopups();
     } catch (error: any) {
       console.error("Update popup error:", error);
-      alert(`Error: ${error.message}`);
+      notify.error("Couldn't update the popup", error.message);
     } finally {
       setIsFormLoading(false);
     }
   };
 
   const handleDeletePopup = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this popup?")) return;
+    if (!(await confirmCard({ title: "Delete this popup?", message: "Its page and homepage popup will be removed. This can't be undone.", confirmLabel: "Delete", destructive: true }))) return;
 
     setDeletingId(id);
     try {
@@ -162,13 +163,13 @@ export default function AdminPopupsPage() {
         );
       }
 
-      alert("Popup deleted successfully!");
+      notify.success("Popup deleted");
       setShowCreateForm(false);
       setEditingPopup(null);
       await fetchPopups();
     } catch (error: any) {
       console.error("Delete popup error:", error);
-      alert(`Error deleting popup: ${error.message}`);
+      notify.error("Couldn't delete the popup", error.message);
     } finally {
       setDeletingId(null);
     }

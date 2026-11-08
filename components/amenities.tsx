@@ -1,249 +1,43 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
-import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import PhotoRail from "@/components/photo-rail";
 
+// The facilities listed on zibabeachresort.com ("Our Facilities"), plus massages.
 const amenities = [
-  {
-    name: "Restaurant & Bar",
-    image: "/experience-ziba/restaurant&bar.jpg",
-  },
-  {
-    name: "FirePit",
-    image: "/experience-ziba/firepit.jpg",
-  },
-  {
-    name: "SPA",
-    image: "/experience-ziba/spa.jpg",
-  },
-  {
-    name: "Gym",
-    image: "/experience-ziba/gym.jpg",
-  },
-  {
-    name: "Conference Room",
-    image: "/experience-ziba/conference-room.jpg",
-  },
-  {
-    name: "Kids Outdoor Playground",
-    image: "/experience-ziba/kids-outdoor-playground.jpg",
-  },
-  {
-    name: "Cinema",
-    image: "/experience-ziba/cinema.jpg",
-  },
-  {
-    name: "Lagoon Pool",
-    image: "/experience-ziba/lagoon-pool.jpg",
-  },
-  {
-    name: "Adult/Kids Pool",
-    image: "/experience-ziba/adult-kids-pool.jpg",
-  },
-  {
-    name: "Games Room",
-    image: "/experience-ziba/indoor-games.jpg",
-  },
-  {
-    name: "Ziba Kids' Club",
-    image: "/experience-ziba/ziba-kids-club.jpg",
-  },
-  {
-    name: "Full Massage Session",
-    image: "/experience-ziba/spa-2.jpg",
-  },
+  { name: "Lagoon pool", image: "/experience-ziba/lagoon-pool.jpg" },
+  { name: "Adult and kids' pool", image: "/experience-ziba/adult-kids-pool.jpg" },
+  { name: "Restaurant & bar", image: "/experience-ziba/restaurant&bar.jpg" },
+  { name: "Spa", image: "/experience-ziba/spa.jpg" },
+  { name: "Ziba Kids' Club", image: "/experience-ziba/ziba-kids-club.jpg" },
+  { name: "Kids' playground", image: "/experience-ziba/kids-outdoor-playground.jpg" },
+  { name: "Games room", image: "/experience-ziba/indoor-games.jpg" },
+  { name: "Cinema", image: "/experience-ziba/cinema.jpg" },
+  { name: "Firepit", image: "/experience-ziba/firepit.jpg" },
+  { name: "Gym", image: "/experience-ziba/gym.jpg" },
+  { name: "Conference room", image: "/experience-ziba/conference-room.jpg" },
+  { name: "Massages", image: "/experience-ziba/spa-2.jpg" },
 ];
 
-// Duplicate amenities for seamless infinite scroll
-const scrollAmenities = [...amenities, ...amenities];
-
 export default function Amenities() {
-  const headingFont = { fontFamily: "Cormorant Garamond, serif" };
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-  const [isHovering, setIsHovering] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const animationRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  const checkScroll = useCallback(() => {
-    if (scrollRef.current) {
-      setCanScrollLeft(true);
-      setCanScrollRight(true);
-    }
-  }, []);
-
-  const scroll = useCallback(
-    (direction: "left" | "right") => {
-      if (scrollRef.current) {
-        const scrollAmount = 400;
-        scrollRef.current.scrollBy({
-          left: direction === "left" ? -scrollAmount : scrollAmount,
-          behavior: "smooth",
-        });
-        setTimeout(checkScroll, 100);
-      }
-    },
-    [checkScroll],
-  );
-
-  // Auto-scroll effect with smooth continuous scrolling using requestAnimationFrame
-  useEffect(() => {
-    const animate = () => {
-      if (!scrollRef.current || isHovering) {
-        animationRef.current = requestAnimationFrame(animate);
-        return;
-      }
-
-      const { scrollWidth } = scrollRef.current;
-      const oneSetWidth = scrollWidth / 2;
-
-      // Continuously scroll right
-      scrollRef.current.scrollLeft += 2;
-
-      // Seamless reset: when reaching the end of first set, jump to beginning
-      if (scrollRef.current.scrollLeft >= oneSetWidth - 10) {
-        scrollRef.current.scrollLeft = 0;
-      }
-
-      checkScroll();
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animationRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [isHovering, checkScroll]);
-
   return (
-    <section
-      ref={sectionRef}
+    <PhotoRail
       id="amenities"
-      className="py-32 px-4 sm:px-6 lg:px-8 bg-gray-50 overflow-hidden"
-    >
-      <div className="max-w-7xl mx-auto">
-        <div
-          className={`mb-16 text-center transition-all duration-1000 ease-out ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
+      tone="sand"
+      eyebrow="Facilities"
+      title="Everything on site"
+      intro="Two pools, a spa, a cinema, a kids' club and more, all a short walk from your room."
+      items={amenities}
+      footer={
+        <Link
+          href="/our-story#resort-map"
+          className="group inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-blue-900 hover:text-blue-700"
         >
-          <h2 className="h2 text-blue-900 mb-4 text-center" style={headingFont}>
-            World-Class Amenities
-          </h2>
-          <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
-          <p className="text-gray-600 font-light mb-8 max-w-2xl mx-auto text-center">
-            Everything you need for an unforgettable stay, from premium
-            facilities to thoughtful services.
-          </p>
-        </div>
-
-        <div
-          className="relative group"
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
-        >
-          {/* Carousel Container */}
-          <div
-            ref={scrollRef}
-            onScroll={checkScroll}
-            className="amenities-carousel flex gap-6 overflow-x-auto scroll-smooth"
-            style={{
-              scrollBehavior: "smooth",
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-            }}
-          >
-            {scrollAmenities.map((amenity, index) => (
-              <div
-                key={`${amenity.name}-${index}`}
-                className={`shrink-0 w-full sm:w-1/2 lg:w-1/3 transition-all duration-700 ${
-                  isVisible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-10"
-                }`}
-                style={{
-                  transitionDelay: isVisible
-                    ? `${300 + (index % amenities.length) * 50}ms`
-                    : "0ms",
-                }}
-              >
-                <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105 h-full flex flex-col cursor-pointer border border-gray-100 hover:border-blue-900">
-                  {/* Image Container */}
-                  <div className="relative w-full h-72 overflow-hidden bg-gray-200">
-                    <Image
-                      src={amenity.image}
-                      alt={amenity.name}
-                      fill
-                      className="object-cover hover:scale-110 transition-transform duration-500"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      quality={90}
-                    />
-                  </div>
-
-                  {/* Name Container */}
-                  <div className="p-6 flex items-center justify-center grow">
-                    <h3 className="text-xl font-light text-gray-900 text-center">
-                      {amenity.name}
-                    </h3>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Left Arrow */}
-          <button
-            onClick={() => scroll("left")}
-            disabled={!canScrollLeft}
-            className="absolute top-1/2 -left-4 sm:-left-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          >
-            <FontAwesomeIcon
-              icon={faChevronLeft}
-              className="h-5 w-5 sm:w-6 sm:h-6"
-            />
-          </button>
-
-          {/* Right Arrow */}
-          <button
-            onClick={() => scroll("right")}
-            disabled={!canScrollRight}
-            className="absolute top-1/2 -right-4 sm:-right-6 transform -translate-y-1/2 z-10 flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-blue-900 text-white hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          >
-            <FontAwesomeIcon
-              icon={faChevronRight}
-              className="h-5 w-5 sm:w-6 sm:h-6"
-            />
-          </button>
-        </div>
-      </div>
-    </section>
+          Explore the resort map
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+        </Link>
+      }
+    />
   );
 }

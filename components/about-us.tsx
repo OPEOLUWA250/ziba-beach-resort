@@ -1,184 +1,89 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faAward,
-  faLocationDot,
-  faUsers,
-} from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useRef, useState } from "react";
+import { ArrowRight } from "lucide-react";
+import SectionHeading from "@/components/section-heading";
+import { useReveal, revealClass } from "@/hooks/use-reveal";
+import { ROOM_IDS } from "@/lib/room-catalog";
+
+// Plain facts about the resort (no awards or ratings we can't show proof of).
+const FACTS = [
+  { value: "Overwater", label: "Rooms that open onto the pool" },
+  { value: String(ROOM_IDS.length), label: "Room and suite types" },
+  { value: "10am–6pm", label: "Day pass, every day" },
+  { value: "Okun Ajah", label: "On the beach in Lagos" },
+];
 
 export default function AboutUs() {
-  const headingFont = { fontFamily: "Cormorant Garamond, serif" };
-  const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
+  const { ref, visible } = useReveal<HTMLElement>();
 
   return (
     <section
-      ref={sectionRef}
+      ref={ref}
       id="about"
-      className="py-32 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden"
+      className="px-5 sm:px-8 lg:px-12 py-20 sm:py-28 bg-white"
     >
-      <div className="max-w-6xl mx-auto">
-        {/* Heading */}
-        <div
-          className={`text-center mb-16 transition-all duration-1000 ease-out ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
-          <h2 className="h2 text-blue-900 mb-6" style={headingFont}>
-            Your Gateway to Luxury
-          </h2>
-          <div className="w-16 h-0.5 mx-auto bg-linear-to-r from-transparent via-blue-400 to-transparent" />
-        </div>
-
-        {/* Content Paragraphs */}
-        <div className="mb-16 max-w-4xl mx-auto">
-          {/* First Paragraph */}
-          <p
-            className={`text-lg text-gray-700 font-light leading-relaxed mb-8 transition-all duration-1000 ease-out delay-200 ${
-              isVisible
-                ? "opacity-100 translate-x-0"
-                : "opacity-0 -translate-x-10"
-            }`}
+      <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2 lg:gap-20">
+        <div className={revealClass(visible)}>
+          <SectionHeading
+            align="left"
+            eyebrow="Welcome to Ziba"
+            title={
+              <>
+                A beach escape in Lagos,
+                <br className="hidden sm:block" /> with rooms on the water
+              </>
+            }
           >
-            At Ziba Beach Resort, every moment is crafted to exceed your
-            expectations. From overwater rooms to day visits to bespoke
-            experiences, we offer the beauty, service, and joy of a world-class
-            getaway without the visa stress or long flights.
-          </p>
-
-          {/* Second Paragraph */}
-          <p
-            className={`text-lg text-gray-700 font-light leading-relaxed mb-8 transition-all duration-1000 ease-out delay-300 ${
-              isVisible
-                ? "opacity-100 translate-x-0"
-                : "opacity-0 translate-x-10"
-            }`}
-          >
-            From romantic getaways to family escapes and special celebrations,
-            every detail at Ziba is crafted to create memories worth keeping.
-          </p>
-
-          {/* Third Paragraph */}
-          <p
-            className={`text-lg text-gray-700 font-light leading-relaxed mb-12 transition-all duration-1000 ease-out delay-400 ${
-              isVisible
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-10"
-            }`}
-          >
-            We&apos;ve redefined what it means to experience true luxury in West
-            Africa.
-          </p>
-        </div>
-
-        {/* Features Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          {/* Feature 1 - Award-Winning Service */}
-          <div
-            className={`text-center transition-all duration-1000 ease-out hover:scale-105 transform ${
-              isVisible
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-10"
-            }`}
-            style={{ transitionDelay: isVisible ? "500ms" : "0ms" }}
-          >
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center hover:bg-blue-100 transition-all duration-500 hover:shadow-lg">
-                <FontAwesomeIcon
-                  icon={faAward}
-                  className="h-8 w-8 text-blue-900"
-                />
-              </div>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">
-              Award-Winning Service
-            </h3>
-            <p className="text-gray-600 font-light leading-relaxed">
-              Recognized for excellence in hospitality and guest satisfaction
+            <p>
+              From overwater rooms to day visits and celebrations, Ziba brings
+              the beauty and ease of a world-class getaway close to home,
+              without the visa stress or long flights.
             </p>
-          </div>
-
-          {/* Feature 2 - Prime Location */}
-          <div
-            className={`text-center transition-all duration-1000 ease-out hover:scale-105 transform ${
-              isVisible
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-10"
-            }`}
-            style={{ transitionDelay: isVisible ? "600ms" : "0ms" }}
-          >
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center hover:bg-blue-100 transition-all duration-500 hover:shadow-lg">
-                <FontAwesomeIcon
-                  icon={faLocationDot}
-                  className="h-8 w-8 text-blue-900"
-                />
-              </div>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">
-              Prime Location
-            </h3>
-            <p className="text-gray-600 font-light leading-relaxed">
-              Located on Nigeria&apos;s most beautiful stretch of coastline
+            <p className="mt-4">
+              Romantic weekends, family holidays or a birthday by the sea:
+              every detail is planned so you can simply arrive and enjoy it.
             </p>
-          </div>
+          </SectionHeading>
 
-          {/* Feature 3 - Personal Concierge */}
-          <div
-            className={`text-center transition-all duration-1000 ease-out hover:scale-105 transform ${
-              isVisible
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-10"
-            }`}
-            style={{ transitionDelay: isVisible ? "700ms" : "0ms" }}
+          <Link
+            href="/our-story"
+            className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-blue-900 hover:text-blue-700"
           >
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center hover:bg-blue-100 transition-all duration-500 hover:shadow-lg">
-                <FontAwesomeIcon
-                  icon={faUsers}
-                  className="h-8 w-8 text-blue-900"
-                />
-              </div>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">
-              Personal Concierge
-            </h3>
-            <p className="text-gray-600 font-light leading-relaxed">
-              Dedicated staff to curate your perfect getaway
-            </p>
-          </div>
-        </div>
-
-        {/* CTA Button */}
-        <div className="text-center">
-          <Link href="/our-story">
-            <button className="px-10 py-3.5 bg-blue-900 text-white font-light text-lg tracking-wide rounded-lg hover:bg-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl cursor-pointer">
-              Discover Our Story
-            </button>
+            Our story
+            <ArrowRight
+              className="h-4 w-4 transition-transform group-hover:translate-x-1"
+              aria-hidden="true"
+            />
           </Link>
         </div>
+
+        <div
+          className={`relative aspect-[4/5] overflow-hidden rounded-[2rem] sm:aspect-[5/4] lg:aspect-[4/5] ${revealClass(visible)} delay-150`}
+        >
+          <Image
+            src="/experience-ziba/lagoon-pool.jpg"
+            alt="Ziba's lagoon pool, with palm islands and sun loungers"
+            fill
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            className="object-cover"
+          />
+        </div>
       </div>
+
+      <dl className="mx-auto mt-16 grid max-w-7xl grid-cols-2 gap-x-6 gap-y-8 border-t border-slate-200 pt-10 lg:grid-cols-4">
+        {FACTS.map((fact) => (
+          <div key={fact.label} className="flex flex-col-reverse">
+            <dt className="mt-1 text-sm font-light text-slate-500">
+              {fact.label}
+            </dt>
+            <dd className="font-cormorant text-3xl sm:text-4xl font-medium text-blue-950">
+              {fact.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
     </section>
   );
 }

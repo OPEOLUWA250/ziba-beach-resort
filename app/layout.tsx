@@ -3,7 +3,9 @@ import { Cormorant_Garamond } from "next/font/google";
 import { Inter } from "next/font/google";
 import { Noto_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import BackToTop from "@/components/back-to-top";
+import WhatsAppConcierge from "@/components/whatsapp-concierge";
+import NoticeHost from "@/components/notice-center";
+import { DEFAULT_SHARE_IMAGE, SITE_URL } from "@/lib/site";
 import AnalyticsTracker from "@/components/analytics-tracker";
 import "./globals.css";
 
@@ -25,41 +27,29 @@ const notoSans = Noto_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://zibabeachresort.com",
-  ),
+  // Share previews and canonical links use this deployment's own address.
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Ziba Beach Resort | Nigeria's Premier Overwater Resort",
     template: "%s | Ziba Beach Resort",
   },
   description:
-    "Experience luxury at Ziba Beach Resort, Nigeria's first overwater resort with breathtaking ocean views, family activities, and world-class amenities.",
-  alternates: {
-    canonical: "/",
-  },
+    "Ziba Beach Resort in Okun Ajah, Lagos: Nigeria's first overwater resort. Overwater rooms and suites, day passes, dining, celebrations and experiences by the sea.",
   openGraph: {
     type: "website",
     locale: "en_NG",
-    url: "/",
     siteName: "Ziba Beach Resort",
     title: "Ziba Beach Resort | Nigeria's Premier Overwater Resort",
     description:
       "Book luxury beach stays, day passes, dining, and experiences at Ziba Beach Resort.",
-    images: [
-      {
-        url: "/ziba-favicon.png",
-        width: 512,
-        height: 512,
-        alt: "Ziba Beach Resort",
-      },
-    ],
+    images: [DEFAULT_SHARE_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "Ziba Beach Resort | Nigeria's Premier Overwater Resort",
     description:
       "Experience overwater luxury, beachfront relaxation, and curated experiences at Ziba Beach Resort.",
-    images: ["/ziba-favicon.png"],
+    images: [DEFAULT_SHARE_IMAGE.url],
   },
   robots: {
     index: true,
@@ -94,7 +84,8 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased bg-white text-slate-900">
         {children}
-        <BackToTop />
+        <WhatsAppConcierge />
+        <NoticeHost />
         <Analytics />
         <AnalyticsTracker />
       </body>

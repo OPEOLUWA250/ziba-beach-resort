@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Check, X } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
@@ -69,7 +70,11 @@ const ExperienceCard = ({
                 : "bg-red-100 text-red-700"
             }`}
           >
-            {experience.available ? "✓ Available" : "✗ Unavailable"}
+            {experience.available ? (
+              <span className="inline-flex items-center gap-1"><Check className="h-3.5 w-3.5" aria-hidden="true" />Available</span>
+            ) : (
+              <span className="inline-flex items-center gap-1"><X className="h-3.5 w-3.5" aria-hidden="true" />Unavailable</span>
+            )}
           </div>
         </div>
       </div>

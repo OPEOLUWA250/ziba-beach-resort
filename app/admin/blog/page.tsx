@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/components/notice-center";
 
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -75,8 +76,9 @@ export default function BlogManagement() {
     } catch (error) {
       console.error("Failed to delete blog:", error);
       setSuccessMessage("");
-      alert(
-        `Error deleting blog: ${error instanceof Error ? error.message : "Unknown error"}`,
+      notify.error(
+        "Couldn't delete the post",
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   };

@@ -1,6 +1,8 @@
 "use client";
+import { promptCard } from "@/components/notice-center";
 
 import React, { useEffect, useMemo, useState } from "react";
+import { Flag, StickyNote } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -243,10 +245,12 @@ export default function OperationsCheckInOut() {
   };
 
   const handleAddNote = async (booking: Booking) => {
-    const note = window.prompt(
-      "Add status note",
-      notesMap[booking.id]?.note || "",
-    );
+    const note = await promptCard({
+      title: `Status note for ${booking.guest_name}`,
+      placeholder: "e.g. Guest arriving late, around 8pm",
+      defaultValue: notesMap[booking.id]?.note || "",
+      confirmLabel: "Save note",
+    });
     if (note === null) return;
     if (!note.trim()) return;
 
@@ -260,10 +264,12 @@ export default function OperationsCheckInOut() {
   };
 
   const handleFlagIssue = async (booking: Booking) => {
-    const issue = window.prompt(
-      "Flag an issue",
-      notesMap[booking.id]?.issue || "",
-    );
+    const issue = await promptCard({
+      title: `Flag an issue for ${booking.guest_name}`,
+      placeholder: "What needs attention?",
+      defaultValue: notesMap[booking.id]?.issue || "",
+      confirmLabel: "Flag issue",
+    });
     if (issue === null) return;
     if (!issue.trim()) return;
 
@@ -578,14 +584,15 @@ export default function OperationsCheckInOut() {
                         </td>
                         <td className="px-3 py-3">
                           {note ? (
-                            <p className="text-gray-200 text-xs mb-1">
-                              📝 {note}
+                            <p className="text-gray-200 text-xs mb-1 flex gap-1.5">
+                              <StickyNote className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                              {note}
                             </p>
                           ) : (
                             <p className="text-gray-500 text-xs">No note</p>
                           )}
                           {issue ? (
-                            <p className="text-red-300 text-xs">🚩 {issue}</p>
+                            <p className="text-red-300 text-xs flex gap-1.5"><Flag className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />{issue}</p>
                           ) : null}
                         </td>
                         <td className="px-3 py-3">

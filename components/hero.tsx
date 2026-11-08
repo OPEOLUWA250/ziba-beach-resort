@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Cormorant_Garamond } from "next/font/google";
+import { ArrowRight } from "lucide-react";
 import { IPMS_BOOKING_URL } from "@/lib/booking-links";
 import { track } from "@/lib/analytics";
-import Image from "next/image";
-import { Cormorant_Garamond } from "next/font/google";
+import ResortConditions from "@/components/resort-conditions";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -36,316 +39,165 @@ const heroImages = [
   },
 ];
 
+const SLIDE_MS = 6000;
+
 export default function Hero() {
-  const [scrollPos, setScrollPos] = useState(0);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isAutoPlay] = useState(true);
+  const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const parallaxRef = useRef<HTMLDivElement>(null);
 
+  // Parallax runs straight on the element, once per frame, with no
+  // transition: the photo moves with the scroll instead of trailing it.
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollPos(window.scrollY);
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const y = Math.min(window.scrollY, window.innerHeight);
+      if (parallaxRef.current) {
+        parallaxRef.current.style.transform = `translate3d(0, ${y * 0.3}px, 0)`;
+      }
     };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, []);
 
   useEffect(() => {
-    if (!isAutoPlay) return;
-
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
-    }, 5000); // Change image every 5 seconds
-
-    return () => clearInterval(interval);
-  }, [isAutoPlay]);
-
-  const scrollToBooking = () => {
-    const bookingSection = document.getElementById("booking-section");
-    if (bookingSection) {
-      bookingSection.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+    if (paused) return;
+    const id = setInterval(
+      () => setCurrent((i) => (i + 1) % heroImages.length),
+      SLIDE_MS,
+    );
+    return () => clearInterval(id);
+  }, [paused]);
 
   return (
-    <>
-      {/* HERO SECTION - Exactly 100vh */}
-      <section className="relative h-screen w-full overflow-hidden bg-linear-to-br from-slate-900 via-blue-900 to-slate-900">
-        {/* Background with Image Slider - Enhanced Parallax */}
-        <div className="absolute inset-0 w-full h-full">
-          {/* Image Slider Container with Zoom Effect */}
-          <div className="absolute inset-0 w-full h-full">
-            {heroImages.map((image, index) => (
-              <div
-                key={image.src}
-                className="absolute inset-0"
-                style={{
-                  opacity: currentImageIndex === index ? 1 : 0,
-                  transition: "opacity 1000ms ease-in-out",
-                }}
-              >
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  fill
-                  priority={index === 0}
-                  quality={95}
-                  className="object-cover"
-                  style={{
-                    transform: `translateY(${scrollPos * 0.4}px) scale(${
-                      currentImageIndex === index ? 1 : 1.15
-                    })`,
-                    transition:
-                      currentImageIndex === index
-                        ? "transform 3500ms cubic-bezier(0.25, 0.46, 0.45, 0.94)"
-                        : "none",
-                  }}
-                />
-              </div>
-            ))}
+    <section
+      className="relative h-svh min-h-[560px] w-full overflow-hidden bg-slate-900"
+      aria-roledescription="carousel"
+      aria-label="Ziba Beach Resort"
+    >
+      {/* Slides: the outer layer moves with the scroll, each slide only fades and zooms. */}
+      <div ref={parallaxRef} className="absolute inset-0 will-change-transform">
+        {heroImages.map((image, index) => (
+          <div
+            key={image.src}
+            className="absolute inset-0 transition-opacity duration-[1400ms] ease-in-out"
+            style={{ opacity: current === index ? 1 : 0 }}
+            aria-hidden={current !== index}
+          >
+            <Image
+              src={image.src}
+              alt={image.alt}
+              fill
+              priority={index === 0}
+              sizes="100vw"
+              quality={80}
+              className={`object-cover motion-safe:transition-transform motion-safe:ease-out ${
+                current === index
+                  ? "scale-105 motion-safe:duration-[7000ms]"
+                  : "scale-100 duration-0"
+              }`}
+            />
           </div>
+        ))}
+      </div>
 
-          {/* Subtle Overlay - tuned for readability without hiding details */}
-          <div className="absolute inset-0 bg-linear-to-b from-black/6 via-black/10 to-black/16 pointer-events-none" />
+      {/* Readability: darker at the top for the menu and bottom for the text, clear in the middle. */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/10 to-black/55 pointer-events-none" />
 
-          {/* Dynamic Color Gradient */}
-          <div
-            className="absolute inset-0 opacity-20 mix-blend-multiply transition-opacity duration-500 pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.3) 0%, transparent 50%)",
-              opacity: Math.max(0.1, 0.3 - scrollPos * 0.001),
-            }}
-          />
-
-          {/* Animated Accent Elements */}
-          <div
-            className="absolute top-20 right-20 w-72 h-72 rounded-full blur-3xl opacity-20 mix-blend-screen pointer-events-none"
-            style={{
-              background: "linear-gradient(135deg, #1e3a8a, #06b6d4)",
-              animation: "float 6s ease-in-out infinite",
-            }}
-          />
-          <div
-            className="absolute bottom-32 -left-40 sm:left-10 w-60 sm:w-80 h-60 sm:h-80 rounded-full blur-3xl opacity-15 mix-blend-screen pointer-events-none"
-            style={{
-              background: "linear-gradient(135deg, #0ea5e9, #1e3a8a)",
-              animation: "float 8s ease-in-out infinite 1s",
-            }}
-          />
-        </div>
-
-        {/* Content - Centered in 100vh with top padding */}
-        <div className="absolute inset-0 flex flex-col items-center px-4 sm:px-6 lg:px-16 z-10 pt-16 sm:pt-24 md:pt-20 lg:pt-16">
-          <div className="max-w-4xl w-full text-center space-y-6 sm:space-y-8 md:space-y-10 flex flex-col justify-center h-full">
-            {/* Main Heading - Nigeria's first overwater resort */}
-            <div style={{ animation: "slideUp 0.8s ease-out both" }}>
-              <h1
-                className={`${cormorant.className} text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-tight`}
-                style={{ textShadow: "0 3px 14px rgba(0, 0, 0, 0.42)" }}
-              >
-                <span className="text-white block">Nigeria&apos;s first</span>
-                <span className="text-white block font-bold mt-1 sm:mt-2 md:mt-3 lg:mt-4">
-                  overwater resort
-                </span>
-              </h1>
-            </div>
-
-            {/* Subtitle */}
-            <p
-              className="text-base sm:text-lg md:text-xl lg:text-2xl text-white max-w-3xl mx-auto font-light leading-relaxed px-2 sm:px-0"
-              style={{
-                animation: "slideUp 0.8s ease-out 0.1s both",
-                textShadow: "0 2px 10px rgba(0, 0, 0, 0.36)",
-              }}
-            >
-              World-class, experience-led beach side holidays in Nigeria
-            </p>
-
-            {/* CTA Buttons - Enhanced with Scroll Animation */}
-            <div
-              className="flex flex-col sm:flex-row gap-4 sm:gap-4 md:gap-6 justify-center pt-2 sm:pt-4"
-              style={{
-                animation: "slideUp 0.8s ease-out 0.2s both",
-                transform: `scale(${Math.min(1.08, 1 + scrollPos * 0.0001)})`,
-                transition: "transform 0.3s ease-out",
-              }}
-            >
-              {/* Primary Button - Brand Blue Gradient with Pulse */}
-              <button
-                onClick={() => {
-                  track("room_book_click", { context: "hero" });
-                  window.location.href = IPMS_BOOKING_URL;
-                }}
-                className="group relative px-8 sm:px-10 md:px-12 py-4 sm:py-4 md:py-5 text-white font-semibold text-sm sm:text-base md:text-lg tracking-wide overflow-hidden rounded-lg transition-all duration-500 transform hover:scale-105 hover:shadow-2xl w-full sm:w-auto active:scale-95 bg-linear-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700"
-                style={{
-                  boxShadow:
-                    scrollPos > 50
-                      ? "0 0 30px rgba(59, 130, 246, 0.4), 0 0 60px rgba(59, 130, 246, 0.2)"
-                      : "none",
-                  animation:
-                    scrollPos > 100
-                      ? "ctaPulse 2s ease-in-out infinite"
-                      : "none",
-                }}
-              >
-                {/* Shimmer Effect on Scroll */}
-                <div
-                  className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent"
-                  style={{
-                    transform: `translateX(${-100 + (scrollPos % 100)}%)`,
-                    transition: "transform 0.6s ease-out",
-                  }}
-                />
-                <span className="relative z-10 flex items-center justify-center gap-2 sm:gap-3">
-                  Reserve Your Stay
-                  <svg
-                    className="w-4 sm:w-5 h-4 sm:h-5 transform group-hover:translate-x-1 transition-transform duration-300"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7l5 5m0 0l-5 5m5-5H6"
-                    />
-                  </svg>
-                </span>
-              </button>
-
-              {/* Secondary Button - White Border & Text */}
-              <button
-                onClick={() => (window.location.href = "/day-pass")}
-                className="group relative px-8 sm:px-10 md:px-12 py-4 sm:py-4 md:py-5 text-sm sm:text-base md:text-lg font-semibold tracking-wide rounded-lg border-2 border-white transition-all duration-500 transform hover:scale-105 backdrop-blur-sm hover:shadow-lg w-full sm:w-auto active:scale-95 buttonGlow"
-                style={{
-                  color: "white",
-                  backgroundColor: "rgba(255, 255, 255, 0.05)",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                    "rgba(255, 255, 255, 0.15)";
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                    "0 10px 30px rgba(255, 255, 255, 0.2)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                    "rgba(255, 255, 255, 0.05)";
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                    "none";
-                }}
-              >
-                <span className="flex items-center justify-center gap-2 sm:gap-3">
-                  Explore Day Pass
-                  <span className="text-lg sm:text-xl group-hover:animate-pulse">
-                    ☀️
-                  </span>
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Scroll to Explore Indicator - Bottom Center */}
-        <button
-          onClick={scrollToBooking}
-          className="absolute bottom-8 sm:bottom-10 md:bottom-12 left-1/2 transform -translate-x-1/2 z-20 group cursor-pointer hover:opacity-80 transition-opacity"
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-5 text-center">
+        <p
+          className="mb-5 text-[11px] sm:text-xs font-medium uppercase tracking-[0.35em] text-white/85"
+          style={{ animation: "heroUp 0.9s ease-out both" }}
         >
-          <div className="flex flex-col items-center gap-2 sm:gap-3">
-            <span className="text-white/60 text-xs sm:text-sm font-light tracking-widest uppercase group-hover:text-white transition-colors">
-              Scroll to Explore
-            </span>
-            <div className="relative w-6 h-10 border-2 border-white/40 rounded-full group-hover:border-white/80 transition-colors">
-              <div
-                className="absolute top-2 left-1/2 transform -translate-x-1/2 w-1 h-2 bg-white/60 rounded-full group-hover:bg-white transition-all"
-                style={{
-                  animation: "scrollBounce 2s infinite",
-                }}
-              />
-            </div>
-          </div>
-        </button>
+          Ziba Beach Resort · Lagos
+        </p>
+        <h1
+          className={`${cormorant.className} max-w-5xl text-[2.9rem] leading-[1.02] sm:text-7xl md:text-8xl font-semibold tracking-tight text-white`}
+          style={{
+            animation: "heroUp 0.9s ease-out 0.1s both",
+            textShadow: "0 2px 24px rgba(0,0,0,0.35)",
+          }}
+        >
+          Nigeria&apos;s first
+          <br />
+          overwater resort
+        </h1>
+        <p
+          className="mt-6 max-w-xl text-base sm:text-lg md:text-xl font-light leading-relaxed text-white/90"
+          style={{ animation: "heroUp 0.9s ease-out 0.2s both" }}
+        >
+          World-class, experience-led beachside holidays, without the visa
+          stress or long flights.
+        </p>
 
-        {/* CSS Animations */}
-        <style jsx>{`
-          @keyframes float {
-            0%,
-            100% {
-              transform: translateY(0px);
-            }
-            50% {
-              transform: translateY(30px);
-            }
-          }
+        <div
+          className="mt-10 flex w-full max-w-md flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:gap-4"
+          style={{ animation: "heroUp 0.9s ease-out 0.3s both" }}
+        >
+          <a
+            href={IPMS_BOOKING_URL}
+            onClick={() => track("room_book_click", { context: "hero" })}
+            className="group inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-sm sm:text-base font-semibold text-blue-950 shadow-lg shadow-black/10 transition hover:bg-blue-50"
+          >
+            Reserve your stay
+            <ArrowRight
+              className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
+          </a>
+          <Link
+            href="/day-pass"
+            className="inline-flex items-center justify-center rounded-full border border-white/70 px-8 py-4 text-sm sm:text-base font-semibold text-white backdrop-blur-[2px] transition hover:bg-white/10"
+          >
+            Book a day pass
+          </Link>
+        </div>
+      </div>
 
-          @keyframes slideUp {
-            from {
-              opacity: 0;
-              transform: translateY(30px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
+      {/* Bottom bar: today's conditions on the left, slide controls on the right. */}
+      <div className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-4 px-5 pb-6 sm:px-10 sm:pb-8">
+        <ResortConditions />
+        <div className="ml-auto flex items-center gap-2">
+          {heroImages.map((image, index) => (
+            <button
+              key={image.src}
+              type="button"
+              onClick={() => {
+                setCurrent(index);
+                setPaused(true);
+              }}
+              aria-label={`Show photo ${index + 1} of ${heroImages.length}`}
+              aria-current={current === index}
+              className={`h-1 rounded-full transition-all duration-500 ${
+                current === index ? "w-8 bg-white" : "w-4 bg-white/45 hover:bg-white/70"
+              }`}
+            />
+          ))}
+        </div>
+      </div>
 
-          @keyframes scrollBounce {
-            0% {
-              transform: translateY(-5px);
-              opacity: 0;
-            }
-            50% {
-              opacity: 1;
-            }
-            100% {
-              transform: translateY(8px);
-              opacity: 0;
-            }
+      <style jsx>{`
+        @keyframes heroUp {
+          from {
+            opacity: 0;
+            transform: translateY(18px);
           }
-
-          @keyframes shimmer {
-            0% {
-              background-position: -1000px 0;
-            }
-            100% {
-              background-position: 1000px 0;
-            }
+          to {
+            opacity: 1;
+            transform: translateY(0);
           }
-
-          @keyframes glow {
-            0% {
-              box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
-            }
-            50% {
-              box-shadow: 0 0 40px rgba(96, 165, 250, 0.6);
-            }
-            100% {
-              box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
-            }
-          }
-
-          @keyframes ctaPulse {
-            0%,
-            100% {
-              transform: scale(1);
-              box-shadow:
-                0 0 30px rgba(59, 130, 246, 0.4),
-                0 0 60px rgba(59, 130, 246, 0.2);
-            }
-            50% {
-              transform: scale(1.02);
-              box-shadow:
-                0 0 40px rgba(59, 130, 246, 0.6),
-                0 0 80px rgba(59, 130, 246, 0.3);
-            }
-          }
-
-          .buttonGlow:hover {
-            animation: glow 1.5s ease-in-out;
-          }
-        `}</style>
-      </section>
-    </>
+        }
+      `}</style>
+    </section>
   );
 }

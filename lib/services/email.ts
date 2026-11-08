@@ -53,13 +53,13 @@ export async function sendBookingConfirmation(
   return await resend.emails.send({
     from: "bookings@zibabeachresort.com",
     to: email,
-    subject: "✅ Your Booking is Confirmed - Ziba Beach Resort",
+    subject: "Your Booking is Confirmed - Ziba Beach Resort",
     html: `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; padding: 40px 0;">
         <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
           <!-- Header -->
           <div style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); padding: 40px 20px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 32px; font-weight: bold;">🎉 Booking Confirmed!</h1>
+            <h1 style="color: white; margin: 0; font-size: 32px; font-weight: bold;">Booking Confirmed</h1>
             <p style="color: #dbeafe; margin: 10px 0 0 0; font-size: 16px;">Thank you for choosing Ziba Beach Resort</p>
           </div>
 
@@ -109,7 +109,7 @@ export async function sendBookingConfirmation(
 
             <!-- Next Steps -->
             <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; margin: 30px 0; border-radius: 8px;">
-              <h3 style="color: #92400e; margin: 0 0 15px 0; font-size: 16px; font-weight: 600;">📋 What's Next?</h3>
+              <h3 style="color: #92400e; margin: 0 0 15px 0; font-size: 16px; font-weight: 600;">What's Next?</h3>
               <ul style="color: #92400e; margin: 0; padding-left: 20px; line-height: 1.8;">
                 <li>Check-in is at 3:00 PM and check-out at 12:00 PM</li>
                 <li>We'll send you check-in instructions 24 hours before your arrival</li>

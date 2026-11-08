@@ -1,86 +1,75 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import Image from "next/image";
 
 interface PageHeroProps {
   title: string;
   subtitle?: string;
   imageUrl?: string;
+  imageAlt?: string;
+  /** Small spaced-out label above the title. */
+  eyebrow?: string;
+  /** CSS object-position for the photo, e.g. "center 30%". */
+  focus?: string;
+  children?: React.ReactNode;
 }
 
+/**
+ * The opening photo of an inner page: about two-thirds of the screen, so the
+ * page's content shows below it, with the title set low on the left over a
+ * soft shade that keeps the rest of the photo bright.
+ */
 export default function PageHero({
   title,
   subtitle,
   imageUrl = "/Ziba-hero.jpg",
+  imageAlt = "",
+  eyebrow = "Ziba Beach Resort",
+  focus = "center",
+  children,
 }: PageHeroProps) {
-  const [scrollPos, setScrollPos] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollPos(window.scrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <section className="relative h-screen w-full overflow-hidden">
-      {/* Background Image with Parallax */}
-      <div
-        className="absolute inset-0 w-full h-full"
-        style={{
-          backgroundImage: `url(${imageUrl})`,
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-          backgroundAttachment: "fixed",
-          transform: `translateY(${scrollPos * 0.5}px)`,
-        }}
-      >
-        {/* Multi-layer Overlay for Text Readability */}
-        <div className="absolute inset-0 bg-linear-to-b from-black/70 via-black/50 to-black/30" />
-        <div className="absolute inset-0 bg-linear-to-r from-black/40 to-transparent" />
-      </div>
+    <section className="relative flex h-[68svh] min-h-[460px] w-full items-end overflow-hidden bg-slate-900 sm:h-[72svh]">
+      <Image
+        src={imageUrl}
+        alt={imageAlt}
+        fill
+        priority
+        sizes="100vw"
+        quality={80}
+        className="object-cover"
+        style={{ objectPosition: focus }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/30" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/35 to-transparent" />
 
-      {/* Content */}
-      <div className="relative h-full flex flex-col justify-center items-center px-4 sm:px-8 lg:px-16">
-        <div className="max-w-3xl text-center">
-          {/* Main Title */}
-          <h1
-            className="text-6xl md:text-7xl lg:text-8xl font-light leading-tight text-white mb-4 tracking-tight"
-            style={{ fontFamily: "Cormorant Garamond, serif" }}
+      <div className="relative mx-auto w-full max-w-7xl px-5 pb-12 sm:px-8 sm:pb-16 lg:px-12">
+        <p
+          className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
+          style={{ animation: "pageHeroUp 0.8s ease-out both" }}
+        >
+          {eyebrow}
+        </p>
+        <h1
+          className="mt-4 max-w-4xl font-cormorant text-5xl sm:text-6xl lg:text-7xl font-medium leading-[1.02] tracking-tight text-white"
+          style={{ animation: "pageHeroUp 0.8s ease-out 0.08s both", textShadow: "0 2px 20px rgba(0,0,0,0.25)" }}
+        >
+          {title}
+        </h1>
+        {subtitle && (
+          <p
+            className="mt-5 max-w-2xl text-base sm:text-lg font-light leading-relaxed text-white/90"
+            style={{ animation: "pageHeroUp 0.8s ease-out 0.16s both" }}
           >
-            {title}
-          </h1>
-
-          {/* Subtitle */}
-          {subtitle && (
-            <p className="text-lg md:text-xl text-gray-100 font-light leading-relaxed max-w-2xl mx-auto">
-              {subtitle}
-            </p>
-          )}
-        </div>
+            {subtitle}
+          </p>
+        )}
+        {children && (
+          <div className="mt-8" style={{ animation: "pageHeroUp 0.8s ease-out 0.24s both" }}>
+            {children}
+          </div>
+        )}
       </div>
 
-      {/* Scroll Down Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <div className="text-white text-center">
-          <p className="text-sm font-light mb-2">Explore More</p>
-          <svg
-            className="w-6 h-6 mx-auto"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 14l-7 7m0 0l-7-7m7 7V3"
-            />
-          </svg>
-        </div>
-      </div>
+      <style>{`@keyframes pageHeroUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){[style*="pageHeroUp"]{animation:none!important}}`}</style>
     </section>
   );
 }

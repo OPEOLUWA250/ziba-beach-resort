@@ -392,3 +392,8 @@ button.booked-date::after,
   color: #d1d5db;
   cursor: not-allowed;
 }
+
+/* The WhatsApp button lifts above pages' bottom bars (e.g. the day-pass cart). */
+body[data-bottom-bar] .concierge-fab {
+  bottom: 5.5rem;
+}

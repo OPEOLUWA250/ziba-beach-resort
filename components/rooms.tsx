@@ -1,222 +1,104 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { Cormorant_Garamond } from "next/font/google";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import SectionHeading from "@/components/section-heading";
+import { useReveal, revealClass } from "@/hooks/use-reveal";
 import { getRoomHeroImage } from "@/lib/room-images";
-import { ROOM_CATALOG, ROOM_IDS } from "@/lib/room-catalog";
+import { ROOM_CATALOG, ROOM_IDS, formatPriceFrom } from "@/lib/room-catalog";
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-});
+/** The rooms the home page leads with; the rest are one click away. */
+const SIGNATURE_ROOMS = ["room10", "room11", "room08", "room06"] as const;
 
-function roomType(id: string, name: string) {
+function roomLabel(name: string) {
   if (name.includes("Overwater")) return "Overwater";
-  if (name.includes("Apartment")) return "Apartment";
+  if (name.includes("Apartment")) return "Private pool";
   if (name.includes("Family")) return "Family";
   if (name.includes("Suite")) return "Suite";
-  return id === "room09" ? "Signature" : "Beach Facing";
+  return "Beach facing";
 }
 
-const TYPE_ICONS: Record<string, string> = {
-  Overwater: "🌊",
-  Apartment: "🏡",
-  Family: "👨‍👩‍👧‍👦",
-  Suite: "✨",
-  Signature: "🖤",
-  "Beach Facing": "🏖️",
-};
-
-// Card content is derived from the shared room catalogue (facts from the
-// resort's own room pages).
-const rooms = ROOM_IDS.map((id) => {
-  const room = ROOM_CATALOG[id];
-  const type = roomType(id, room.name);
-  return {
-    id,
-    name: room.name,
-    type,
-    description: room.description,
-    icon: TYPE_ICONS[type],
-    features: room.features.slice(0, 3),
-  };
-});
-
 export default function Rooms() {
-  const [isVisible, setIsVisible] = useState(false);
+  const { ref, visible } = useReveal<HTMLElement>();
   const [roomStatuses, setRoomStatuses] = useState<Record<string, string>>({});
-  const sectionRef = useRef(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
+    let cancelled = false;
+    fetch("/api/rooms")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled || !Array.isArray(data?.rooms)) return;
+        const map: Record<string, string> = {};
+        for (const room of data.rooms as { id?: string; status?: string }[]) {
+          if (room?.id) map[room.id] = String(room.status || "available").toLowerCase();
         }
-      },
-      { threshold: 0.1 },
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const fetchRoomStatuses = async () => {
-      try {
-        const response = await fetch("/api/rooms");
-        if (!response.ok) return;
-
-        const data = await response.json();
-        const statusMap: Record<string, string> = {};
-
-        if (data?.rooms && Array.isArray(data.rooms)) {
-          data.rooms.forEach((room: any) => {
-            if (room?.id) {
-              statusMap[room.id] = String(
-                room.status || "available",
-              ).toLowerCase();
-            }
-          });
-        }
-
-        setRoomStatuses(statusMap);
-      } catch (error) {
-        console.error("Failed to load room statuses:", error);
-      }
+        setRoomStatuses(map);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
     };
-
-    fetchRoomStatuses();
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      id="rooms"
-      className="py-32 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden"
-    >
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div
-          className={`text-center mb-16 transition-all duration-1000 ease-out ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
-          <h2
-            className={`${cormorant.className} h2 text-blue-900 mb-4 text-center`}
+    <section ref={ref} id="rooms" className="bg-white px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
+      <div className="mx-auto max-w-7xl">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <SectionHeading align="left" eyebrow="Rooms & suites" title="Signature stays">
+            Overwater lofts and studios, terrace suites and a two-bedroom
+            apartment with its own pool.
+          </SectionHeading>
+          <Link
+            href="/bookings"
+            className="group inline-flex shrink-0 items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-blue-900 hover:text-blue-700"
           >
-            Our Rooms And Suites
-          </h2>
-          <div className="w-16 h-0.5 mx-auto mb-8 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
-          <p className="text-gray-600 font-light text-lg max-w-2xl mx-auto text-center">
-            Choose from our carefully curated collection of rooms, each designed
-            to provide the ultimate luxury beach resort experience
-          </p>
+            View all {ROOM_IDS.length} rooms
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+          </Link>
         </div>
 
-        {/* Rooms Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {rooms.map((room, idx) => (
-            <div
-              key={room.id}
-              className={`group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-opacity transition-transform duration-500 ease-out transform hover:-translate-y-2 flex flex-col h-full ${
-                isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-10"
-              }`}
-              style={{
-                transitionDelay: isVisible ? `${300 + idx * 100}ms` : "0ms",
-              }}
-            >
-              {/* Image Container - Enhanced with smooth zoom */}
-              <div className="relative w-full h-64 overflow-hidden bg-slate-100">
-                <Image
-                  src={getRoomHeroImage(room.id)}
-                  alt={`${room.name} - Hero Image`}
-                  fill
-                  className="object-cover transition-all duration-700 ease-out group-hover:scale-110"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  quality={85}
-                />
-                {/* Overlay with subtle brightness on hover */}
-                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent group-hover:from-black/50 transition-all duration-500" />
-
-                {roomStatuses[room.id] === "fully-booked" && (
-                  <div className="absolute top-4 left-4 z-10">
-                    <span className="inline-block px-3 py-1.5 bg-red-600 text-white text-xs font-semibold uppercase tracking-wide rounded-full shadow-lg border border-red-500">
-                      Fully Booked
+        <div className="mt-12 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+          {SIGNATURE_ROOMS.map((id, i) => {
+            const room = ROOM_CATALOG[id];
+            const booked = roomStatuses[id] === "fully-booked";
+            const guests = /^up to/i.test(room.capacity) ? room.capacity : null;
+            return (
+              <Link
+                key={id}
+                href={`/bookings/rooms/${id}`}
+                className={`group block ${revealClass(visible)}`}
+                style={{ transitionDelay: visible ? `${i * 90}ms` : "0ms" }}
+              >
+                <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-slate-100">
+                  <Image
+                    src={getRoomHeroImage(id)}
+                    alt={room.name}
+                    fill
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.05]"
+                  />
+                  {booked && (
+                    <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-rose-700">
+                      Fully booked
                     </span>
-                  </div>
-                )}
-
-                {/* Room Type Badge - Smooth scale and glow */}
-                <div className="absolute top-4 right-4 z-10 transition-all duration-500 ease-out group-hover:scale-105">
-                  <span className="inline-block px-4 py-1 bg-blue-900 text-white text-xs font-light rounded-full shadow-lg group-hover:shadow-xl group-hover:bg-blue-800 transition-all duration-500">
-                    {room.type}
-                  </span>
+                  )}
                 </div>
-
-                {/* Icon - Playful rotation and bounce */}
-                <div className="absolute bottom-4 left-4 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3">
-                  <div className="text-5xl filter drop-shadow-lg">
-                    {room.icon}
-                  </div>
-                </div>
-              </div>
-
-              {/* Content Container */}
-              <div className="p-6 flex flex-col grow">
-                <h5 className={`${cormorant.className} h5 text-gray-900 mb-2`}>
-                  {room.name}
-                </h5>
-
-                <p className="text-gray-600 font-light text-sm mb-4 grow">
-                  {room.description}
+                <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.25em] text-blue-700">
+                  {roomLabel(room.name)}
+                  {guests && <span className="text-slate-400"> · {guests}</span>}
                 </p>
-
-                {/* Features List */}
-                <ul className="space-y-2 mb-6">
-                  {room.features.map((feature, featureIdx) => (
-                    <li
-                      key={featureIdx}
-                      className={`flex items-center gap-2 text-sm text-gray-700 transition-opacity transition-transform duration-500 ${
-                        isVisible
-                          ? "opacity-100 translate-x-0"
-                          : "opacity-0 -translate-x-5"
-                      }`}
-                      style={{
-                        transitionDelay: isVisible
-                          ? `${400 + idx * 100 + featureIdx * 50}ms`
-                          : "0ms",
-                      }}
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-900" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                {/* CTA Button - Prominent Action */}
-                <Link
-                  href={`/bookings/rooms/${room.id}`}
-                  className="block w-full mt-4 bg-blue-900 hover:bg-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1 active:translate-y-0 text-center"
-                >
-                  <div className="flex items-center justify-center gap-2 w-full">
-                    <span>View Room Details</span>
-                    <FontAwesomeIcon icon={faArrowRight} className="h-5 w-5" />
-                  </div>
-                </Link>
-              </div>
-            </div>
-          ))}
+                <h3 className="mt-2 font-cormorant text-2xl font-medium leading-snug text-blue-950 group-hover:text-blue-800">
+                  {room.name}
+                </h3>
+                <p className="mt-2 text-sm font-light text-slate-600">
+                  {formatPriceFrom(room.priceFrom)}{" "}
+                  <span className="text-slate-400">/ night</span>
+                </p>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

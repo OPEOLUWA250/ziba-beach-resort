@@ -1,4 +1,5 @@
 "use client";
+import { confirmCard } from "@/components/notice-center";
 
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -93,7 +94,7 @@ export default function AdminMenusPage() {
 
   // Delete menu item
   const handleDeleteItem = async (categoryId: string, itemId: string) => {
-    if (!confirm("Delete this menu item?")) return;
+    if (!(await confirmCard({ title: "Delete this menu item?", message: "It will disappear from the menu page straight away.", confirmLabel: "Delete", destructive: true }))) return;
 
     try {
       const res = await fetch(`/api/menus/${categoryId}/${itemId}`, {

@@ -55,9 +55,11 @@ export default function Blog() {
     <>
       <Header />
       <PageHero
-        title="Blog & Stories"
-        subtitle="Insights, tips, and inspiration from the Ziba Beach Resort community"
+        eyebrow="Journal"
+        title="Stories from Ziba"
+        subtitle="Ideas for proposals, beach weddings, family days out and more."
         imageUrl="/ziba-hero-images/blog-hero.jpg"
+        imageAlt="Steps leading into a pool at Ziba"
       />
       <main className="bg-white">
         {/* Category Filter */}

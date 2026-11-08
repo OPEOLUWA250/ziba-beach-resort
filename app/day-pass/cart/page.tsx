@@ -1,5 +1,7 @@
 "use client";
 
+import { notify } from "@/components/notice-center";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -104,12 +106,12 @@ export default function DayPassCart() {
 
   const handleProceedToCheckout = () => {
     if (cart.items.length === 0) {
-      alert("Please add items to your cart");
+      notify.info("Your cart is empty", "Add at least one ticket to continue.");
       return;
     }
 
     if (!cart.visitDate) {
-      alert("Please select a visit date");
+      notify.info("Choose your visit date", "Pick the day you'd like to come.");
       return;
     }
 
@@ -120,8 +122,9 @@ export default function DayPassCart() {
     );
 
     if (!hasValidTicket) {
-      alert(
-        "You must select at least one ticket (Day Pass or Premium ticket) before checkout. Add-on experiences alone cannot be booked. Please select a ticket type first.",
+      notify.info(
+        "Add a ticket first",
+        "Add-on experiences need at least one day pass ticket (Day Pass or Plus).",
       );
       return;
     }
@@ -131,8 +134,9 @@ export default function DayPassCart() {
       item.name.includes("Infant Ticket"),
     );
     if (hasOnlyInfant) {
-      alert(
-        "Infant tickets cannot be booked alone. Please add at least one ticketed guest (Kids, Teens, or Adult).",
+      notify.info(
+        "Infants come with a ticketed guest",
+        "Please add at least one Kids, Teens or Adult ticket.",
       );
       return;
     }
@@ -142,8 +146,9 @@ export default function DayPassCart() {
       item.name.includes("Infant Ticket"),
     );
     if (hasInfant && !hasValidTicket) {
-      alert(
-        "Infant tickets must be accompanied by at least one ticketed guest (Kids, Teens, or Adult).",
+      notify.info(
+        "Infants come with a ticketed guest",
+        "Please add at least one Kids, Teens or Adult ticket.",
       );
       return;
     }

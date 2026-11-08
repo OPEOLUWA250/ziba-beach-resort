@@ -1,181 +1,79 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHeart,
-  faUsers,
-  faBriefcase,
-  faCamera,
-} from "@fortawesome/free-solid-svg-icons";
+import { ArrowUpRight } from "lucide-react";
+import SectionHeading from "@/components/section-heading";
+import { useReveal, revealClass } from "@/hooks/use-reveal";
 
-const highlights = [
+const OCCASIONS = [
   {
-    id: 1,
-    title: "Honeymoon Experience",
-    description:
-      "Create unforgettable romantic moments with our specially curated honeymoon packages. From sunset picnics to floating breakfasts and couple massages.",
-    icon: faHeart,
-    gradient: "from-rose-500 to-pink-600",
-    lightGradient: "from-rose-50 to-pink-50",
+    title: "Honeymoons & celebrations",
+    text: "Build your own package: floating breakfast, beach dinner, decorated room and more.",
+    href: "/celebrations",
+    image: "/honeymoon/honeymoon-1.jpg",
+    alt: "A couple celebrating at Ziba",
   },
   {
-    id: 2,
-    title: "Team Bonding",
-    description:
-      "Strengthen relationships and boost team morale with our exclusive team bonding activities and experiences designed for corporate groups.",
-    icon: faUsers,
-    gradient: "from-blue-500 to-cyan-600",
-    lightGradient: "from-blue-50 to-cyan-50",
+    title: "Weddings & team bonding",
+    text: "Beach weddings, retreats and conferences for groups of any size.",
+    href: "/events",
+    image: "/team-bonding/team-bonding-1.jpg",
+    alt: "A team bonding event at Ziba",
   },
   {
-    id: 3,
-    title: "Conference Hall",
-    description:
-      "Host your corporate events, seminars, and conferences in our world-class conference facilities with full amenities and support services.",
-    icon: faBriefcase,
-    gradient: "from-purple-500 to-indigo-600",
-    lightGradient: "from-purple-50 to-indigo-50",
+    title: "Gift a day pass",
+    text: "A day at the beach for someone you love, with a personal message.",
+    href: "/gift",
+    image: "/day-experience.jpg",
+    alt: "The beach at Ziba",
   },
   {
-    id: 4,
-    title: "Professional Photoshoot",
-    description:
-      "Capture your precious moments with our professional photography services. Perfect for special occasions, events, and creating lasting memories at Ziba.",
-    icon: faCamera,
-    gradient: "from-indigo-500 to-purple-600",
-    lightGradient: "from-indigo-50 to-purple-50",
+    title: "Seasonal offers",
+    text: "Holiday packages and limited-time stays throughout the year.",
+    href: "/offers",
+    image: "/honeymoon/honeymoon-4.jpg",
+    alt: "A decorated setting at Ziba",
   },
 ];
 
 export default function ExperienceHighlights() {
-  const headingFont = { fontFamily: "Cormorant Garamond, serif" };
-  const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
+  const { ref, visible } = useReveal<HTMLElement>();
 
   return (
-    <section
-      ref={sectionRef}
-      className="py-32 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-gray-50 to-white overflow-hidden"
-    >
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div
-          className={`text-center mb-16 transition-all duration-1000 ease-out ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
-          <h2 className="h2 text-blue-900 mb-6" style={headingFont}>
-            Celebrate Life&apos;s Moments
-          </h2>
-          <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
-          <p className="text-lg text-gray-600 font-light max-w-2xl mx-auto">
-            From romantic getaways to corporate events, Ziba offers tailored
-            experiences for every occasion.
-          </p>
-        </div>
+    <section ref={ref} id="occasions" className="bg-white px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
+      <div className="mx-auto max-w-7xl">
+        <SectionHeading eyebrow="Occasions" title="Made for the moments that matter">
+          Honeymoons, birthdays, weddings and team retreats, planned with you.
+        </SectionHeading>
 
-        {/* Highlights Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {highlights.map((item, idx) => {
-            return (
-              <Link href="/experience" key={item.id}>
-                <div
-                  className={`group relative overflow-hidden rounded-xl bg-white border border-gray-200 hover:border-gray-400 shadow-md hover:shadow-xl transition-all duration-700 transform hover:-translate-y-3 cursor-pointer h-full ${
-                    isVisible
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-10"
-                  }`}
-                  style={{
-                    transitionDelay: isVisible ? `${300 + idx * 100}ms` : "0ms",
-                  }}
-                >
-                  {/* Background gradient overlay */}
-                  <div
-                    className={`absolute inset-0 bg-linear-to-br ${item.lightGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-                  />
-
-                  {/* Icon background circle */}
-                  <div
-                    className={`absolute top-4 right-4 w-16 h-16 rounded-full bg-linear-to-br ${item.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}
-                  />
-
-                  {/* Content */}
-                  <div className="relative p-6 sm:p-7 h-full flex flex-col">
-                    {/* Icon */}
-                    <div
-                      className={`w-12 h-12 rounded-lg bg-linear-to-br ${item.gradient} flex items-center justify-center mb-4 transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500`}
-                    >
-                      <FontAwesomeIcon icon={item.icon} className="w-6 h-6 text-white" />
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="text-xl font-light text-gray-900 mb-3 group-hover:text-blue-900 transition-colors">
-                      {item.title}
-                    </h3>
-
-                    {/* Description */}
-                    <p className="text-sm text-gray-600 font-light leading-relaxed grow">
-                      {item.description}
-                    </p>
-
-                    {/* Learn More Arrow */}
-                    <div className="mt-4 flex items-center gap-2 text-blue-600 font-light text-sm group-hover:gap-3 transition-all">
-                      Explore
-                      <svg
-                        className="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 7l5 5m0 0l-5 5m5-5H6"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Call to Action */}
-        <div
-          className={`text-center mt-16 transition-all duration-1000 ease-out ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-          style={{
-            transitionDelay: isVisible ? "600ms" : "0ms",
-          }}
-        >
-          <Link href="/experience">
-            <button className="px-10 py-4 bg-blue-900 hover:bg-blue-800 text-white font-light tracking-wide rounded-lg transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-xl">
-              Explore All Experiences
-            </button>
-          </Link>
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {OCCASIONS.map((item, i) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`group relative flex aspect-[3/4] flex-col justify-end overflow-hidden rounded-3xl ${revealClass(visible)}`}
+              style={{ transitionDelay: visible ? `${i * 90}ms` : "0ms" }}
+            >
+              <Image
+                src={item.image}
+                alt={item.alt}
+                fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                className="-z-10 object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.05]"
+              />
+              <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+              <div className="p-6">
+                <h3 className="font-cormorant text-2xl sm:text-3xl font-medium leading-tight text-white">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm font-light leading-relaxed text-white/80">{item.text}</p>
+              </div>
+              <span className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-blue-950 transition group-hover:bg-white">
+                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              </span>
+            </Link>
+          ))}
         </div>
       </div>
     </section>

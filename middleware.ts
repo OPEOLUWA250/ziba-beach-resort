@@ -38,7 +38,8 @@ export function middleware(request: NextRequest) {
     request.method === "GET" &&
     (pathname === "/api/popups" ||
       pathname === "/api/instagram/feed" ||
-      pathname === "/api/reviews");
+      pathname === "/api/reviews" ||
+      pathname === "/api/conditions");
 
   if (pathname.startsWith("/api") && !cacheableApi) {
     response.headers.set("Cache-Control", "no-store");

@@ -69,9 +69,11 @@ export default function Contact() {
     <>
       <Header />
       <PageHero
-        title="Get In Touch"
-        subtitle="We'd love to hear from you. Contact us with any questions or inquiries."
+        eyebrow="Contact"
+        title="Get in touch"
+        subtitle="Call, email or WhatsApp us. We're happy to help you plan your visit."
         imageUrl="/ziba-hero-images/contact-hero.jpg"
+        imageAlt="Ziba Beach Resort"
       />
       <main className="bg-white">
         {/* Trust Indicators */}
@@ -143,7 +145,7 @@ export default function Contact() {
                 <div className="h-full flex flex-col">
                   <div className="flex-1">
                     <FontAwesomeIcon icon={contact.icon} className="w-12 h-12 text-blue-900 mx-auto mb-4" />
-                    <h3 className="h4 text-gray-900 mb-3">{contact.title}</h3>
+                    <h3 className="mb-3 font-cormorant text-3xl font-medium text-blue-950">{contact.title}</h3>
                     {contact.details.map((detail, j) => (
                       <p key={j} className="text-gray-600 font-light">
                         {detail}

@@ -9,6 +9,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { ROOM_CATALOG, ROOM_IDS } from "@/lib/room-catalog";
+import ResortConditions from "@/components/resort-conditions";
 import { useEffect, useRef, useState } from "react";
 
 export default function Footer() {
@@ -73,10 +74,10 @@ export default function Footer() {
               </Link>
             </div>
             <p className="text-sm font-light text-blue-100 leading-relaxed">
-              Experience luxury redefined at Nigeria&apos;s premier beachfront
-              destination, where world-class hospitality meets pristine natural
-              beauty.
+              Nigeria&apos;s first overwater resort, on the beach at Okun Ajah,
+              Lagos.
             </p>
+            <ResortConditions className="mt-4" />
             {/* Social Links */}
             <div className="flex gap-4 pt-6 justify-center md:justify-start">
               {[
@@ -170,14 +171,19 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3 text-sm font-light text-blue-100">
               {[
+                { href: "/bookings", label: "Rooms" },
                 { href: "/day-pass", label: "Day Pass" },
-                { href: "/booking", label: "Rooms" },
+                { href: "/experience", label: "Experiences" },
+                { href: "/celebrations", label: "Honeymoons & Celebrations" },
+                { href: "/events", label: "Weddings & Events" },
+                { href: "/gift", label: "Gift a Day Pass" },
+                { href: "/offers", label: "Offers" },
+                { href: "/gallery", label: "Gallery" },
                 { href: "/menu", label: "Menu" },
                 { href: "/our-story", label: "Our Story" },
-                { href: "/experience", label: "Experience" },
                 { href: "/blog", label: "Blog" },
                 { href: "/contact", label: "Contact" },
-                { href: "/view-booking", label: "Receipt Lookup" },
+                { href: "/view-booking", label: "Find Your Booking" },
               ].map((link, index) => (
                 <li
                   key={index}
@@ -280,7 +286,7 @@ export default function Footer() {
           }`}
           style={{ transitionDelay: isVisible ? "500ms" : "0ms" }}
         >
-          <p>&copy; 2026 Ziba Beach Resort - Privacy Policy</p>
+          <p>&copy; {new Date().getFullYear()} Ziba Beach Resort · Ziba Beach Close, Okun Ajah, Lagos</p>
         </div>
       </div>
     </footer>

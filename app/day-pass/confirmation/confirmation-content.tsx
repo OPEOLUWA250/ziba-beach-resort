@@ -1,8 +1,11 @@
 "use client";
 
+import { notify } from "@/components/notice-center";
+
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Info, Lightbulb } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -154,9 +157,7 @@ export default function DayPassConfirmationContent() {
         setCopiedLink(true);
         setTimeout(() => setCopiedLink(false), 2000);
       } catch {
-        alert(
-          "Failed to copy link. Please copy from your browser address bar.",
-        );
+        notify.error("Couldn't copy the link", "Please copy it from your browser's address bar.");
       }
     }
   };
@@ -170,8 +171,9 @@ export default function DayPassConfirmationContent() {
         `Ziba-DayPass-Receipt-${booking.referenceCode}`,
       );
       if (!success) {
-        alert(
-          "Couldn't download the receipt. Please try again or use the print option from your browser.",
+        notify.error(
+          "Couldn't download the receipt",
+          "Please try again, or use your browser's print option.",
         );
       }
     } finally {
@@ -336,7 +338,8 @@ export default function DayPassConfirmationContent() {
             {/* Important Notes */}
             <div className="bg-amber-50 border border-amber-200 p-2.5 rounded">
               <p className="font-bold text-amber-900 text-xs mb-1.5">
-                ⚡ Important
+                <Info className="mr-1 inline h-3.5 w-3.5 align-[-2px]" aria-hidden="true" />
+                Important
               </p>
               <ul className="text-gray-700 space-y-0.5 text-xs">
                 <li>• Check-in time: 10:00 AM</li>
@@ -392,7 +395,8 @@ export default function DayPassConfirmationContent() {
 
         {/* Actions Hint */}
         <p className="text-center text-gray-500 text-xs mt-4">
-          💡 Download your receipt as a PDF, or copy the link to save and
+          <Lightbulb className="mr-1 inline h-3.5 w-3.5 align-[-2px]" aria-hidden="true" />
+          Download your receipt as a PDF, or copy the link to save and
           share it
         </p>
         {copiedLink && (

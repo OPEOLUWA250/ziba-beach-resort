@@ -13,12 +13,35 @@ import {
   faWandMagicSparkles,
 } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
+import { honeymoonPackages } from "@/lib/honeymoon-packages";
+import {
+  Baby,
+  Cake,
+  CircleDot,
+  Clapperboard,
+  Crown,
+  FerrisWheel,
+  Gamepad2,
+  Goal,
+  Mic,
+  Music,
+  Palette,
+  PartyPopper,
+  Shirt,
+  Sun,
+  Sunset,
+  Target,
+  Trophy,
+  Utensils,
+  Video,
+  Volleyball,
+} from "lucide-react";
 
 const eventSpaces = [
   {
     name: "Conference Hall",
     capacity: "Up to 85 People",
-    icon: "🎤",
+    icon: Mic,
     features: [
       "Training sessions & workshops",
       "Comfortable chairs and A/C",
@@ -32,7 +55,7 @@ const eventSpaces = [
   {
     name: "Games Room",
     capacity: "Multi-purpose Space",
-    icon: "🎮",
+    icon: Gamepad2,
     features: [
       "Variety of games for relaxation",
       "Team bonding activities",
@@ -53,82 +76,82 @@ const eventSpaces = [
 const activities = [
   {
     name: "Foam Party",
-    icon: "🎉",
+    icon: PartyPopper,
     desc: "Dance and play in a sea of bubbles, with music, laughter and foam-filled fun.",
   },
   {
     name: "Pool Volleyball",
-    icon: "🏐",
+    icon: Volleyball,
     desc: "Splash, spike and serve your way through games that mix swimming with volleyball.",
   },
   {
     name: "Paint 'n' Chill in the Pool",
-    icon: "🎨",
+    icon: Palette,
     desc: "Paint in the pool with floating snacks for you and your partner.",
   },
   {
     name: "Tye & Dye Workshop",
-    icon: "👕",
+    icon: Shirt,
     desc: "Learn the traditional art of fabric dyeing and take home a piece you designed.",
   },
   {
     name: "PS5",
-    icon: "🎮",
+    icon: Gamepad2,
     desc: "From kid-friendly platformers to cinematic action and adventure games.",
   },
   {
     name: "Snooker",
-    icon: "🎱",
+    icon: CircleDot,
     desc: "Sharpen your focus over a game of snooker.",
   },
   {
     name: "Darts",
-    icon: "🎯",
+    icon: Target,
     desc: "Test your aim and your competitive streak on the dartboard.",
   },
   {
     name: "Table Tennis",
-    icon: "🏓",
+    icon: Trophy,
     desc: "A fast, versatile game for quick hands and quick feet.",
   },
   {
     name: "Foosball",
-    icon: "⚽",
+    icon: Goal,
     desc: "Classic table soccer: block, twist and fire your shot.",
   },
   {
     name: "Board Games & Jenga",
-    icon: "♟️",
+    icon: Crown,
     desc: "Chess, Monopoly, Jenga and more for a family or friends' night in.",
   },
   {
     name: "Basketball",
-    icon: "🏀",
+    icon: Trophy,
     desc: "A regulation court with room to shoot, pass and score.",
   },
   {
     name: "Beach Football",
-    icon: "🏖️",
+    icon: Sun,
     desc: "Kick a ball around on the sand and feel like a kid again.",
   },
   {
     name: "Limbo Dance",
-    icon: "💃",
+    icon: Music,
     desc: "How low can you go? A fun way to shake off stress.",
   },
   {
     name: "Pool Dining",
-    icon: "🍽️",
+    icon: Utensils,
     desc: "Dishes from our chefs, served while you relax by the pool.",
   },
   {
     name: "Family Beachside Dinner",
-    icon: "🌅",
+    icon: Sunset,
     desc: "A beach dinner setup for your family or group (up to 6 guests).",
   },
   {
     name: "Children's Playground",
-    icon: "🎠",
+    icon: FerrisWheel,
     desc: "Swings, slides and a safe space for kids to play and make friends.",
   },
 ];
@@ -137,254 +160,25 @@ const shootTypes = [
   {
     type: "Maternity Shoots",
     desc: "Capture motherhood's beauty",
-    icon: "👶",
+    icon: Baby,
   },
   {
     type: "Birthday Shoots",
     desc: "Celebrate special moments",
-    icon: "🎂",
+    icon: Cake,
   },
   {
     type: "Music Video Shoots",
     desc: "Professional music video production",
-    icon: "🎬",
+    icon: Clapperboard,
   },
   {
     type: "Film Productions",
     desc: "Full-scale film production services",
-    icon: "🎥",
+    icon: Video,
   },
 ];
 
-const honeymoonPackages = [
-  {
-    id: "01",
-    name: "Honeymoon Package 1",
-    price: "₦900,000",
-    stay: "2-night stay in Beach Facing Room",
-    inclusions: [
-      "Decorated room upon arrival",
-      "3 meals daily",
-      "Horse riding",
-      "1-hr couple massage",
-      "Sunset Picnic",
-      "Romantic Dinner",
-      "Paint and chill",
-      "Floating Breakfast",
-      "Hand casting",
-      "Complimentary minibar",
-    ],
-  },
-  {
-    id: "02",
-    name: "Honeymoon Package 2",
-    price: "₦1,020,000",
-    stay: "2-night stay in Beach Facing Suite Room",
-    inclusions: [
-      "Decorated room upon arrival",
-      "3 meals daily",
-      "Horse riding",
-      "1-hr couple massage",
-      "Sunset Picnic",
-      "Romantic Dinner",
-      "Paint and chill",
-      "Floating Breakfast",
-      "Hand casting",
-      "Complimentary minibar",
-    ],
-  },
-  {
-    id: "03",
-    name: "Honeymoon Package 3",
-    price: "₦940,000",
-    stay: "2-night stay in Overwater Terrace Room",
-    inclusions: [
-      "Decorated room upon arrival",
-      "3 meals daily",
-      "Horse riding",
-      "1-hr couple massage",
-      "Sunset Picnic",
-      "Romantic Dinner",
-      "Paint and chill",
-      "Floating Breakfast",
-      "Hand casting",
-      "Floating Movie",
-      "Complimentary minibar",
-    ],
-  },
-  {
-    id: "04",
-    name: "Honeymoon Package 4",
-    price: "₦1,070,000",
-    stay: "2-night stay in Overwater Terrace Suite",
-    inclusions: [
-      "Decorated room upon arrival",
-      "3 meals daily",
-      "Horse riding",
-      "1-hr couple massage",
-      "Sunset Picnic",
-      "Romantic Dinner",
-      "Paint and chill",
-      "Floating Breakfast",
-      "Hand casting",
-      "Floating Movie",
-      "Complimentary minibar",
-    ],
-  },
-  {
-    id: "05",
-    name: "Honeymoon Package 5",
-    price: "₦1,500,000",
-    stay: "4-night stay in Beach Facing Room",
-    inclusions: [
-      "Decorated room upon arrival",
-      "3 meals daily",
-      "Horse riding",
-      "1-hr couple massage",
-      "Sunset Picnic",
-      "Romantic Dinner",
-      "Paint and chill",
-      "Hand casting",
-      "Floating Movie",
-      "Complimentary minibar",
-      "No Floating Breakfast on this package",
-    ],
-  },
-  {
-    id: "06",
-    name: "Honeymoon Package 6",
-    price: "₦1,720,000",
-    stay: "4-night stay in Beach Facing Suite",
-    inclusions: [
-      "Decorated room upon arrival",
-      "3 meals daily",
-      "Horse riding",
-      "1-hr couple massage",
-      "Sunset Picnic",
-      "Romantic Dinner",
-      "Paint and chill",
-      "Hand casting",
-      "Floating Movie",
-      "Complimentary minibar",
-      "No Floating Breakfast on this package",
-    ],
-  },
-  {
-    id: "07",
-    name: "Honeymoon Package 7",
-    price: "₦1,760,000",
-    stay: "4-night stay in an Overwater Room",
-    inclusions: [
-      "Decorated room upon arrival",
-      "3 meals daily",
-      "Horse riding",
-      "1-hr couple massage",
-      "Sunset Picnic",
-      "Romantic Dinner",
-      "Paint and chill",
-      "Floating Breakfast",
-      "Hand casting",
-      "Floating Movie",
-      "Complimentary minibar",
-    ],
-  },
-  {
-    id: "08",
-    name: "Honeymoon Package 8",
-    price: "₦1,940,000",
-    stay: "4-night stay in an Overwater Suite",
-    inclusions: [
-      "Decorated room upon arrival",
-      "3 meals daily",
-      "Horse riding",
-      "1-hr couple massage",
-      "Sunset Picnic",
-      "Romantic Dinner",
-      "Paint and chill",
-      "Floating Breakfast",
-      "Hand casting",
-      "Floating Movie",
-      "Complimentary minibar",
-    ],
-  },
-  {
-    id: "09",
-    name: "Honeymoon Package 9",
-    price: "₦2,100,000",
-    stay: "6-night stay in a Beach Facing Room",
-    inclusions: [
-      "Decorated room upon arrival",
-      "3 meals daily",
-      "Horse riding",
-      "Flying dress or clear kayak photo shoot",
-      "1-hr couple massage",
-      "Sunset Picnic",
-      "Romantic Dinner",
-      "Paint and chill",
-      "Hand casting",
-      "Floating Movie",
-      "Complimentary minibar",
-      "No Floating Breakfast on this package",
-    ],
-  },
-  {
-    id: "10",
-    name: "Honeymoon Package 10",
-    price: "₦2,450,000",
-    stay: "6-night stay in Beach Facing Suite",
-    inclusions: [
-      "Decorated room upon arrival",
-      "3 meals daily",
-      "Horse riding",
-      "1-hr couple massage",
-      "Sunset Picnic",
-      "Romantic Dinner",
-      "Paint and chill",
-      "Floating Breakfast",
-      "Hand casting",
-      "Floating Movie",
-      "Complimentary minibar",
-    ],
-  },
-  {
-    id: "11",
-    name: "Honeymoon Package 11",
-    price: "₦2,340,000",
-    stay: "4-night stay in an Overwater Suite",
-    inclusions: [
-      "Decorated room upon arrival",
-      "3 meals daily",
-      "Horse riding",
-      "1-hr couple massage",
-      "Sunset Picnic",
-      "Romantic Dinner",
-      "Paint and chill",
-      "Floating Breakfast",
-      "Hand casting",
-      "Floating Movie",
-      "Complimentary minibar",
-    ],
-  },
-  {
-    id: "12",
-    name: "Honeymoon Package 12",
-    price: "₦2,720,000",
-    stay: "6-night stay in an Overwater Suite",
-    inclusions: [
-      "Decorated room upon arrival",
-      "3 meals daily",
-      "Horse riding",
-      "1-hr couple massage",
-      "Sunset Picnic",
-      "Romantic Dinner",
-      "Paint and chill",
-      "Floating Breakfast",
-      "Hand casting",
-      "Floating Movie",
-      "Complimentary minibar",
-    ],
-  },
-];
 
 export default function Celebrate() {
   const headingFont = { fontFamily: "Cormorant Garamond, serif" };
@@ -409,18 +203,15 @@ export default function Celebrate() {
     return `https://wa.me/2347047300013?text=${encodeURIComponent(prefilledMessage)}`;
   };
 
-  // Debug: log when component mounts
-  useEffect(() => {
-    console.log("🔧 Celebrate component mounted");
-  }, []);
-
   return (
     <>
       <Header />
       <PageHero
-        title="Celebrate Life's Moments"
-        subtitle="From honeymoons to team bonding events, create unforgettable memories at Ziba"
+        eyebrow="Experiences"
+        title="Experiences at Ziba"
+        subtitle="Floating breakfasts, beach dinners, foam parties and celebrations planned with you."
         imageUrl="/ziba-hero-images/experience-hero.jpg"
+        imageAlt="Hanging rattan chairs among the palms at Ziba"
       />
       <main className="bg-white">
         {/* Trust Indicators Hero */}
@@ -431,7 +222,7 @@ export default function Celebrate() {
               <div>
                 <p className="text-4xl font-light mb-2">
                   {googleReviews?.rating != null
-                    ? `${googleReviews.rating.toFixed(1)}★`
+                    ? `${googleReviews.rating.toFixed(1)} / 5`
                     : "Google"}
                 </p>
                 <p className="font-light text-blue-100">
@@ -583,6 +374,12 @@ export default function Celebrate() {
                 Choose the package that fits your perfect romantic escape. Each
                 package includes curated experiences for unforgettable moments.
               </p>
+              <a
+                href="/celebrations"
+                className="mt-6 inline-flex items-center gap-2 rounded-full border border-blue-950 px-6 py-3 text-sm font-semibold text-blue-950 transition hover:bg-blue-950 hover:text-white"
+              >
+                Or build your own package
+              </a>
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
@@ -757,7 +554,7 @@ export default function Celebrate() {
                   className="rounded-2xl border border-blue-100 bg-blue-50/40 p-6 transition-shadow duration-300 hover:shadow-lg"
                 >
                   <span className="text-3xl" aria-hidden="true">
-                    {activity.icon}
+                    <activity.icon className="h-7 w-7 text-blue-800" strokeWidth={1.5} />
                   </span>
                   <h3 className="mt-3 text-lg font-medium text-blue-900">
                     {activity.name}
@@ -917,7 +714,7 @@ export default function Celebrate() {
                   </div>
                   <div className="p-8">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-4xl">{space.icon}</span>
+                      <space.icon className="h-9 w-9 text-blue-800" strokeWidth={1.5} aria-hidden="true" />
                       <div>
                         <h3 className="h4 text-2xl font-light text-gray-900">
                           {space.name}
@@ -1004,7 +801,7 @@ export default function Celebrate() {
                   key={i}
                   className="bg-white rounded-xl p-8 border border-gray-200 text-center hover:shadow-lg hover:border-blue-300 transition-all duration-300"
                 >
-                  <div className="text-6xl mb-4">{shoot.icon}</div>
+                  <shoot.icon className="mx-auto mb-4 h-10 w-10 text-blue-800" strokeWidth={1.5} aria-hidden="true" />
                   <h3 className="text-lg font-light text-gray-900 mb-2">
                     {shoot.type}
                   </h3>
