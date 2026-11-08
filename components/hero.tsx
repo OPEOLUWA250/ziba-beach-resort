@@ -11,11 +11,29 @@ const cormorant = Cormorant_Garamond({
   weight: ["400", "500", "600", "700"],
 });
 
+// Same slides, in the same order, as the hero on zibabeachresort.com
+// (updated 2026-10 for the new Grand Overwater Villa).
 const heroImages = [
-  "/ziba-hero-images/ziba-home/ziba-home-hero-1.jpg",
-  "/ziba-hero-images/ziba-home/ziba-home-hero-2.jpg",
-  "/ziba-hero-images/ziba-home/ziba-home-hero-3.jpg",
-  "/ziba-hero-images/ziba-home/ziba-home-hero-4.jpg",
+  {
+    src: "/ziba-hero-images/ziba-home/ziba-grand-overwater-villa.jpg",
+    alt: "Aerial view of Ziba's Grand Overwater Villa: white rooms set around a turquoise pool with palm islands, beside the beach",
+  },
+  {
+    src: "/ziba-hero-images/ziba-home/ziba-aerial-view-grand-overwater-villa.jpg",
+    alt: "Grand Overwater Villa from above, with overwater rooms around the pool and the Atlantic Ocean behind",
+  },
+  {
+    src: "/ziba-hero-images/ziba-home/ziba-aerial-view-grand-overwater-pool.jpg",
+    alt: "The Grand Overwater pool, with private decks and steps from each room straight into the water",
+  },
+  {
+    src: "/ziba-hero-images/ziba-home/ziba-aerial-view-phase-2-grand-overwater-villa.jpg",
+    alt: "Ziba Beach Resort from the air: the main pool and palm garden, with the new Grand Overwater Villa beyond",
+  },
+  {
+    src: "/ziba-hero-images/ziba-home/ziba-grand-overwater-loft-rooms-exterior.jpg",
+    alt: "Grand Overwater Loft rooms, each with a sun lounger on a deck that opens onto the pool",
+  },
 ];
 
 export default function Hero() {
@@ -59,7 +77,7 @@ export default function Hero() {
           <div className="absolute inset-0 w-full h-full">
             {heroImages.map((image, index) => (
               <div
-                key={index}
+                key={image.src}
                 className="absolute inset-0"
                 style={{
                   opacity: currentImageIndex === index ? 1 : 0,
@@ -67,8 +85,8 @@ export default function Hero() {
                 }}
               >
                 <Image
-                  src={image}
-                  alt={`Ziba Beach Resort Hero ${index + 1}`}
+                  src={image.src}
+                  alt={image.alt}
                   fill
                   priority={index === 0}
                   quality={95}

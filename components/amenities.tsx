@@ -42,6 +42,18 @@ const amenities = [
     image: "/experience-ziba/lagoon-pool.jpg",
   },
   {
+    name: "Adult/Kids Pool",
+    image: "/experience-ziba/adult-kids-pool.jpg",
+  },
+  {
+    name: "Games Room",
+    image: "/experience-ziba/indoor-games.jpg",
+  },
+  {
+    name: "Ziba Kids' Club",
+    image: "/experience-ziba/ziba-kids-club.jpg",
+  },
+  {
     name: "Full Massage Session",
     image: "/experience-ziba/spa-2.jpg",
   },

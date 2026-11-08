@@ -45,6 +45,94 @@ const eventSpaces = [
   },
 ];
 
+/**
+ * Activities and dining from zibabeachresort.com/experiences and
+ * /experiences/activities (checked 2026-11-08) that have no photo of their
+ * own. The photo-led experiences are in components/experiences-carousel.tsx.
+ */
+const activities = [
+  {
+    name: "Foam Party",
+    icon: "🎉",
+    desc: "Dance and play in a sea of bubbles, with music, laughter and foam-filled fun.",
+  },
+  {
+    name: "Pool Volleyball",
+    icon: "🏐",
+    desc: "Splash, spike and serve your way through games that mix swimming with volleyball.",
+  },
+  {
+    name: "Paint 'n' Chill in the Pool",
+    icon: "🎨",
+    desc: "Paint in the pool with floating snacks for you and your partner.",
+  },
+  {
+    name: "Tye & Dye Workshop",
+    icon: "👕",
+    desc: "Learn the traditional art of fabric dyeing and take home a piece you designed.",
+  },
+  {
+    name: "PS5",
+    icon: "🎮",
+    desc: "From kid-friendly platformers to cinematic action and adventure games.",
+  },
+  {
+    name: "Snooker",
+    icon: "🎱",
+    desc: "Sharpen your focus over a game of snooker.",
+  },
+  {
+    name: "Darts",
+    icon: "🎯",
+    desc: "Test your aim and your competitive streak on the dartboard.",
+  },
+  {
+    name: "Table Tennis",
+    icon: "🏓",
+    desc: "A fast, versatile game for quick hands and quick feet.",
+  },
+  {
+    name: "Foosball",
+    icon: "⚽",
+    desc: "Classic table soccer: block, twist and fire your shot.",
+  },
+  {
+    name: "Board Games & Jenga",
+    icon: "♟️",
+    desc: "Chess, Monopoly, Jenga and more for a family or friends' night in.",
+  },
+  {
+    name: "Basketball",
+    icon: "🏀",
+    desc: "A regulation court with room to shoot, pass and score.",
+  },
+  {
+    name: "Beach Football",
+    icon: "🏖️",
+    desc: "Kick a ball around on the sand and feel like a kid again.",
+  },
+  {
+    name: "Limbo Dance",
+    icon: "💃",
+    desc: "How low can you go? A fun way to shake off stress.",
+  },
+  {
+    name: "Pool Dining",
+    icon: "🍽️",
+    desc: "Dishes from our chefs, served while you relax by the pool.",
+  },
+  {
+    name: "Family Beachside Dinner",
+    icon: "🌅",
+    desc: "A beach dinner setup for your family or group (up to 6 guests).",
+  },
+  {
+    name: "Children's Playground",
+    icon: "🎠",
+    desc: "Swings, slides and a safe space for kids to play and make friends.",
+  },
+];
+
 const shootTypes = [
   {
     type: "Maternity Shoots",
@@ -610,6 +698,9 @@ export default function Celebrate() {
                 },
                 { name: "Cinema", image: "cinema.jpg" },
                 { name: "Lagoon Pool", image: "lagoon-pool.jpg" },
+                { name: "Adult/Kids Pool", image: "adult-kids-pool.jpg" },
+                { name: "Games Room", image: "indoor-games.jpg" },
+                { name: "Ziba Kids' Club", image: "ziba-kids-club.jpg" },
                 { name: "Full Massage Session", image: "spa-2.jpg" },
               ].map((amenity, idx) => (
                 <div
@@ -636,6 +727,59 @@ export default function Celebrate() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* Activities & Games */}
+        <section
+          id="activities"
+          className="px-4 sm:px-6 lg:px-8 py-20 bg-white"
+        >
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-14">
+              <h2
+                style={headingFont}
+                className="h2 font-light text-blue-900 mb-4 text-center"
+              >
+                Activities &amp; Games
+              </h2>
+              <div className="w-16 h-0.5 mx-auto mb-6 bg-linear-to-r from-transparent via-blue-400 to-transparent" />
+              <p className="text-gray-600 font-light text-lg max-w-2xl mx-auto">
+                Something for every mood, from poolside games and foam parties
+                to quiet evenings over a board game
+              </p>
+            </div>
+
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {activities.map((activity) => (
+                <li
+                  key={activity.name}
+                  className="rounded-2xl border border-blue-100 bg-blue-50/40 p-6 transition-shadow duration-300 hover:shadow-lg"
+                >
+                  <span className="text-3xl" aria-hidden="true">
+                    {activity.icon}
+                  </span>
+                  <h3 className="mt-3 text-lg font-medium text-blue-900">
+                    {activity.name}
+                  </h3>
+                  <p className="mt-2 text-sm font-light leading-relaxed text-gray-600">
+                    {activity.desc}
+                  </p>
+                </li>
+              ))}
+            </ul>
+
+            <p className="mt-10 text-center text-sm font-light text-gray-500">
+              Some activities are paid extras or need booking ahead. Ask at the
+              front desk or{" "}
+              <a
+                href="/contact"
+                className="text-blue-900 underline underline-offset-2 hover:text-blue-700"
+              >
+                contact us
+              </a>{" "}
+              for availability.
+            </p>
           </div>
         </section>
 

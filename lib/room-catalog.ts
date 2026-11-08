@@ -38,6 +38,20 @@ const CORE_AMENITIES = [
   "Non-smoking Room",
 ];
 
+/**
+ * Resort services listed on the Grand Overwater room pages
+ * (zibabeachresort.com, checked 2026-11-08).
+ */
+const GRAND_OVERWATER_SERVICES = [
+  "Laundry & On-site Guest Laundry",
+  "Dry Cleaning",
+  "Breakfast",
+  "Welcome Drinks",
+  "Free Parking",
+  "24/7 Front Desk",
+  "Transportation",
+];
+
 const NO_CHILDREN_UNDER_10 = "Children under 10 are not permitted in this room.";
 
 export const ROOM_CATALOG: Record<string, RoomCatalogEntry> = {
@@ -306,6 +320,7 @@ export const ROOM_CATALOG: Record<string, RoomCatalogEntry> = {
       "Non-smoking Room",
       "Room Service",
       "Daily Housekeeping",
+      ...GRAND_OVERWATER_SERVICES,
     ],
     notes: [NO_CHILDREN_UNDER_10],
   },
@@ -344,6 +359,7 @@ export const ROOM_CATALOG: Record<string, RoomCatalogEntry> = {
       "Non-smoking Room",
       "Room Service",
       "Daily Housekeeping",
+      ...GRAND_OVERWATER_SERVICES,
     ],
     notes: [NO_CHILDREN_UNDER_10],
   },
